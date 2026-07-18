@@ -1,5 +1,5 @@
 import path from "path";
-import { createWorker } from "tesseract.js";
+import { createWorker, PSM } from "tesseract.js";
 import type { OcrTextBlock } from "@/types";
 
 // tesseract.js resolves `corePath`/`workerPath`/`langPath` at runtime, not
@@ -50,6 +50,17 @@ export async function detectTextBlocks(imageBytes: Buffer): Promise<OcrTextBlock
       // ourselves anyway.
       cacheMethod: "none",
     });
+
+    // Tesseract's default page segmentation mode (AUTO) assumes a fairly
+    // uniform document layout and, verified empirically against synthetic
+    // map-like fixtures, can fail to segment disconnected text regions at
+    // all (e.g. a title band and a legend box separated by a large
+    // non-text map body) — silently returning zero blocks for exactly the
+    // regions this function most needs to find. SPARSE_TEXT is designed
+    // for "find as much text as possible in no particular order," which
+    // matches a map's scattered-labels-plus-title-plus-legend layout far
+    // better than the automatic default.
+    await worker.setParameters({ tessedit_pageseg_mode: PSM.SPARSE_TEXT });
 
     const { data } = await worker.recognize(imageBytes, {}, { blocks: true });
 
