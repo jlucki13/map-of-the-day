@@ -34,9 +34,10 @@ class VercelBlobImageStore implements ImageStore {
     const { put } = await import("@vercel/blob");
     const result = await put(pathname, bytes, {
       access: "public",
+      // Puzzle ids are UUIDs, so pathnames never collide — no random suffix
+      // needed, and overwrites can't occur in practice.
       addRandomSuffix: false,
       contentType,
-      allowOverwrite: true,
     });
     return { url: result.url };
   }

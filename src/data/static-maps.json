@@ -1,0 +1,243 @@
+[
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:paris-1878",
+    "title": "Paris",
+    "aliases": ["City of Paris", "Paris France", "Paris, France"],
+    "description": "A folding pocket map of Paris published by Ledot Freres in 1867, illustrating Baron Haussmann's sweeping mid-19th-century modernization of the city under Napoleon III, including the 1860 reorganization of the arrondissements into twenty zones and the new network of grand boulevards.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/1867_Ledot_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-ledot-1867.jpg",
+    "width": 6000,
+    "height": 4110,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "Ledot Freres",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1867_Ledot_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-ledot-1867.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 6000, "height": 575 },
+      { "kind": "legend", "x": 0, "y": 3370, "width": 6000, "height": 740 }
+    ],
+    "preauthoredHints": [
+      "This map shows a European capital reshaped by a famous 19th-century urban renewal project that widened its streets into grand boulevards.",
+      "The city sits on a river and is divided into numbered administrative districts arranged in a spiral."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:london-1746",
+    "title": "London",
+    "aliases": ["City of London", "London England", "London, England", "London UK"],
+    "description": "John Rocque's celebrated 1741-1745 survey map of London, Westminster, and Southwark, engraved by Richard Parr, is one of the most detailed and influential 18th-century maps of the city, mapping individual buildings, gardens, and fields across a roughly ten-mile radius.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Rocque's_Map_of_London_1741-5.jpg",
+    "width": 4000,
+    "height": 2685,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "John Rocque",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:Rocque's_Map_of_London_1741-5.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 4000, "height": 376 },
+      { "kind": "legend", "x": 0, "y": 2202, "width": 4000, "height": 483 }
+    ],
+    "preauthoredHints": [
+      "This 18th-century survey mapped a sprawling capital in extraordinary building-by-building detail, covering roughly ten miles around its historic core.",
+      "A river winds through the city depicted here, which later became the seat of a global empire and is still one of Europe's largest capitals."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:roman-empire-1850",
+    "title": "Roman Empire",
+    "aliases": ["Rome", "Ancient Rome", "The Roman Empire"],
+    "description": "An 1850 historical map by Karl von Spruner depicting the Roman Empire as divided by Constantine into Eastern and Western halves in 330 AD, with all labels rendered in Latin across the Mediterranean world.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a4/1850_Map_of_the_Roman_Empire_as_Divided_into_East_and_West_(Ancient_Rome)_-_Geographicus_-_RomeDivided-spruneri-1850.jpg",
+    "width": 3000,
+    "height": 2487,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "Karl von Spruner",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1850_Map_of_the_Roman_Empire_as_Divided_into_East_and_West_(Ancient_Rome)_-_Geographicus_-_RomeDivided-spruneri-1850.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 3000, "height": 348 },
+      { "kind": "legend", "x": 0, "y": 2039, "width": 3000, "height": 448 }
+    ],
+    "preauthoredHints": [
+      "This 19th-century historical map documents a vast ancient Mediterranean empire at the moment an emperor split it into two administrative halves.",
+      "Every place name on this map is written in Latin, spanning territory from Britain to the Near East under a single ancient civilization."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:japan-1880",
+    "title": "Japan",
+    "aliases": ["Nippon", "Empire of Japan", "State of Japan"],
+    "description": "A rare late-Meiji-era Japanese folding map of Japan from around the 1880s, printed in the Japanese style with insets of Hokkaido and the outer islands, blending traditional woodblock techniques with newly adopted Western cartographic conventions.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/de/1880s_Meiji_Japanese_Folding_Map_of_Japan_-_Geographicus_-_Japan-meiji-1880.jpg",
+    "width": 3580,
+    "height": 5000,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "Unknown",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1880s_Meiji_Japanese_Folding_Map_of_Japan_-_Geographicus_-_Japan-meiji-1880.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 3580, "height": 700 },
+      { "kind": "legend", "x": 0, "y": 4100, "width": 3580, "height": 900 }
+    ],
+    "preauthoredHints": [
+      "This late-19th-century island nation map was printed in a style blending traditional woodblock techniques with newly adopted Western surveying conventions.",
+      "An inset in one corner shows a large northern island, part of an archipelago nation in East Asia famous for its imperial era of rapid modernization."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:italy-1850",
+    "title": "Italy",
+    "aliases": ["Italia", "Italian Peninsula", "Kingdom of Italy"],
+    "description": "An 1850 map of Italy published by the German cartographic house Justus Perthes, depicting the peninsula's patchwork of pre-unification states, kingdoms, and papal territories on the eve of the Risorgimento.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/33/1850_Justus_Perthes_Map_of_Italy_-_Geographicus_-_Italy-perthes-50.jpg",
+    "width": 4000,
+    "height": 3334,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "Justus Perthes",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1850_Justus_Perthes_Map_of_Italy_-_Geographicus_-_Italy-perthes-50.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 4000, "height": 467 },
+      { "kind": "legend", "x": 0, "y": 2734, "width": 4000, "height": 600 }
+    ],
+    "preauthoredHints": [
+      "This mid-19th-century map shows a boot-shaped southern European peninsula still divided into separate kingdoms and papal territories.",
+      "Within a few decades of this map's publication, the many small states shown here were unified into a single kingdom under one crown."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:nyc-1850",
+    "title": "New York City",
+    "aliases": ["New York", "NYC", "Manhattan", "New York, New York"],
+    "description": "An 1850 map of New York City by the American publisher S. Augustus Mitchell, capturing Manhattan's street grid and waterfront just as the city was rapidly expanding northward before the Civil War.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4e/1850_Mitchell_Map_of_New_York_City_-_Geographicus_-_NewYorkCity-mitchell-1850.jpg",
+    "width": 2500,
+    "height": 3096,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "S. Augustus Mitchell",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1850_Mitchell_Map_of_New_York_City_-_Geographicus_-_NewYorkCity-mitchell-1850.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 2500, "height": 433 },
+      { "kind": "legend", "x": 0, "y": 2539, "width": 2500, "height": 557 }
+    ],
+    "preauthoredHints": [
+      "This mid-19th-century map shows a rapidly growing island city just before it became the financial capital of a young nation.",
+      "A rigid street grid stretches north across the island shown here, laid out decades earlier by a famous commissioners' plan."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:australia-1818",
+    "title": "Australia",
+    "aliases": ["Commonwealth of Australia", "New Holland"],
+    "description": "An 1818 map by Edinburgh cartographer John Pinkerton, from the American edition of his Modern Atlas, depicting Australia -- still labeled New Holland, with Van Diemen's Land shown detached -- alongside a roughly sketched New Zealand and parts of Micronesia.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/67/1818_Pinkerton_Map_of_Australia_and_New_Zealand_-_Geographicus_-_AustraliaNewZealand-pinkerton-1818.jpg",
+    "width": 6000,
+    "height": 4382,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "John Pinkerton",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1818_Pinkerton_Map_of_Australia_and_New_Zealand_-_Geographicus_-_AustraliaNewZealand-pinkerton-1818.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 6000, "height": 613 },
+      { "kind": "legend", "x": 0, "y": 3593, "width": 6000, "height": 789 }
+    ],
+    "preauthoredHints": [
+      "This early-19th-century map depicts a vast southern-hemisphere landmass under a name European mapmakers used before its modern name became standard.",
+      "A smaller pair of islands appears to its southeast, sketched with limited accuracy -- today a separate island nation famous for its mountains and fjords."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:africa-1794",
+    "title": "Africa",
+    "aliases": ["African continent", "The Continent of Africa"],
+    "description": "Compiled by Samuel Boulton and published by Laurie & Whittle in 1794, this large wall map of Africa -- based on the earlier work of Jean-Baptiste Bourguignon d'Anville -- was considered the most scientifically accurate map of the continent produced in the 18th century.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f5/1794_Boulton_and_Anville_Wall_Map_of_Africa_(most_important_18th_cntry_map_of_Africa)_-_Geographicus_-_Africa2-boulton-1794.jpg",
+    "width": 5988,
+    "height": 5025,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "Samuel Boulton",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1794_Boulton_and_Anville_Wall_Map_of_Africa_(most_important_18th_cntry_map_of_Africa)_-_Geographicus_-_Africa2-boulton-1794.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 5988, "height": 704 },
+      { "kind": "legend", "x": 0, "y": 4120, "width": 5988, "height": 905 }
+    ],
+    "preauthoredHints": [
+      "This large 18th-century wall map depicts an entire continent, compiling the best scientific geographic knowledge available at the time of its printing.",
+      "Rivers labeled here include the Congo and the Zambezi, and the map spans a landmass that straddles the equator and touches two oceans."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:mediterranean-1745",
+    "title": "Mediterranean Sea",
+    "aliases": ["The Mediterranean", "Mediterranean"],
+    "description": "A hand-colored 1745 nautical chart of the Mediterranean Sea by English engraver Richard William Seale, detailing ports, rhumb lines, and a decorative compass rose from the Strait of Gibraltar to the coast of the Levant.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/46/1745_Seale_Map_or_Chart_of_the_Mediterranean_Sea_-_Geographicus_-_Mediterranean-seale-1845.jpg",
+    "width": 4000,
+    "height": 1952,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "Richard William Seale",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1745_Seale_Map_or_Chart_of_the_Mediterranean_Sea_-_Geographicus_-_Mediterranean-seale-1845.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 4000, "height": 273 },
+      { "kind": "title", "x": 800, "y": 950, "width": 2400, "height": 800 },
+      { "kind": "legend", "x": 0, "y": 1601, "width": 4000, "height": 351 }
+    ],
+    "preauthoredHints": [
+      "This 18th-century nautical chart maps a sea enclosed almost entirely by three continents, stretching between a famous strait and a Levantine coastline.",
+      "Rhumb lines crisscross the water on this chart, which sailors once used to navigate between ports in southern Europe, North Africa, and the Middle East."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:san-francisco-1932",
+    "title": "San Francisco",
+    "aliases": ["San Francisco, California", "The City by the Bay"],
+    "description": "A 1932 art-deco-style pocket map of San Francisco by Swiss-American publisher H. A. Candrian, covering the city from the Presidio to McLaren Park and labeling streets, trolley lines, parks, and municipal landmarks in the years just before World War II.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/99/1932_Candrain_Map_of_San_Francisco,_California_-_Geographicus_-_SanFrancisco-candrian-1932.jpg",
+    "width": 4500,
+    "height": 3790,
+    "mimeType": "image/jpeg",
+    "attribution": {
+      "author": "H. A. Candrian",
+      "license": "Public domain",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1932_Candrain_Map_of_San_Francisco,_California_-_Geographicus_-_SanFrancisco-candrian-1932.jpg"
+    },
+    "preauthoredRedactionRegions": [
+      { "kind": "title", "x": 0, "y": 0, "width": 4500, "height": 531 },
+      { "kind": "legend", "x": 0, "y": 3108, "width": 4500, "height": 682 }
+    ],
+    "preauthoredHints": [
+      "This art-deco-style pocket map shows a hilly West Coast city built on a peninsula, laid out just before a mid-century world war.",
+      "Trolley lines crisscross the peninsula on this map, which sits beside a bay famous for a bridge painted in international orange, completed a few years after this map's publication."
+    ]
+  }
+]
