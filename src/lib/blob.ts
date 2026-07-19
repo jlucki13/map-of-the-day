@@ -63,31 +63,26 @@ function devBlobRoot(): string {
   return path.join(process.cwd(), "public", "dev-blob");
 }
 
-let warnedAboutFallbackOnVercel = false;
-
-function warnIfFallbackOnVercel(): void {
-  if (config.isVercel && !warnedAboutFallbackOnVercel) {
-    warnedAboutFallbackOnVercel = true;
-    // eslint-disable-next-line no-console
-    console.error(
-      "\n" +
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" +
-        "! WARNING: Using disk-based image store fallback while running on  !\n" +
-        "! Vercel. The filesystem is ephemeral/read-only in production —    !\n" +
-        "! images WILL be lost or writes WILL fail. Set BLOB_READ_WRITE_TOKEN!\n" +
-        "! to fix this.                                                      !\n" +
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n",
-    );
-  }
-}
-
 class DiskImageStore implements ImageStore {
   async putImage(
     pathname: string,
     bytes: Buffer,
     _contentType: string,
   ): Promise<{ url: string }> {
-    warnIfFallbackOnVercel();
+    if (config.isVercel) {
+      // Fail fast with a clear, actionable message instead of attempting a
+      // write that's guaranteed to fail — Vercel's function filesystem is
+      // read-only outside /tmp, and even a successful /tmp write wouldn't be
+      // publicly fetchable, so there's no useful degraded behavior here.
+      // Verified against a real deployment: without this check, the write
+      // below throws a raw ENOENT ("mkdir '/var/task/public'") that gives no
+      // hint the actual problem is a missing BLOB_READ_WRITE_TOKEN.
+      throw new Error(
+        "ImageStore: BLOB_READ_WRITE_TOKEN is not set. The disk-based " +
+          "fallback only works in local dev — connect Vercel Blob to this " +
+          "project (Storage tab) and redeploy.",
+      );
+    }
     const normalized = pathname.replace(/^\/+/, "");
     const filePath = path.join(devBlobRoot(), normalized);
     await mkdir(path.dirname(filePath), { recursive: true });
