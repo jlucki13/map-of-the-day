@@ -1,14 +1,29 @@
 /**
  * Key-value store abstraction. Two implementations:
- *  - Upstash Redis (production / any env with UPSTASH_REDIS_REST_URL + TOKEN)
- *  - In-memory Map fallback (local dev without Upstash configured)
+ *  - Upstash Redis (production / any env with REST URL + TOKEN configured)
+ *  - In-memory Map fallback (local dev without Redis configured)
  *
  * All server-side session/game state goes through this interface so the rest
  * of the codebase never has to know which backend is active.
+ *
+ * Vercel's Redis marketplace integration has, at different times/accounts,
+ * provisioned this under different env var name pairs — UPSTASH_REDIS_REST_*
+ * (the @upstash/redis SDK's own `Redis.fromEnv()` convention) and, currently,
+ * KV_REST_API_* (Vercel's own branding for the same underlying REST API).
+ * Rather than depend on a specific integration naming, check both.
  */
 
 import { Redis } from "@upstash/redis";
 import { config } from "@/lib/config";
+
+function resolveRedisRestCredentials(): { url: string; token: string } | null {
+  const url =
+    process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+  if (!url || !token) return null;
+  return { url, token };
+}
 
 export interface KvStore {
   getJson<T>(key: string): Promise<T | null>;
@@ -19,10 +34,6 @@ export interface KvStore {
   /** Prepend value to a capped recent-list (LPUSH + LTRIM semantics). */
   pushRecent(key: string, value: string, maxLen: number): Promise<void>;
   getRecent(key: string, maxLen: number): Promise<string[]>;
-}
-
-function hasUpstashEnv(): boolean {
-  return !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN;
 }
 
 // ---------------------------------------------------------------------------
@@ -126,8 +137,8 @@ function warnIfFallbackOnVercel(): void {
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" +
         "! WARNING: Using in-memory KV fallback while running on Vercel.    !\n" +
         "! Serverless invocations do NOT share memory — session/game state  !\n" +
-        "! WILL be lost between requests. Set UPSTASH_REDIS_REST_URL and    !\n" +
-        "! UPSTASH_REDIS_REST_TOKEN to fix this.                            !\n" +
+        "! WILL be lost between requests. Set UPSTASH_REDIS_REST_URL/TOKEN  !\n" +
+        "! or KV_REST_API_URL/TOKEN to fix this.                            !\n" +
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n",
     );
   }
@@ -219,8 +230,9 @@ let cachedStore: KvStore | null = null;
 export function getKv(): KvStore {
   if (cachedStore) return cachedStore;
 
-  if (hasUpstashEnv()) {
-    cachedStore = new UpstashKvStore(Redis.fromEnv());
+  const credentials = resolveRedisRestCredentials();
+  if (credentials) {
+    cachedStore = new UpstashKvStore(new Redis(credentials));
   } else {
     cachedStore = new MemoryKvStore();
   }

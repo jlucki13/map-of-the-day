@@ -73,11 +73,19 @@ Tip: set `PUZZLE_INTERVAL_SECONDS=300` in `.env` to watch rotation happen.
 ## Deployment (Vercel)
 
 1. Create the Vercel project from this repo (framework: Next.js).
-2. Add the Upstash Redis integration (sets `UPSTASH_REDIS_REST_URL/TOKEN`)
-   and Vercel Blob (`BLOB_READ_WRITE_TOKEN`).
+2. Add a Redis integration (Storage tab) and Vercel Blob (`BLOB_READ_WRITE_TOKEN`).
+   Vercel's Redis integration has provisioned env vars under different names
+   at different times — sometimes `UPSTASH_REDIS_REST_URL/TOKEN`, sometimes
+   `KV_REST_API_URL/TOKEN`. The app accepts either pair; just confirm
+   whichever one your integration actually injected shows up under Project
+   Settings → Environment Variables after connecting, and **redeploy** —
+   connecting the integration doesn't retroactively affect an
+   already-running deployment.
 3. Set `ANTHROPIC_API_KEY` and `CRON_SECRET` (see `.env.example` for all
    variables, including `WIKIMEDIA_USER_AGENT` — set it to your real site
-   URL/contact).
+   URL/contact). Leave `ANTHROPIC_API_KEY` unset until you've confirmed the
+   data-retention requirement below — the app runs correctly in mock mode
+   without it, on real storage.
 4. **Anthropic account requirement:** Claude Fable 5 requires 30-day-minimum
    data retention on your Anthropic organization (it is unavailable under
    zero-data-retention). Confirm in the Anthropic Console before relying on
