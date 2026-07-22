@@ -5,7 +5,9 @@ import { MAX_GUESSES } from "@/lib/config";
 import { getCurrentPuzzle } from "@/lib/ensureFreshPuzzle";
 import { appendGuess } from "@/lib/gameState";
 import { matchGuessLocally } from "@/lib/guessMatch";
+import { getViewerStanding, recordGameFinished } from "@/lib/leaderboard";
 import { toPublicSessionView } from "@/lib/publicViews";
+import { scoreForWin } from "@/lib/scoring";
 import { getOrCreateSessionId, loadSession, saveSession } from "@/lib/session";
 import type { GuessOutcome } from "@/types";
 
@@ -85,5 +87,26 @@ export async function POST(request: Request) {
   const nextState = appendGuess(state, body.guess, outcome);
   await saveSession(nextState);
 
-  return NextResponse.json(toPublicSessionView(puzzle, nextState));
+  // The earlier early-return guaranteed state.status === "in_progress", so any
+  // status change on nextState IS the game-over transition.
+  let scoreAwarded: { points: number; hasNickname: boolean } | undefined;
+  if (nextState.status !== "in_progress") {
+    const won = nextState.status === "won";
+    // On a win, the winning guess number is nextState.guesses.length (1-5).
+    const points = won
+      ? scoreForWin(nextState.guesses.length as 1 | 2 | 3 | 4 | 5)
+      : 0;
+    await recordGameFinished(sessionId, won, points);
+    if (won) {
+      const standing = await getViewerStanding(sessionId);
+      scoreAwarded = {
+        points,
+        hasNickname: !!standing?.nickname,
+      };
+    }
+  }
+
+  return NextResponse.json(
+    toPublicSessionView(puzzle, nextState, scoreAwarded),
+  );
 }

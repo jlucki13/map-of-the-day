@@ -6,12 +6,17 @@ import {
   GuessForm,
   GuessPips,
   HintCallout,
+  InstructionsModal,
   MapReveal,
+  Nav,
   ResultBanner,
 } from "@/components";
 import type { PublicPuzzleView, PublicSessionView } from "@/types";
 
 const MAX_GUESSES = 5;
+// Bump the suffix to force the instructions popup to re-show after a rules
+// change.
+const INSTRUCTIONS_SEEN_KEY = "motd:instructions-seen:v1";
 
 export default function Page() {
   const [view, setView] = useState<PublicPuzzleView | null>(null);
@@ -19,6 +24,28 @@ export default function Page() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [guessError, setGuessError] = useState<string | null>(null);
+  const [instructionsOpen, setInstructionsOpen] = useState(false);
+
+  // First-visit popup: show once ever, gated by localStorage. The "?" button
+  // reopens it regardless of this flag.
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem(INSTRUCTIONS_SEEN_KEY)) {
+        setInstructionsOpen(true);
+      }
+    } catch {
+      // localStorage unavailable (private mode, etc.) — just skip the popup.
+    }
+  }, []);
+
+  const closeInstructions = useCallback(() => {
+    setInstructionsOpen(false);
+    try {
+      localStorage.setItem(INSTRUCTIONS_SEEN_KEY, "1");
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const fetchPuzzle = useCallback(async () => {
     setLoadError(null);
@@ -86,11 +113,15 @@ export default function Page() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-4 py-8">
+      <Nav
+        active="game"
+        onOpenInstructions={() => setInstructionsOpen(true)}
+      />
+
+      <InstructionsModal open={instructionsOpen} onClose={closeInstructions} />
+
       <header className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Map of the Day
-          </h1>
           <p className="text-sm text-slate-400">
             Guess the place. Title and legend are hidden. 5 tries.
           </p>
@@ -138,7 +169,11 @@ export default function Page() {
 
           {!finished && <HintCallout hints={session.hintsRevealed} />}
 
-          <ResultBanner status={session.status} reveal={session.reveal} />
+          <ResultBanner
+            status={session.status}
+            reveal={session.reveal}
+            scoreAwarded={session.scoreAwarded}
+          />
 
           {!finished && (
             <GuessForm

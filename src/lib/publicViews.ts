@@ -48,6 +48,7 @@ function buildReveal(puzzle: Puzzle, session: GuessSessionState): PuzzleReveal {
 export function toPublicSessionView(
   puzzle: Puzzle,
   session: GuessSessionState,
+  scoreAwarded?: { points: number; hasNickname: boolean },
 ): PublicSessionView {
   const finished = session.status !== "in_progress";
   const hintsRevealed: Hint[] = puzzle.hints.slice(0, session.hintsRevealed);
@@ -61,6 +62,12 @@ export function toPublicSessionView(
   };
   if (finished) {
     view.reveal = buildReveal(puzzle, session);
+  }
+  // Populated only on the response where a win was just recorded — this is the
+  // single sanctioned place scoreAwarded reaches the client (never bolted on
+  // by a route handler after the fact).
+  if (scoreAwarded) {
+    view.scoreAwarded = scoreAwarded;
   }
   return view;
 }

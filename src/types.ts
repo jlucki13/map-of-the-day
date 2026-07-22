@@ -104,6 +104,26 @@ export interface PublicSessionView {
   status: GameStatus;
   guessHistory: { outcome: GuessOutcome }[];
   reveal?: PuzzleReveal;
+  /**
+   * Present only on the exact response where a win was just recorded. Points
+   * are server-computed from the winning guess number; hasNickname tells the
+   * client whether to prompt for a leaderboard name.
+   */
+  scoreAwarded?: { points: number; hasNickname: boolean };
+}
+
+// ---- Leaderboard client-facing views ----
+
+export interface PublicLeaderboardEntry {
+  rank: number;
+  nickname: string;
+  totalScore: number;
+  gamesWon: number;
+}
+
+export interface PublicLeaderboardView {
+  entries: PublicLeaderboardEntry[];
+  you: PublicLeaderboardEntry | null;
 }
 
 export interface PublicPuzzleView {

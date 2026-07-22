@@ -4,7 +4,11 @@ A Wordle-style daily game: once per configurable interval (default 24h) the
 site publishes one map image with its **title and legend redacted**, and
 everyone guesses the place it depicts. 5 guesses; a hint unlocks after the
 3rd and 4th wrong guess; the answer, description, and source attribution are
-revealed when the round ends.
+revealed when the round ends. A win earns points based on how many guesses it
+took (10/8/5/2/1 for guess 1–5), tracked cumulatively on an all-time
+leaderboard (`/leaderboard`) once you set a nickname — prompted inline on
+your first win. A first-visit popup explains the rules (reopenable anytime
+via the "?" button).
 
 The backend actually runs a small multi-agent Claude pipeline at
 map-generation time (source/vet a candidate map, find and redact its

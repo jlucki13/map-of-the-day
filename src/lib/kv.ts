@@ -34,6 +34,15 @@ export interface KvStore {
   /** Prepend value to a capped recent-list (LPUSH + LTRIM semantics). */
   pushRecent(key: string, value: string, maxLen: number): Promise<void>;
   getRecent(key: string, maxLen: number): Promise<string[]>;
+  /** Atomically increments member's score in a sorted set; returns the new score. */
+  zIncrBy(key: string, member: string, delta: number): Promise<number>;
+  /** Top `count` members by score descending, with scores. */
+  zRevRangeWithScores(
+    key: string,
+    count: number,
+  ): Promise<{ member: string; score: number }[]>;
+  /** 0-indexed rank by score descending, or null if the member isn't present. */
+  zRevRank(key: string, member: string): Promise<number | null>;
 }
 
 // ---------------------------------------------------------------------------
@@ -50,6 +59,15 @@ class UpstashKvStore implements KvStore {
     lpush(key: string, value: string): Promise<unknown>;
     ltrim(key: string, start: number, end: number): Promise<unknown>;
     lrange(key: string, start: number, end: number): Promise<unknown>;
+    // NOTE argument order: increment BEFORE member (matches @upstash/redis).
+    zincrby(key: string, increment: number, member: string): Promise<number>;
+    zrange(
+      key: string,
+      min: number,
+      max: number,
+      opts?: Record<string, unknown>,
+    ): Promise<unknown>;
+    zrevrank(key: string, member: string): Promise<number | null>;
   };
 
   constructor(client: UpstashKvStore["client"]) {
@@ -101,6 +119,38 @@ class UpstashKvStore implements KvStore {
     if (!Array.isArray(raw)) return [];
     return raw.map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
   }
+
+  async zIncrBy(key: string, member: string, delta: number): Promise<number> {
+    // @upstash/redis zincrby takes (key, increment, member) — increment first.
+    return this.client.zincrby(key, delta, member);
+  }
+
+  async zRevRangeWithScores(
+    key: string,
+    count: number,
+  ): Promise<{ member: string; score: number }[]> {
+    if (count <= 0) return [];
+    // withScores + rev => a FLAT array [member, score, member, score, ...].
+    const raw = await this.client.zrange(key, 0, count - 1, {
+      withScores: true,
+      rev: true,
+    });
+    if (!Array.isArray(raw)) return [];
+    const out: { member: string; score: number }[] = [];
+    for (let i = 0; i + 1 < raw.length; i += 2) {
+      out.push({
+        member: String(raw[i]),
+        // score may arrive as string or number depending on transport.
+        score: Number(raw[i + 1]),
+      });
+    }
+    return out;
+  }
+
+  async zRevRank(key: string, member: string): Promise<number | null> {
+    const rank = await this.client.zrevrank(key, member);
+    return rank ?? null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -113,9 +163,14 @@ interface MemEntry {
 }
 
 const MEMORY_STORE_KEY = Symbol.for("map-of-the-day.kv.memoryStore");
+const MEMORY_ZSET_STORE_KEY = Symbol.for("map-of-the-day.kv.memoryZsetStore");
+
+// Sorted sets: outer key = zset key, inner Map = member -> score.
+type MemZsetStore = Map<string, Map<string, number>>;
 
 type GlobalWithStore = typeof globalThis & {
   [MEMORY_STORE_KEY]?: Map<string, MemEntry>;
+  [MEMORY_ZSET_STORE_KEY]?: MemZsetStore;
 };
 
 function getGlobalMemoryStore(): Map<string, MemEntry> {
@@ -124,6 +179,14 @@ function getGlobalMemoryStore(): Map<string, MemEntry> {
     g[MEMORY_STORE_KEY] = new Map<string, MemEntry>();
   }
   return g[MEMORY_STORE_KEY]!;
+}
+
+function getGlobalMemoryZsetStore(): MemZsetStore {
+  const g = globalThis as GlobalWithStore;
+  if (!g[MEMORY_ZSET_STORE_KEY]) {
+    g[MEMORY_ZSET_STORE_KEY] = new Map<string, Map<string, number>>();
+  }
+  return g[MEMORY_ZSET_STORE_KEY]!;
 }
 
 let warnedAboutFallbackOnVercel = false;
@@ -146,9 +209,37 @@ function warnIfFallbackOnVercel(): void {
 
 class MemoryKvStore implements KvStore {
   private store: Map<string, MemEntry>;
+  private zstore: MemZsetStore;
 
   constructor() {
     this.store = getGlobalMemoryStore();
+    this.zstore = getGlobalMemoryZsetStore();
+  }
+
+  private zset(key: string): Map<string, number> {
+    let set = this.zstore.get(key);
+    if (!set) {
+      set = new Map<string, number>();
+      this.zstore.set(key, set);
+    }
+    return set;
+  }
+
+  /** Members sorted by score descending, ties broken by member ascending. */
+  private zsortedDesc(key: string): { member: string; score: number }[] {
+    const set = this.zstore.get(key);
+    if (!set) return [];
+    return [...set.entries()]
+      .map(([member, score]) => ({ member, score }))
+      .sort((a, b) =>
+        b.score !== a.score
+          ? b.score - a.score
+          : a.member < b.member
+            ? -1
+            : a.member > b.member
+              ? 1
+              : 0,
+      );
   }
 
   private read(key: string): string | null {
@@ -218,6 +309,28 @@ class MemoryKvStore implements KvStore {
     } catch {
       return [];
     }
+  }
+
+  async zIncrBy(key: string, member: string, delta: number): Promise<number> {
+    const set = this.zset(key);
+    const next = (set.get(member) ?? 0) + delta;
+    set.set(member, next);
+    return next;
+  }
+
+  async zRevRangeWithScores(
+    key: string,
+    count: number,
+  ): Promise<{ member: string; score: number }[]> {
+    if (count <= 0) return [];
+    return this.zsortedDesc(key).slice(0, count);
+  }
+
+  async zRevRank(key: string, member: string): Promise<number | null> {
+    const set = this.zstore.get(key);
+    if (!set || !set.has(member)) return null;
+    const idx = this.zsortedDesc(key).findIndex((e) => e.member === member);
+    return idx < 0 ? null : idx;
   }
 }
 

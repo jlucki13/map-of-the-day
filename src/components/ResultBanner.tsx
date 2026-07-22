@@ -1,19 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { PuzzleReveal } from "@/types";
+import NicknamePrompt from "./NicknamePrompt";
 
 export interface ResultBannerProps {
   status: "in_progress" | "won" | "lost";
   reveal?: PuzzleReveal;
+  scoreAwarded?: { points: number; hasNickname: boolean };
 }
 
-export default function ResultBanner({ status, reveal }: ResultBannerProps) {
+export default function ResultBanner({
+  status,
+  reveal,
+  scoreAwarded,
+}: ResultBannerProps) {
   const [copied, setCopied] = useState(false);
+  // Locally track a name saved via the inline prompt so we can swap it out for
+  // the leaderboard link without needing a fresh server response.
+  const [savedNickname, setSavedNickname] = useState<string | null>(null);
 
   if (status === "in_progress") return null;
 
   const won = status === "won";
+  const hasNickname = !!scoreAwarded?.hasNickname || savedNickname !== null;
 
   async function copyShareGrid() {
     if (!reveal?.shareGrid) return;
@@ -42,7 +53,31 @@ export default function ResultBanner({ status, reveal }: ResultBannerProps) {
         }
       >
         {won ? "You got it!" : "Out of guesses."}
+        {won && scoreAwarded && (
+          <span className="ml-2 text-emerald-200">
+            +{scoreAwarded.points}{" "}
+            {scoreAwarded.points === 1 ? "point" : "points"}
+          </span>
+        )}
       </p>
+
+      {won && scoreAwarded && (
+        <div className="mt-3">
+          {hasNickname ? (
+            <Link
+              href="/leaderboard"
+              className="text-sm font-medium text-emerald-300 underline decoration-emerald-700 underline-offset-2 hover:text-emerald-200"
+            >
+              View leaderboard &rarr;
+            </Link>
+          ) : (
+            <NicknamePrompt
+              points={scoreAwarded.points}
+              onSaved={(name) => setSavedNickname(name)}
+            />
+          )}
+        </div>
+      )}
 
       {reveal && (
         <div className="mt-4 space-y-3">
