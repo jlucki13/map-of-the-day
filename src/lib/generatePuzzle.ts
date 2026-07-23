@@ -31,16 +31,23 @@ export const CURRENT_PUZZLE_KEY = "puzzle:current";
 export const RECENT_EXTERNAL_IDS_KEY = "puzzle:recent-external-ids";
 
 async function fetchImageBytes(candidate: CandidateMap): Promise<Buffer> {
+  // Root-relative URLs point at our own self-hosted generated maps under
+  // public/generated-maps/ — resolve them against the deployment's base URL so
+  // the same fetch path works in dev, on Vercel, and in mock mode.
+  const imageUrl = candidate.imageUrl.startsWith("/")
+    ? `${config.publicBaseUrl}${candidate.imageUrl}`
+    : candidate.imageUrl;
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 30_000);
   try {
-    const response = await fetch(candidate.imageUrl, {
+    const response = await fetch(imageUrl, {
       headers: { "User-Agent": config.wikimediaUserAgent },
       signal: controller.signal,
     });
     if (!response.ok) {
       throw new Error(
-        `image fetch failed with ${response.status} for ${candidate.imageUrl}`,
+        `image fetch failed with ${response.status} for ${imageUrl}`,
       );
     }
     return Buffer.from(await response.arrayBuffer());

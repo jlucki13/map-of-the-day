@@ -123,7 +123,7 @@ export default function Page() {
       <header className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="text-sm text-slate-400">
-            Guess the place. Title and legend are hidden. 5 tries.
+            Guess what this map is depicting. The title is hidden. 5 tries.
           </p>
         </div>
         {view && (
@@ -187,8 +187,7 @@ export default function Page() {
       )}
 
       <footer className="mt-auto pt-8 text-center text-xs text-slate-600">
-        Maps sourced from Wikimedia Commons. Attribution appears after each
-        round.
+        Thematic data maps. Source and attribution appear after each round.
       </footer>
     </main>
   );

@@ -3,9 +3,9 @@ import { hintLeaksAnswer, normalizeGuess } from "@/lib/guessMatch";
 import type { CandidateMap, Hint } from "@/types";
 
 const GENERIC_HINT_1 =
-  "Study the coastlines, rivers, and street patterns — the shape of this place is its signature.";
+  "Read the pattern: where the values run high versus low across the map is the biggest clue to what's being measured.";
 const GENERIC_HINT_2 =
-  "This place has appeared on maps for a very long time, and its outline alone is famous enough to recognize.";
+  "The color scale tells you the range of the quantity — match that range and the regional pattern to a familiar statistic.";
 
 /**
  * Deterministic mock hintsmith: preauthored hints when available; otherwise
@@ -39,7 +39,7 @@ export class MockHintsmithAgent implements HintsmithAgent {
     const generated: [Hint, Hint] = [
       {
         order: 1,
-        text: "Look closely at the geography: coastline, rivers, and layout narrow this down more than you'd think.",
+        text: "Look at which regions are shaded high versus low — the spatial pattern narrows the topic more than you'd think.",
       },
       {
         order: 2,

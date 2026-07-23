@@ -1,14 +1,17 @@
 # Map of the Day
 
 A Wordle-style daily game: once per configurable interval (default 24h) the
-site publishes one map image with its **title and legend redacted**, and
-everyone guesses the place it depicts. 5 guesses; a hint unlocks after the
-3rd and 4th wrong guess; the answer, description, and source attribution are
-revealed when the round ends. A win earns points based on how many guesses it
-took (10/8/5/2/1 for guess 1–5), tracked cumulatively on an all-time
-leaderboard (`/leaderboard`) once you set a nickname — prompted inline on
-your first win. A first-visit popup explains the rules (reopenable anytime
-via the "?" button).
+site publishes one **thematic data map** — a choropleth shading states or
+countries by some statistic — with its **title redacted**, and everyone
+guesses **what the map is depicting** (the variable being visualized, e.g.
+"population by state" or "highest elevation"). The color scale stays visible
+as a clue; the words that name the topic don't. 5 guesses; a hint unlocks
+after the 3rd and 4th wrong guess; the answer, description, and source
+attribution are revealed when the round ends. A win earns points based on how
+many guesses it took (10/8/5/2/1 for guess 1–5), tracked cumulatively on an
+all-time leaderboard (`/leaderboard`) once you set a nickname — prompted
+inline on your first win. A first-visit popup explains the rules (reopenable
+anytime via the "?" button).
 
 The backend actually runs a small multi-agent Claude pipeline at
 map-generation time (source/vet a candidate map, find and redact its
@@ -22,11 +25,12 @@ npm install
 npm run dev
 ```
 
-With no `ANTHROPIC_API_KEY` set, the app runs in **mock mode**: the curated
-static dataset (`src/data/static-maps.json`) supplies the puzzle, agents are
-deterministic stubs, game/session state lives in memory, and images are
-written to `public/dev-blob/`. The full guess flow — hints, win/loss, reveal
-— works with zero provisioned services.
+With no `ANTHROPIC_API_KEY` set, the app runs in **mock mode**: the
+self-generated thematic dataset (`src/data/static-maps.json` +
+`public/generated-maps/*.png`) supplies the puzzle, agents are deterministic
+stubs, game/session state lives in memory, and images are written to
+`public/dev-blob/`. The full guess flow — hints, win/loss, reveal — works with
+zero provisioned services.
 
 Tip: set `PUZZLE_INTERVAL_SECONDS=300` in `.env` to watch rotation happen.
 
@@ -52,11 +56,15 @@ Tip: set `PUZZLE_INTERVAL_SECONDS=300` in `.env` to watch rotation happen.
   (Fable 5) final QA on exactly what a player will see. Live sub-agents use
   structured outputs (`output_config.format`), Fable calls set the
   server-side fallback-to-Opus-4.8 beta and handle `refusal` stop reasons.
-- **Sources** (`src/sources/`): Wikimedia Commons live API (raster maps with
-  complete license metadata, honest User-Agent per Wikimedia policy) + a
-  ~10-entry hand-curated static dataset used in mock mode and as automatic
-  fallback when live sourcing/QA fails. Dedupe against repeats is
-  count-based (last 20 used).
+- **Sources** (`src/sources/`): a self-generated **thematic dataset** (8
+  choropleths rendered by `scripts/generate-maps.mjs` from public-domain
+  boundaries — US Census TIGER via `us-atlas`, Natural Earth via
+  `world-atlas` — shaded by real public statistics; CC0, self-hosted under
+  `public/generated-maps/`) used in mock mode and as automatic fallback, plus
+  the Wikimedia Commons live API retargeted to thematic-map categories (raster
+  maps with complete license metadata, honest User-Agent per Wikimedia
+  policy). Regenerate the dataset with `npm run generate:maps`. Dedupe against
+  repeats is count-based (last 20 used).
 - **Storage**: Upstash Redis (puzzle record, per-visitor sessions keyed by an
   httpOnly cookie, recent-history list) and Vercel Blob (redacted + original
   images). Both have local fallbacks (in-memory map / `public/dev-blob/`)

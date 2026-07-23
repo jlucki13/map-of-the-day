@@ -1,417 +1,288 @@
 [
   {
     "sourceId": "static-dataset",
-    "externalId": "static:paris-1878",
-    "title": "Paris",
+    "externalId": "static:us-population",
+    "title": "Population by State (2020 Census)",
     "aliases": [
-      "City of Paris",
-      "Paris France",
-      "Paris, France"
+      "population",
+      "state population",
+      "how many people live in each state",
+      "residents per state"
     ],
-    "description": "A folding pocket map of Paris published by Ledot Freres in 1867, illustrating Baron Haussmann's sweeping mid-19th-century modernization of the city under Napoleon III, including the 1860 reorganization of the arrondissements into twenty zones and the new network of grand boulevards.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/1867_Ledot_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-ledot-1867.jpg",
-    "width": 6000,
-    "height": 4110,
-    "mimeType": "image/jpeg",
+    "description": "Resident population of each U.S. state from the 2020 United States Census. California, Texas, Florida, and New York are the most populous; Wyoming and Vermont the least. Boundaries: US Census TIGER via us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-population.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "Ledot Freres",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1867_Ledot_Pocket_Map_of_Paris,_France_-_Geographicus_-_Paris-ledot-1867.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 748
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 3370,
-        "width": 1000000,
-        "height": 962
+        "width": 975,
+        "height": 68
       }
     ],
     "preauthoredHints": [
-      "This map shows a European capital reshaped by a famous 19th-century urban renewal project that widened its streets into grand boulevards.",
-      "The city sits on a river and is divided into numbered administrative districts arranged in a spiral."
+      "This is a straightforward head-count of people — not land, money, or altitude.",
+      "The four darkest states are California, Texas, Florida, and New York."
     ]
   },
   {
     "sourceId": "static-dataset",
-    "externalId": "static:london-1746",
-    "title": "London",
+    "externalId": "static:us-land-area",
+    "title": "Land Area by State (square miles)",
     "aliases": [
-      "City of London",
-      "London England",
-      "London, England",
-      "London UK"
+      "land area",
+      "area",
+      "state size",
+      "how big each state is",
+      "size of each state"
     ],
-    "description": "John Rocque's celebrated 1741-1745 survey map of London, Westminster, and Southwark, engraved by Richard Parr, is one of the most detailed and influential 18th-century maps of the city, mapping individual buildings, gardens, and fields across a roughly ten-mile radius.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Rocque's_Map_of_London_1741-5.jpg",
-    "width": 4000,
-    "height": 2685,
-    "mimeType": "image/jpeg",
+    "description": "Land area of each U.S. state in square miles. Alaska dwarfs every other state, followed by Texas, California, and Montana; Rhode Island and Delaware are the smallest. Boundaries: US Census TIGER via us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-land-area.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "John Rocque",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:Rocque's_Map_of_London_1741-5.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 489
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 2202,
-        "width": 1000000,
-        "height": 628
+        "width": 975,
+        "height": 68
       }
     ],
     "preauthoredHints": [
-      "This 18th-century survey mapped a sprawling capital in extraordinary building-by-building detail, covering roughly ten miles around its historic core.",
-      "A river winds through the city depicted here, which later became the seat of a global empire and is still one of Europe's largest capitals."
+      "This measures physical size on the ground, not how many people are there.",
+      "One state in the far northwest is more than twice the size of the next largest."
     ]
   },
   {
     "sourceId": "static-dataset",
-    "externalId": "static:roman-empire-1850",
-    "title": "Roman Empire",
+    "externalId": "static:us-statehood-order",
+    "title": "Order of Admission to the Union",
     "aliases": [
-      "Rome",
-      "Ancient Rome",
-      "The Roman Empire"
+      "order of statehood",
+      "statehood order",
+      "when each state joined the union",
+      "order states joined the us",
+      "admission to the union"
     ],
-    "description": "An 1850 historical map by Karl von Spruner depicting the Roman Empire as divided by Constantine into Eastern and Western halves in 330 AD, with all labels rendered in Latin across the Mediterranean world.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a4/1850_Map_of_the_Roman_Empire_as_Divided_into_East_and_West_(Ancient_Rome)_-_Geographicus_-_RomeDivided-spruneri-1850.jpg",
-    "width": 3000,
-    "height": 2487,
-    "mimeType": "image/jpeg",
+    "description": "The order in which each state was admitted to the Union, from Delaware (1st, 1787) to Hawaii (50th, 1959). The original thirteen colonies along the East Coast rank lowest; the West and the last frontier states rank highest. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-statehood-order.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "Karl von Spruner",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1850_Map_of_the_Roman_Empire_as_Divided_into_East_and_West_(Ancient_Rome)_-_Geographicus_-_RomeDivided-spruneri-1850.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 452
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 2039,
-        "width": 1000000,
-        "height": 582
+        "width": 975,
+        "height": 68
       }
     ],
     "preauthoredHints": [
-      "This 19th-century historical map documents a vast ancient Mediterranean empire at the moment an emperor split it into two administrative halves.",
-      "Every place name on this map is written in Latin, spanning territory from Britain to the Near East under a single ancient civilization."
+      "The lowest values cluster along the East Coast and climb as you move west.",
+      "The thirteen original colonies hold the earliest ranks; Alaska and Hawaii the last two."
     ]
   },
   {
     "sourceId": "static-dataset",
-    "externalId": "static:japan-1880",
-    "title": "Japan",
+    "externalId": "static:us-electoral-votes",
+    "title": "Electoral Votes per State (2024)",
     "aliases": [
-      "Nippon",
-      "Empire of Japan",
-      "State of Japan"
+      "electoral votes",
+      "electoral college votes",
+      "electoral college",
+      "presidential electors"
     ],
-    "description": "A rare late-Meiji-era Japanese folding map of Japan from around the 1880s, printed in the Japanese style with insets of Hokkaido and the outer islands, blending traditional woodblock techniques with newly adopted Western cartographic conventions.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/de/1880s_Meiji_Japanese_Folding_Map_of_Japan_-_Geographicus_-_Japan-meiji-1880.jpg",
-    "width": 3580,
-    "height": 5000,
-    "mimeType": "image/jpeg",
+    "description": "Number of Electoral College votes per state for the 2024 U.S. presidential election, based on the 2020 apportionment (House seats plus two senators; Washington, D.C. gets three). Ranges from 3 for the smallest states to 54 for California. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-electoral-votes.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "Unknown",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1880s_Meiji_Japanese_Folding_Map_of_Japan_-_Geographicus_-_Japan-meiji-1880.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 910
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 4100,
-        "width": 1000000,
-        "height": 1170
+        "width": 975,
+        "height": 68
       }
     ],
     "preauthoredHints": [
-      "This late-19th-century island nation map was printed in a style blending traditional woodblock techniques with newly adopted Western surveying conventions.",
-      "An inset in one corner shows a large northern island, part of an archipelago nation in East Asia famous for its imperial era of rapid modernization."
+      "The figure tracks a state's clout in choosing a national leader every four years.",
+      "The smallest states all share the minimum of three; California tops out at 54."
     ]
   },
   {
     "sourceId": "static-dataset",
-    "externalId": "static:italy-1850",
-    "title": "Italy",
+    "externalId": "static:us-counties",
+    "title": "Number of Counties per State",
     "aliases": [
-      "Italia",
-      "Italian Peninsula",
-      "Kingdom of Italy"
+      "number of counties",
+      "counties per state",
+      "how many counties",
+      "count of counties"
     ],
-    "description": "An 1850 map of Italy published by the German cartographic house Justus Perthes, depicting the peninsula's patchwork of pre-unification states, kingdoms, and papal territories on the eve of the Risorgimento.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/33/1850_Justus_Perthes_Map_of_Italy_-_Geographicus_-_Italy-perthes-50.jpg",
-    "width": 4000,
-    "height": 3334,
-    "mimeType": "image/jpeg",
+    "description": "The number of counties (or county-equivalents — Louisiana's parishes, Alaska's boroughs and census areas, and independent cities) in each state. Texas leads with 254; Delaware has just 3. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-counties.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "Justus Perthes",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1850_Justus_Perthes_Map_of_Italy_-_Geographicus_-_Italy-perthes-50.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 607
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 2734,
-        "width": 1000000,
-        "height": 780
+        "width": 975,
+        "height": 68
       }
     ],
     "preauthoredHints": [
-      "This mid-19th-century map shows a boot-shaped southern European peninsula still divided into separate kingdoms and papal territories.",
-      "Within a few decades of this map's publication, the many small states shown here were unified into a single kingdom under one crown."
+      "It counts a state's internal administrative subdivisions, not people or land.",
+      "One large southern state has 254 of them; Delaware, Hawaii, and Rhode Island have a handful."
     ]
   },
   {
     "sourceId": "static-dataset",
-    "externalId": "static:nyc-1850",
-    "title": "New York City",
+    "externalId": "static:us-elevation",
+    "title": "Highest Elevation Point by State (feet)",
     "aliases": [
-      "New York",
-      "NYC",
-      "Manhattan",
-      "New York, New York"
+      "highest elevation",
+      "highest point",
+      "peak elevation",
+      "highest point in each state",
+      "elevation",
+      "highest summit"
     ],
-    "description": "An 1850 map of New York City by the American publisher S. Augustus Mitchell, capturing Manhattan's street grid and waterfront just as the city was rapidly expanding northward before the Civil War.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4e/1850_Mitchell_Map_of_New_York_City_-_Geographicus_-_NewYorkCity-mitchell-1850.jpg",
-    "width": 2500,
-    "height": 3096,
-    "mimeType": "image/jpeg",
+    "description": "The elevation of the highest natural point in each state, in feet above sea level — from Alaska's Denali (20,310 ft) down to Florida's Britton Hill (345 ft). The Rockies and western ranges dominate. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-elevation.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "S. Augustus Mitchell",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1850_Mitchell_Map_of_New_York_City_-_Geographicus_-_NewYorkCity-mitchell-1850.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 563
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 2539,
-        "width": 1000000,
-        "height": 724
+        "width": 975,
+        "height": 68
       }
     ],
     "preauthoredHints": [
-      "This mid-19th-century map shows a rapidly growing island city just before it became the financial capital of a young nation.",
-      "A rigid street grid stretches north across the island shown here, laid out decades earlier by a famous commissioners' plan."
+      "This is about how far up the land rises, greatest across the mountainous West.",
+      "The single loftiest summit is in Alaska, while flat states like Florida and Delaware barely rise above the sea."
     ]
   },
   {
     "sourceId": "static-dataset",
-    "externalId": "static:australia-1818",
-    "title": "Australia",
+    "externalId": "static:world-population",
+    "title": "Population by Country (~2020)",
     "aliases": [
-      "Commonwealth of Australia",
-      "New Holland"
+      "population",
+      "country population",
+      "how many people live in each country",
+      "national population"
     ],
-    "description": "An 1818 map by Edinburgh cartographer John Pinkerton, from the American edition of his Modern Atlas, depicting Australia -- still labeled New Holland, with Van Diemen's Land shown detached -- alongside a roughly sketched New Zealand and parts of Micronesia.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/67/1818_Pinkerton_Map_of_Australia_and_New_Zealand_-_Geographicus_-_AustraliaNewZealand-pinkerton-1818.jpg",
-    "width": 6000,
-    "height": 4382,
-    "mimeType": "image/jpeg",
+    "description": "Approximate national population around 2020. China and India each exceed 1.3 billion; a long tail of countries have only a few million. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-population.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "John Pinkerton",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1818_Pinkerton_Map_of_Australia_and_New_Zealand_-_Geographicus_-_AustraliaNewZealand-pinkerton-1818.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 797
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 3593,
-        "width": 1000000,
-        "height": 1026
+        "width": 980,
+        "height": 58
       }
     ],
     "preauthoredHints": [
-      "This early-19th-century map depicts a vast southern-hemisphere landmass under a name European mapmakers used before its modern name became standard.",
-      "A smaller pair of islands appears to its southeast, sketched with limited accuracy -- today a separate island nation famous for its mountains and fjords."
+      "A simple count of people, nation by nation.",
+      "Two countries in Asia tower over everyone else, each above a billion."
     ]
   },
   {
     "sourceId": "static-dataset",
-    "externalId": "static:africa-1794",
-    "title": "Africa",
+    "externalId": "static:world-land-area",
+    "title": "Land Area by Country (thousand km²)",
     "aliases": [
-      "African continent",
-      "The Continent of Africa"
+      "land area",
+      "country area",
+      "area",
+      "how big each country is",
+      "size of each country",
+      "territory size"
     ],
-    "description": "Compiled by Samuel Boulton and published by Laurie & Whittle in 1794, this large wall map of Africa -- based on the earlier work of Jean-Baptiste Bourguignon d'Anville -- was considered the most scientifically accurate map of the continent produced in the 18th century.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f5/1794_Boulton_and_Anville_Wall_Map_of_Africa_(most_important_18th_cntry_map_of_Africa)_-_Geographicus_-_Africa2-boulton-1794.jpg",
-    "width": 5988,
-    "height": 5025,
-    "mimeType": "image/jpeg",
+    "description": "Land area by country, in thousands of square kilometres. Russia is by far the largest, followed by Canada, the United States, China, and Brazil. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-land-area.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
     "attribution": {
-      "author": "Samuel Boulton",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1794_Boulton_and_Anville_Wall_Map_of_Africa_(most_important_18th_cntry_map_of_Africa)_-_Geographicus_-_Africa2-boulton-1794.jpg"
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
     },
     "preauthoredRedactionRegions": [
       {
         "kind": "title",
         "x": 0,
         "y": 0,
-        "width": 1000000,
-        "height": 915
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 4120,
-        "width": 1000000,
-        "height": 1176
+        "width": 980,
+        "height": 58
       }
     ],
     "preauthoredHints": [
-      "This large 18th-century wall map depicts an entire continent, compiling the best scientific geographic knowledge available at the time of its printing.",
-      "Rivers labeled here include the Congo and the Zambezi, and the map spans a landmass that straddles the equator and touches two oceans."
-    ]
-  },
-  {
-    "sourceId": "static-dataset",
-    "externalId": "static:mediterranean-1745",
-    "title": "Mediterranean Sea",
-    "aliases": [
-      "The Mediterranean",
-      "Mediterranean"
-    ],
-    "description": "A hand-colored 1745 nautical chart of the Mediterranean Sea by English engraver Richard William Seale, detailing ports, rhumb lines, and a decorative compass rose from the Strait of Gibraltar to the coast of the Levant.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/46/1745_Seale_Map_or_Chart_of_the_Mediterranean_Sea_-_Geographicus_-_Mediterranean-seale-1845.jpg",
-    "width": 4000,
-    "height": 1952,
-    "mimeType": "image/jpeg",
-    "attribution": {
-      "author": "Richard William Seale",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1745_Seale_Map_or_Chart_of_the_Mediterranean_Sea_-_Geographicus_-_Mediterranean-seale-1845.jpg"
-    },
-    "preauthoredRedactionRegions": [
-      {
-        "kind": "title",
-        "x": 0,
-        "y": 0,
-        "width": 1000000,
-        "height": 355
-      },
-      {
-        "kind": "title",
-        "x": 800,
-        "y": 950,
-        "width": 2400,
-        "height": 800
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 1601,
-        "width": 1000000,
-        "height": 456
-      }
-    ],
-    "preauthoredHints": [
-      "This 18th-century nautical chart maps a sea enclosed almost entirely by three continents, stretching between a famous strait and a Levantine coastline.",
-      "Rhumb lines crisscross the water on this chart, which sailors once used to navigate between ports in southern Europe, North Africa, and the Middle East."
-    ]
-  },
-  {
-    "sourceId": "static-dataset",
-    "externalId": "static:san-francisco-1932",
-    "title": "San Francisco",
-    "aliases": [
-      "San Francisco, California",
-      "The City by the Bay"
-    ],
-    "description": "A 1932 art-deco-style pocket map of San Francisco by Swiss-American publisher H. A. Candrian, covering the city from the Presidio to McLaren Park and labeling streets, trolley lines, parks, and municipal landmarks in the years just before World War II.",
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/99/1932_Candrain_Map_of_San_Francisco,_California_-_Geographicus_-_SanFrancisco-candrian-1932.jpg",
-    "width": 4500,
-    "height": 3790,
-    "mimeType": "image/jpeg",
-    "attribution": {
-      "author": "H. A. Candrian",
-      "license": "CC BY-SA 4.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:1932_Candrain_Map_of_San_Francisco,_California_-_Geographicus_-_SanFrancisco-candrian-1932.jpg"
-    },
-    "preauthoredRedactionRegions": [
-      {
-        "kind": "title",
-        "x": 0,
-        "y": 0,
-        "width": 1000000,
-        "height": 690
-      },
-      {
-        "kind": "legend",
-        "x": 0,
-        "y": 3108,
-        "width": 1000000,
-        "height": 887
-      }
-    ],
-    "preauthoredHints": [
-      "This art-deco-style pocket map shows a hilly West Coast city built on a peninsula, laid out just before a mid-century world war.",
-      "Trolley lines crisscross the peninsula on this map, which sits beside a bay famous for a bridge painted in international orange, completed a few years after this map's publication."
+      "This is about sheer territorial size, not how many people live there.",
+      "The largest by a wide margin stretches across northern Eurasia."
     ]
   }
 ]

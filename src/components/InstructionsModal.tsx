@@ -49,8 +49,11 @@ export default function InstructionsModal({
 
         <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-300">
           <p>
-            Each round shows a real map with its title, legend, and other
-            identifying text hidden. Your job: name the place it depicts.
+            Each round shows a thematic data map &mdash; a choropleth that
+            shades states or countries by some statistic &mdash; with its title
+            hidden. Your job: figure out <span className="font-semibold text-white">what
+            the map is measuring</span>. The color scale stays visible as a
+            clue; the words that name the topic don&apos;t.
           </p>
           <p>
             You get <span className="font-semibold text-white">5 guesses</span>.

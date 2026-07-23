@@ -48,6 +48,19 @@ export const config = {
 
   /** True when running on Vercel (used to loudly warn about dev fallbacks). */
   isVercel: !!process.env.VERCEL,
+
+  /**
+   * Absolute base URL used to resolve root-relative image URLs from the
+   * curated static dataset (self-hosted generated maps under
+   * public/generated-maps/). The generation pipeline fetches these over HTTP
+   * so the same code path works in dev, on Vercel, and in mock mode.
+   * Override with PUBLIC_BASE_URL if the deployment URL isn't discoverable.
+   */
+  publicBaseUrl:
+    process.env.PUBLIC_BASE_URL ??
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : `http://localhost:${process.env.PORT ?? 3000}`),
 } as const;
 
 /**

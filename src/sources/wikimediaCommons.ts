@@ -14,20 +14,30 @@ import { config } from "@/lib/config";
 const API_ENDPOINT = "https://commons.wikimedia.org/w/api.php";
 
 /**
- * Real, verified Commons categories (existence + file counts confirmed
- * against the live site) that directly hold raster map files via
- * generator=categorymembers&gcmtype=file. Rotated/shuffled per call so
- * repeated generations don't hammer the same category.
+ * Commons categories that hold THEMATIC / choropleth map files (the "guess
+ * the topic" game wants data maps, not geographic reference maps). The list is
+ * weighted roughly 75% US / 25% global by including more US categories, since
+ * the shuffle picks categories in random order and generation stops once
+ * `limit` candidates are collected.
+ *
+ * NOTE: unlike the v1 geographic categories, these have NOT been verified
+ * against live Commons from this environment (Wikimedia is network-blocked in
+ * the build sandbox). Confirm each still exists and returns direct file
+ * members (generator=categorymembers&gcmtype=file) on a preview deploy; drop
+ * or replace any that come up empty. The curated static dataset is the
+ * reliable fallback while these are being validated.
  */
 const MAP_CATEGORIES = [
-  "Old maps of Paris",
-  "Old maps of London",
-  "Old maps of the Roman Empire",
-  "Old maps of Japan",
-  "Old maps of Italy",
-  "Old maps of San Francisco",
-  "Old maps of Africa",
-  "Old maps of Australia",
+  // US-focused thematic / choropleth categories (~75% weight).
+  "Choropleth maps of the United States",
+  "Thematic maps of the United States",
+  "Demographic maps of the United States",
+  "Election maps of the United States",
+  "Maps of the economy of the United States",
+  "Climate maps of the United States",
+  // Global thematic categories (~25% weight).
+  "Choropleth maps of the world",
+  "Thematic maps of the world",
 ];
 
 const FETCH_TIMEOUT_MS = 15_000;
