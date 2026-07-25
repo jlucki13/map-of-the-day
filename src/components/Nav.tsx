@@ -17,19 +17,23 @@ export interface NavProps {
  * title/link markup isn't duplicated.
  */
 const secondaryAction =
-  "rounded-control border border-hairline bg-surface/80 px-3 py-1.5 text-sm font-medium text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:bg-surface-raised hover:text-ink";
+  "rounded-control px-3 py-1.5 text-sm font-medium text-ink-subtle transition-colors duration-150 hover:bg-sand-100 hover:text-ink";
 
 export default function Nav({ onOpenInstructions, active = "game" }: NavProps) {
   return (
-    <nav className="flex items-center justify-between gap-3 border-b border-hairline/70 pb-4">
+    // The masthead is a standing label, not a headline: the page's own question
+    // has to be the largest thing on it. Small caps-weight display type, ruled
+    // off, with the utilities kept as quiet text buttons rather than boxed
+    // chips competing with the primary control below.
+    <nav className="flex items-center justify-between gap-3 border-b border-hairline pb-3">
       <Link
         href="/"
-        className="font-display text-xl tracking-tight text-ink transition-colors duration-150 hover:text-sand-200"
+        className="font-display text-[15px] uppercase tracking-[0.16em] text-ink-muted transition-colors duration-150 hover:text-ink"
       >
         Map of the Day
       </Link>
 
-      <div className="flex items-center gap-2">
+      <div className="-mr-2 flex items-center gap-1">
         {active === "leaderboard" ? (
           <Link href="/" className={secondaryAction}>
             Back to game
@@ -46,7 +50,7 @@ export default function Nav({ onOpenInstructions, active = "game" }: NavProps) {
             onClick={onOpenInstructions}
             aria-label="How to play"
             title="How to play"
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-hairline bg-surface/80 text-sm font-semibold text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:bg-surface-raised hover:text-ink"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-ink-subtle transition-colors duration-150 hover:bg-sand-100 hover:text-ink"
           >
             ?
           </button>
