@@ -26,28 +26,37 @@ import { normalizeOriginal, redactImage } from "@/lib/imageRedact";
 import { getSources } from "@/sources";
 import type { MapSource } from "@/sources/types";
 import type { CandidateMap, Hint, Puzzle, RedactionRegion } from "@/types";
+import embeddedMapsJson from "@/data/generated-maps.b64.json";
+
+// externalId -> base64 PNG for the self-generated static maps (see the
+// generator script). Read directly so image sourcing never touches the network.
+const embeddedGeneratedMaps = embeddedMapsJson as Record<string, string>;
 
 export const CURRENT_PUZZLE_KEY = "puzzle:current";
 export const RECENT_EXTERNAL_IDS_KEY = "puzzle:recent-external-ids";
 
 async function fetchImageBytes(candidate: CandidateMap): Promise<Buffer> {
-  // Root-relative URLs point at our own self-hosted generated maps under
-  // public/generated-maps/ — resolve them against the deployment's base URL so
-  // the same fetch path works in dev, on Vercel, and in mock mode.
-  const imageUrl = candidate.imageUrl.startsWith("/")
-    ? `${config.publicBaseUrl}${candidate.imageUrl}`
-    : candidate.imageUrl;
+  // Self-hosted generated maps ship as base64 in the bundle, so we read their
+  // bytes directly rather than self-fetching over HTTP. A network self-fetch
+  // returns an HTML auth page under Vercel Deployment Protection (HTTP 200,
+  // so it isn't caught as an error), which sharp then rejects with "Input
+  // buffer has corrupt header" — reading from the bundle avoids the network,
+  // deployment protection, and any base-URL guesswork entirely.
+  const embedded = embeddedGeneratedMaps[candidate.externalId];
+  if (embedded) {
+    return Buffer.from(embedded, "base64");
+  }
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 30_000);
   try {
-    const response = await fetch(imageUrl, {
+    const response = await fetch(candidate.imageUrl, {
       headers: { "User-Agent": config.wikimediaUserAgent },
       signal: controller.signal,
     });
     if (!response.ok) {
       throw new Error(
-        `image fetch failed with ${response.status} for ${imageUrl}`,
+        `image fetch failed with ${response.status} for ${candidate.imageUrl}`,
       );
     }
     return Buffer.from(await response.arrayBuffer());

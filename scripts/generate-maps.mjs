@@ -35,6 +35,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO = join(__dirname, "..");
 const OUT_IMG_DIR = join(REPO, "public", "generated-maps");
 const OUT_JSON = join(REPO, "src", "data", "static-maps.json");
+// Base64-embedded copy of each PNG, imported by the generation pipeline so it
+// reads image bytes straight from the bundle instead of self-fetching over
+// HTTP (a network self-fetch returns an HTML auth page under Vercel
+// Deployment Protection, which sharp then rejects as a corrupt header).
+const OUT_B64 = join(REPO, "src", "data", "generated-maps.b64.json");
 const REPO_URL = "https://github.com/jlucki13/map-of-the-day";
 
 const usTopo = JSON.parse(
@@ -512,6 +517,7 @@ async function main() {
   }
 
   const entries = [];
+  const embedded = {};
   for (const spec of MAPS) {
     // Author-time leak check on hints.
     for (const h of spec.hints) {
@@ -524,6 +530,7 @@ async function main() {
     const png = await sharp(Buffer.from(r.svg)).png().toBuffer();
     const outPath = join(OUT_IMG_DIR, `${spec.id}.png`);
     writeFileSync(outPath, png);
+    embedded[`static:${spec.id}`] = png.toString("base64");
     console.log(`  wrote ${spec.id}.png (${r.W}x${r.H}, ${(png.length / 1024).toFixed(0)}KB)`);
 
     entries.push({
@@ -548,7 +555,10 @@ async function main() {
   }
 
   writeFileSync(OUT_JSON, JSON.stringify(entries, null, 2) + "\n");
+  writeFileSync(OUT_B64, JSON.stringify(embedded) + "\n");
+  const b64Kb = (JSON.stringify(embedded).length / 1024).toFixed(0);
   console.log(`\nWrote ${entries.length} entries to src/data/static-maps.json`);
+  console.log(`Wrote ${entries.length} embedded images to src/data/generated-maps.b64.json (${b64Kb}KB)`);
 }
 
 main().catch((err) => {
