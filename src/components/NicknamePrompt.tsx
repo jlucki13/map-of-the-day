@@ -34,13 +34,13 @@ export default function NicknamePrompt({
         body: JSON.stringify({ nickname: trimmed }),
       });
       if (!res.ok) {
-        setError("Couldn't save that name — try another.");
+        setError("Couldn't save that name. Try another.");
         return;
       }
       const data = (await res.json()) as { nickname: string };
       onSaved(data.nickname);
     } catch {
-      setError("Network hiccup — try again.");
+      setError("Network hiccup. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -48,29 +48,38 @@ export default function NicknamePrompt({
 
   return (
     <form onSubmit={submit} className="space-y-2">
-      <p className="text-sm font-semibold text-emerald-200">
-        You scored {points} {points === 1 ? "point" : "points"}! Save it to the
-        leaderboard:
-      </p>
+      <label
+        htmlFor="nickname-input"
+        className="block text-sm font-medium text-ink-muted"
+      >
+        Claim your {points} {points === 1 ? "point" : "points"} on the
+        leaderboard
+      </label>
       <div className="flex gap-2">
         <input
+          id="nickname-input"
           type="text"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
           maxLength={24}
           placeholder="Your nickname"
-          aria-label="Nickname"
-          className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
+          aria-invalid={Boolean(error) || undefined}
+          aria-describedby={error ? "nickname-error" : undefined}
+          className="min-w-0 flex-1 rounded-control border border-hairline bg-surface-raised px-3 py-2 text-sm text-ink outline-none transition-colors duration-150 placeholder:text-ink-subtle/80 hover:border-ocean-700 focus:border-ocean-600"
         />
         <button
           type="submit"
           disabled={submitting || nickname.trim().length === 0}
-          className="rounded-lg border border-emerald-700 bg-emerald-900/60 px-4 py-2 text-sm font-semibold text-emerald-100 transition-colors hover:bg-emerald-900 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-control bg-accent px-4 py-2 text-sm font-semibold text-ocean-950 transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-sand-600/45 disabled:text-sand-50/75"
         >
           {submitting ? "Saving…" : "Save"}
         </button>
       </div>
-      {error && <p className="text-xs text-red-300">{error}</p>}
+      {error && (
+        <p id="nickname-error" role="alert" className="text-xs text-clay-300">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

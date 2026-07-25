@@ -38,26 +38,29 @@ export default function LeaderboardPage() {
     you !== null && entries.some((e) => e.rank === you.rank);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-4 py-8">
+    <main className="relative z-10 mx-auto flex min-h-[100dvh] max-w-2xl flex-col gap-6 px-4 py-8">
       <Nav active="leaderboard" />
 
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">
+        <h1 className="font-display text-3xl tracking-tight text-ink">
           Leaderboard
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="mt-1 text-sm text-ink-subtle">
           All-time points across every map. Win in fewer guesses to climb.
         </p>
       </div>
 
       {loading && (
-        <div className="flex h-48 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400">
+        <div
+          role="status"
+          className="flex h-48 items-center justify-center rounded-panel border border-hairline bg-surface text-sm text-ink-subtle shadow-plate"
+        >
           Loading leaderboard&hellip;
         </div>
       )}
 
       {!loading && error && (
-        <div className="rounded-xl border border-red-800/50 bg-red-950/20 p-5 text-red-200">
+        <div className="rounded-panel border border-clay-700/60 bg-clay-900 p-5 text-clay-300 shadow-plate">
           {error}
         </div>
       )}
@@ -65,15 +68,16 @@ export default function LeaderboardPage() {
       {!loading && !error && (
         <>
           {entries.length === 0 && !you && (
-            <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 text-center text-slate-400">
-              No scores yet. Be the first to win a round and claim a nickname!
+            <div className="rounded-panel border border-hairline bg-surface p-8 text-center text-sm text-ink-muted shadow-plate">
+              No scores yet. Win a round, claim a nickname, and this board is
+              yours.
             </div>
           )}
 
           {(entries.length > 0 || you) && (
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
+            <div className="overflow-x-auto rounded-panel border border-hairline bg-surface shadow-plate">
               <table className="w-full text-left text-sm">
-                <thead className="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <thead className="border-b border-hairline text-xs uppercase tracking-[0.12em] text-ink-subtle">
                   <tr>
                     <th className="px-4 py-3 font-medium">#</th>
                     <th className="px-4 py-3 font-medium">Player</th>
@@ -81,31 +85,29 @@ export default function LeaderboardPage() {
                     <th className="px-4 py-3 text-right font-medium">Wins</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-hairline/60">
                   {entries.map((e) => {
                     const isYou = you !== null && e.rank === you.rank;
                     return (
                       <tr
                         key={e.rank}
-                        className={
-                          isYou ? "bg-emerald-950/30" : "bg-slate-950/40"
-                        }
+                        className={isYou ? "bg-land-700/20" : undefined}
                       >
-                        <td className="px-4 py-3 tabular-nums text-slate-400">
+                        <td className="px-4 py-3 font-mono tabular-nums text-ink-subtle">
                           {e.rank}
                         </td>
-                        <td className="px-4 py-3 font-medium text-white">
+                        <td className="px-4 py-3 font-medium text-ink">
                           {e.nickname}
                           {isYou && (
-                            <span className="ml-2 text-xs font-normal text-emerald-300">
+                            <span className="ml-2 rounded-chip bg-land-600/30 px-1.5 py-0.5 text-xs font-normal text-land-300">
                               you
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
+                        <td className="px-4 py-3 text-right font-mono font-semibold tabular-nums text-sand-200">
                           {e.totalScore}
                         </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-slate-400">
+                        <td className="px-4 py-3 text-right font-mono tabular-nums text-ink-subtle">
                           {e.gamesWon}
                         </td>
                       </tr>
@@ -113,20 +115,20 @@ export default function LeaderboardPage() {
                   })}
 
                   {you && !youInList && (
-                    <tr className="bg-emerald-950/30">
-                      <td className="px-4 py-3 tabular-nums text-slate-400">
+                    <tr className="bg-land-700/20">
+                      <td className="px-4 py-3 font-mono tabular-nums text-ink-subtle">
                         {you.rank}
                       </td>
-                      <td className="px-4 py-3 font-medium text-white">
+                      <td className="px-4 py-3 font-medium text-ink">
                         {you.nickname || "You (unnamed)"}
-                        <span className="ml-2 text-xs font-normal text-emerald-300">
+                        <span className="ml-2 rounded-chip bg-land-600/30 px-1.5 py-0.5 text-xs font-normal text-land-300">
                           you
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-right tabular-nums font-semibold text-white">
+                      <td className="px-4 py-3 text-right font-mono font-semibold tabular-nums text-sand-200">
                         {you.totalScore}
                       </td>
-                      <td className="px-4 py-3 text-right tabular-nums text-slate-400">
+                      <td className="px-4 py-3 text-right font-mono tabular-nums text-ink-subtle">
                         {you.gamesWon}
                       </td>
                     </tr>
@@ -137,10 +139,10 @@ export default function LeaderboardPage() {
           )}
 
           {you && !you.nickname && (
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-ink-muted">
               You have {you.totalScore}{" "}
-              {you.totalScore === 1 ? "point" : "points"} but no nickname yet —
-              win a round and set one to appear on the public board.
+              {you.totalScore === 1 ? "point" : "points"} but no nickname yet.
+              Win a round and set one to appear on the public board.
             </p>
           )}
         </>

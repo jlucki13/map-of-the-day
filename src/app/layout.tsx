@@ -1,5 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+// Matches --canvas, so mobile browser chrome continues the ocean.
+export const viewport: Viewport = {
+  themeColor: "#061523",
+};
 
 export const metadata: Metadata = {
   title: "Map of the Day",
@@ -14,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased">
+      <body className="min-h-screen bg-canvas font-sans text-ink antialiased">
         {children}
       </body>
     </html>

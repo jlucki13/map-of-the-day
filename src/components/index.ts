@@ -7,3 +7,4 @@ export { default as ResultBanner } from "./ResultBanner";
 export { default as InstructionsModal } from "./InstructionsModal";
 export { default as NicknamePrompt } from "./NicknamePrompt";
 export { default as Nav } from "./Nav";
+export { default as GlobeBackground } from "./GlobeBackground";

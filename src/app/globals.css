@@ -1,3 +1,287 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   ---------------------------------------------------------------------------
+   One atlas palette, four hues, each stored as space-separated RGB channels so
+   Tailwind can apply opacity modifiers (see tailwind.config.js).
+
+     ocean  the world itself: page, panels, borders, links, focus
+     sand   the reader's layer: type, the primary action, hint notes, map mount
+     land   correct / won
+     clay   incorrect / lost / errors
+
+   The map images the game renders are choropleths on a near-white plate and may
+   use any sequential scheme (blues, greens, reds, purples). The shell therefore
+   stays deep and desaturated so it frames those plates instead of arguing with
+   them, and green/red are spent only on feedback.
+   ------------------------------------------------------------------------- */
+
+:root {
+  /* ocean ---------------------------------------------------------------- */
+  --ocean-950: 6 21 35; /* #061523 */
+  --ocean-900: 10 31 49; /* #0a1f31 */
+  --ocean-850: 14 42 63; /* #0e2a3f */
+  --ocean-800: 18 56 82; /* #123852 */
+  --ocean-700: 26 77 109; /* #1a4d6d */
+  --ocean-600: 36 104 142; /* #24688e */
+  --ocean-500: 47 134 176; /* #2f86b0 */
+  --ocean-400: 87 166 204; /* #57a6cc */
+  --ocean-300: 140 198 226; /* #8cc6e2 */
+  --ocean-200: 195 226 240; /* #c3e2f0 */
+
+  /* sand ----------------------------------------------------------------- */
+  --sand-50: 247 241 227; /* #f7f1e3 */
+  --sand-100: 238 228 207; /* #eee4cf */
+  --sand-200: 222 208 178; /* #ded0b2 */
+  --sand-300: 201 181 140; /* #c9b58c */
+  --sand-400: 185 156 102; /* #b99c66 */
+  --sand-500: 165 133 74; /* #a5854a */
+  --sand-600: 138 108 55; /* #8a6c37 */
+
+  /* land ----------------------------------------------------------------- */
+  --land-800: 20 67 47; /* #14432f */
+  --land-700: 27 92 64; /* #1b5c40 */
+  --land-600: 35 117 82; /* #237552 */
+  --land-500: 47 144 102; /* #2f9066 */
+  --land-400: 92 177 135; /* #5cb187 */
+  --land-300: 154 211 179; /* #9ad3b3 */
+
+  /* clay ----------------------------------------------------------------- */
+  --clay-900: 58 22 19; /* #3a1613 */
+  --clay-700: 122 44 34; /* #7a2c22 */
+  --clay-500: 184 80 60; /* #b8503c */
+  --clay-400: 207 116 96; /* #cf7460 */
+  --clay-300: 227 166 149; /* #e3a695 */
+
+  /* semantic roles ------------------------------------------------------- */
+  --canvas: var(--ocean-950);
+  --surface: var(--ocean-900);
+  --surface-raised: var(--ocean-850);
+  --hairline: var(--ocean-800);
+  --ink: var(--sand-50); /* 15.8:1 on canvas */
+  --ink-muted: var(--sand-300); /* 9.1:1 on canvas */
+  --ink-subtle: 143 168 186; /* #8fa8ba, 7.4:1 on canvas */
+  --accent: var(--sand-400); /* primary action fill */
+  --accent-hover: var(--sand-300);
+  --focus: var(--ocean-300);
+}
+
+@layer base {
+  body {
+    /* Light from the ocean surface: one soft fall-off, no stacked gradients. */
+    background-color: rgb(var(--canvas));
+    background-image: radial-gradient(
+      120% 70% at 50% -12%,
+      rgb(var(--ocean-900)) 0%,
+      rgb(var(--canvas)) 62%
+    );
+    background-attachment: fixed;
+  }
+
+  /* One focus treatment for every control on every surface. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--focus));
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: rgb(var(--sand-200));
+    color: rgb(var(--ocean-950));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Decorative globe (see src/components/GlobeBackground.tsx)
+   ---------------------------------------------------------------------------
+   A sphere built from three honest parts: a shaded disc, the world's land
+   sliding past behind a limb fade, and a graticule of real 3D circles rotating
+   about the polar axis. Only two elements animate, each with a single
+   compositable transform; nothing here reads or writes layout.
+   ------------------------------------------------------------------------- */
+
+.globe-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint style;
+}
+
+.globe {
+  --globe-size: clamp(400px, 116vw, 820px);
+  --globe-spin: 110s;
+  /* Axial tilt, plus a viewpoint slightly above the equator, so the graticule
+     reads like a globe on a stand rather than a wheel. */
+  --globe-tilt: -16deg;
+  --globe-pitch: 12deg;
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--globe-size);
+  height: var(--globe-size);
+  margin-top: calc(var(--globe-size) / -2);
+  margin-left: calc(var(--globe-size) / -2);
+  border-radius: 50%;
+  opacity: 0.46;
+  background: radial-gradient(
+    circle at 34% 28%,
+    rgb(var(--ocean-700)) 0%,
+    rgb(var(--ocean-800)) 32%,
+    rgb(var(--ocean-900)) 60%,
+    rgb(var(--ocean-950)) 92%
+  );
+}
+
+/* Land --------------------------------------------------------------------- */
+
+.globe__skin {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  transform: rotate(var(--globe-tilt));
+  /* A sliding cylindrical texture cannot foreshorten longitude, so the limb,
+     where that error would show, is faded out. */
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    #000 40%,
+    rgb(0 0 0 / 0.32) 74%,
+    transparent 95%
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    #000 40%,
+    rgb(0 0 0 / 0.32) 74%,
+    transparent 95%
+  );
+}
+
+.globe__land {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -150%;
+  width: 400%; /* two whole worlds: one world spans twice the disc's diameter */
+  background-color: rgb(var(--land-600));
+  -webkit-mask-image: url("/globe-land.svg");
+  mask-image: url("/globe-land.svg");
+  -webkit-mask-size: 50% 100%;
+  mask-size: 50% 100%;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  animation: globe-drift var(--globe-spin) linear infinite;
+}
+
+/* Half a layer width is exactly one world, so the loop is seamless. */
+@keyframes globe-drift {
+  from {
+    transform: translate3d(-25%, 0, 0);
+  }
+  to {
+    transform: translate3d(25%, 0, 0);
+  }
+}
+
+/* Graticule ---------------------------------------------------------------- */
+
+.globe__frame {
+  position: absolute;
+  inset: 0;
+  transform: rotate(var(--globe-tilt)) rotateX(var(--globe-pitch));
+  transform-style: preserve-3d;
+}
+
+.globe__grid {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: globe-turn var(--globe-spin) linear infinite;
+}
+
+@keyframes globe-turn {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-360deg);
+  }
+}
+
+/* A circle turned about the polar axis projects to exactly the ellipse an
+   orthographic meridian draws, so nothing here is faked. */
+.globe__meridian {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(var(--ocean-300) / 0.2);
+  border-radius: 50%;
+  transform: rotateY(var(--meridian));
+}
+
+/* --lat-scale = cos(latitude), --lat-offset = -sin(latitude) / 2 */
+.globe__parallel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--globe-size) * var(--lat-scale));
+  height: calc(var(--globe-size) * var(--lat-scale));
+  border: 1px solid rgb(var(--ocean-300) / 0.17);
+  border-radius: 50%;
+  transform: translate(-50%, -50%)
+    translateY(calc(var(--globe-size) * var(--lat-offset))) rotateX(90deg);
+}
+
+/* Shading ------------------------------------------------------------------ */
+
+.globe__shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 31% 25%,
+    rgb(var(--sand-100) / 0.09) 0%,
+    rgb(var(--sand-100) / 0) 45%
+  );
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--ocean-500) / 0.22),
+    inset -14px -18px 60px 6px rgb(var(--ocean-950) / 0.8),
+    inset 0 0 34px 4px rgb(var(--ocean-950) / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .globe__land,
+  .globe__grid {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   One entrance, reused: panels that appear because the round changed state
+   (a hint unlocking, the result landing) settle in from just below. Everything
+   else is already on screen.
+   ------------------------------------------------------------------------- */
+
+@keyframes settle-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.settle-in {
+  animation: settle-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settle-in {
+    animation: none;
+  }
+}

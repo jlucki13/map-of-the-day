@@ -25,12 +25,14 @@ export default function MapReveal({
 
   return (
     <div className="relative">
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      {/* The plate is mounted on sand and lifted off the ocean: it is the one
+          thing on the page that should hold the eye. */}
+      <div className="overflow-hidden rounded-panel bg-sand-100 p-1.5 shadow-lifted ring-1 ring-sand-300/30">
         <img
           src={displayUrl}
           alt={revealed ? alt : `${alt} (title and legend redacted)`}
           loading="eager"
-          className="block max-w-full w-full h-auto select-none"
+          className="block h-auto w-full max-w-full select-none rounded-[10px]"
           draggable={false}
         />
       </div>
@@ -40,7 +42,7 @@ export default function MapReveal({
           <button
             type="button"
             onClick={() => setShowOriginal((v) => !v)}
-            className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className="rounded-chip border border-hairline bg-surface/80 px-3 py-1 text-xs font-medium text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:bg-surface-raised hover:text-ink"
           >
             {showOriginal ? "Show redacted version" : "Show original"}
           </button>

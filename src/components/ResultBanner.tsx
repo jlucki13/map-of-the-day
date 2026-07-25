@@ -11,6 +11,24 @@ export interface ResultBannerProps {
   scoreAwarded?: { points: number; hasNickname: boolean };
 }
 
+/**
+ * Label the attribution link from its host, since maps come from more than one
+ * place: the curated set is self-generated (CC0, sourced to this repo) while
+ * live puzzles come from Wikimedia Commons. Naming Wikimedia unconditionally
+ * would misattribute our own renders.
+ */
+function sourceLinkLabel(url: string): string {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    if (host.endsWith("wikimedia.org") || host.endsWith("wikipedia.org")) {
+      return "View on Wikimedia Commons";
+    }
+    return `View source on ${host}`;
+  } catch {
+    return "View source";
+  }
+}
+
 export default function ResultBanner({
   status,
   reveal,
@@ -41,20 +59,16 @@ export default function ResultBanner({
     <section
       aria-live="polite"
       className={
-        "rounded-xl border p-5 " +
-        (won
-          ? "border-emerald-700/50 bg-emerald-950/30"
-          : "border-red-800/50 bg-red-950/20")
+        "settle-in rounded-panel border bg-surface p-5 shadow-plate " +
+        (won ? "border-land-600/50" : "border-clay-700/60")
       }
     >
-      <p
-        className={
-          "text-lg font-bold " + (won ? "text-emerald-300" : "text-red-300")
-        }
-      >
-        {won ? "You got it!" : "Out of guesses."}
+      <p className="flex flex-wrap items-baseline gap-x-2 text-lg font-semibold">
+        <span className={won ? "text-land-300" : "text-clay-300"}>
+          {won ? "Correct." : "Out of guesses."}
+        </span>
         {won && scoreAwarded && (
-          <span className="ml-2 text-emerald-200">
+          <span className="font-mono text-base tabular-nums text-sand-300">
             +{scoreAwarded.points}{" "}
             {scoreAwarded.points === 1 ? "point" : "points"}
           </span>
@@ -66,7 +80,7 @@ export default function ResultBanner({
           {hasNickname ? (
             <Link
               href="/leaderboard"
-              className="text-sm font-medium text-emerald-300 underline decoration-emerald-700 underline-offset-2 hover:text-emerald-200"
+              className="text-sm font-medium text-ocean-300 underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-ocean-200"
             >
               View leaderboard &rarr;
             </Link>
@@ -80,33 +94,36 @@ export default function ResultBanner({
       )}
 
       {reveal && (
-        <div className="mt-4 space-y-3">
+        <div className="mt-5 space-y-4 border-t border-hairline/70 pt-5">
           <div>
-            <p className="text-xs uppercase tracking-wide text-slate-400">
+            <p className="text-xs uppercase tracking-[0.14em] text-ink-subtle">
               The answer was
             </p>
-            <h2 className="text-2xl font-bold text-white">{reveal.title}</h2>
+            {/* The plate's title block, restored. */}
+            <h2 className="mt-1 font-display text-2xl leading-snug text-ink">
+              {reveal.title}
+            </h2>
             {reveal.aliases.length > 0 && (
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-2.5 text-sm text-ink-subtle">
                 Also accepted: {reveal.aliases.join(", ")}
               </p>
             )}
           </div>
 
           {reveal.description && (
-            <p className="text-sm leading-relaxed text-slate-300">
+            <p className="max-w-[68ch] text-sm leading-relaxed text-ink-muted">
               {reveal.description}
             </p>
           )}
 
-          <p className="text-xs text-slate-500">
+          <p className="text-xs leading-relaxed text-ink-subtle">
             Map by {reveal.attribution.author} &middot;{" "}
             {reveal.attribution.licenseUrl ? (
               <a
                 href={reveal.attribution.licenseUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="underline decoration-slate-600 underline-offset-2 hover:text-slate-300"
+                className="underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-ink-muted"
               >
                 {reveal.attribution.license}
               </a>
@@ -118,9 +135,9 @@ export default function ResultBanner({
               href={reveal.attribution.sourcePageUrl}
               target="_blank"
               rel="noreferrer"
-              className="underline decoration-slate-600 underline-offset-2 hover:text-slate-300"
+              className="underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-ink-muted"
             >
-              View on Wikimedia Commons
+              {sourceLinkLabel(reveal.attribution.sourcePageUrl)}
             </a>
           </p>
 
@@ -128,9 +145,9 @@ export default function ResultBanner({
             <button
               type="button"
               onClick={copyShareGrid}
-              className="rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800"
+              className="rounded-control border border-hairline bg-surface-raised/80 px-4 py-2 text-sm font-medium text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:text-ink"
             >
-              {copied ? "Copied!" : "Copy result"}
+              {copied ? "Copied" : "Copy result"}
             </button>
           </div>
         </div>

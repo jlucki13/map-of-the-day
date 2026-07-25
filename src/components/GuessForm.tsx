@@ -42,7 +42,7 @@ export default function GuessForm({
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex items-stretch gap-2">
         <label htmlFor="guess-input" className="sr-only">
-          Guess the place
+          What is this map measuring?
         </label>
         <input
           id="guess-input"
@@ -51,25 +51,29 @@ export default function GuessForm({
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
-          placeholder="Where is this?"
+          placeholder="e.g. average rainfall"
           value={value}
           disabled={isDisabled}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
           aria-invalid={Boolean(error) || undefined}
           aria-describedby={error ? "guess-form-error" : undefined}
-          className="flex-1 rounded-lg border border-slate-700 bg-slate-900 px-4 py-2.5 text-base text-slate-100 placeholder:text-slate-500 outline-none transition-colors focus:border-slate-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 rounded-control border border-hairline bg-surface-raised px-4 py-2.5 text-base text-ink outline-none transition-colors duration-150 placeholder:text-ink-subtle/80 hover:border-ocean-700 focus:border-ocean-600 disabled:cursor-not-allowed disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={isDisabled || value.trim().length === 0}
-          className="shrink-0 rounded-lg bg-emerald-600 px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-emerald-500 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+          className="shrink-0 rounded-control bg-accent px-5 py-2.5 text-base font-semibold text-ocean-950 transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-sand-600/45 disabled:text-sand-50/75"
         >
-          {submitting ? "Guessing…" : "Guess"}
+          {submitting ? "Checking…" : "Guess"}
         </button>
       </div>
       {error && (
-        <p id="guess-form-error" role="alert" className="mt-2 text-sm font-medium text-amber-400">
+        <p
+          id="guess-form-error"
+          role="alert"
+          className="mt-2 text-sm font-medium text-clay-300"
+        >
           {error}
         </p>
       )}

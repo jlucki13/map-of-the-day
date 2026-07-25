@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   CountdownTimer,
+  GlobeBackground,
   GuessForm,
   GuessPips,
   HintCallout,
@@ -84,7 +85,7 @@ export default function Page() {
       if (res.status === 503) {
         // Judge unavailable — the guess was NOT consumed; invite a retry.
         setGuessError(
-          "The judge is momentarily unavailable — your guess wasn't counted. Try it again.",
+          "The judge is momentarily unavailable, so your guess wasn't counted. Try it again.",
         );
         return;
       }
@@ -95,14 +96,14 @@ export default function Page() {
         return;
       }
       if (!res.ok) {
-        setGuessError("Something went wrong — please try again.");
+        setGuessError("Something went wrong. Please try again.");
         return;
       }
 
       const session = (await res.json()) as PublicSessionView;
       setView((prev) => (prev ? { ...prev, session } : prev));
     } catch {
-      setGuessError("Network hiccup — your guess wasn't counted. Try again.");
+      setGuessError("Network hiccup: your guess wasn't counted. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -112,83 +113,94 @@ export default function Page() {
   const finished = session ? session.status !== "in_progress" : false;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-4 py-8">
-      <Nav
-        active="game"
-        onOpenInstructions={() => setInstructionsOpen(true)}
-      />
+    <>
+      <GlobeBackground />
 
-      <InstructionsModal open={instructionsOpen} onClose={closeInstructions} />
+      <main className="relative z-10 mx-auto flex min-h-[100dvh] max-w-2xl flex-col gap-6 px-4 py-8">
+        <Nav active="game" onOpenInstructions={() => setInstructionsOpen(true)} />
 
-      <header className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <p className="text-sm text-slate-400">
-            Guess what this map is depicting. The title is hidden. 5 tries.
-          </p>
-        </div>
-        {view && (
-          <CountdownTimer
-            nextRotationAt={view.nextRotationAt}
-            onExpire={() => void fetchPuzzle()}
-          />
-        )}
-      </header>
+        <InstructionsModal open={instructionsOpen} onClose={closeInstructions} />
 
-      {loading && (
-        <div className="flex h-64 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-400">
-          Loading today&apos;s map&hellip;
-        </div>
-      )}
-
-      {!loading && loadError && (
-        <div className="rounded-xl border border-red-800/50 bg-red-950/20 p-5 text-red-200">
-          {loadError}
-        </div>
-      )}
-
-      {!loading && view && session && (
-        <>
-          <MapReveal
-            redactedImageUrl={view.redactedImageUrl}
-            originalImageUrl={session.reveal?.originalImageUrl}
-            revealed={finished}
-          />
-
-          <div className="flex items-center justify-between">
-            <GuessPips
-              guessHistory={session.guessHistory}
-              maxGuesses={MAX_GUESSES}
-            />
+        <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight text-ink">
+              {finished ? "Today's map" : "What is this map measuring?"}
+            </h1>
             {!finished && (
-              <p className="text-sm text-slate-400">
-                {session.guessesRemaining}{" "}
-                {session.guessesRemaining === 1 ? "guess" : "guesses"} left
+              <p className="mt-0.5 text-sm text-ink-subtle">
+                The title is hidden. Five tries.
               </p>
             )}
           </div>
-
-          {!finished && <HintCallout hints={session.hintsRevealed} />}
-
-          <ResultBanner
-            status={session.status}
-            reveal={session.reveal}
-            scoreAwarded={session.scoreAwarded}
-          />
-
-          {!finished && (
-            <GuessForm
-              disabled={finished}
-              submitting={submitting}
-              error={guessError}
-              onSubmit={(guess) => void submitGuess(guess)}
+          {view && (
+            <CountdownTimer
+              nextRotationAt={view.nextRotationAt}
+              onExpire={() => void fetchPuzzle()}
             />
           )}
-        </>
-      )}
+        </header>
 
-      <footer className="mt-auto pt-8 text-center text-xs text-slate-600">
-        Thematic data maps. Source and attribution appear after each round.
-      </footer>
-    </main>
+        {loading && (
+          <div
+            role="status"
+            className="flex h-64 items-center justify-center rounded-panel border border-hairline bg-surface text-sm text-ink-subtle shadow-plate"
+          >
+            Unrolling today&apos;s map&hellip;
+          </div>
+        )}
+
+        {!loading && loadError && (
+          <div className="rounded-panel border border-clay-700/60 bg-clay-900 p-5 text-clay-300 shadow-plate">
+            {loadError}
+          </div>
+        )}
+
+        {!loading && view && session && (
+          <>
+            <MapReveal
+              redactedImageUrl={view.redactedImageUrl}
+              originalImageUrl={session.reveal?.originalImageUrl}
+              revealed={finished}
+            />
+
+            <div className="flex items-center justify-between gap-4">
+              <GuessPips
+                guessHistory={session.guessHistory}
+                maxGuesses={MAX_GUESSES}
+              />
+              {!finished && (
+                <p className="text-sm text-ink-muted">
+                  <span className="font-mono tabular-nums">
+                    {session.guessesRemaining}
+                  </span>{" "}
+                  {session.guessesRemaining === 1 ? "guess" : "guesses"} left
+                </p>
+              )}
+            </div>
+
+            {!finished && <HintCallout hints={session.hintsRevealed} />}
+
+            <ResultBanner
+              status={session.status}
+              reveal={session.reveal}
+              scoreAwarded={session.scoreAwarded}
+            />
+
+            {!finished && (
+              <GuessForm
+                disabled={finished}
+                submitting={submitting}
+                error={guessError}
+                onSubmit={(guess) => void submitGuess(guess)}
+              />
+            )}
+          </>
+        )}
+
+        <footer className="mt-auto pt-10 text-center text-xs text-ink-subtle">
+          Thematic data maps. Source and attribution appear after each round.
+        </footer>
+      </main>
+    </>
   );
 }

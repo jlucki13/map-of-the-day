@@ -8,7 +8,10 @@ export interface RedactedImage {
   height: number;
 }
 
-const REDACTION_FILL = "#1e293b";
+// Parchment/sand tone (matches the UI's sand-300 token). Reads as a label
+// deliberately covered over on the map rather than a dark hole punched through
+// it, which is how a slate fill looked against the app's sand map mount.
+const REDACTION_FILL = "#c9b58c";
 const REDACTION_CORNER_RADIUS = 6;
 /** Pad each region by this fraction of the ORIGINAL image width, on all sides. */
 const PAD_FRACTION_OF_WIDTH = 0.02;

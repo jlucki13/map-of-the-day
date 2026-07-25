@@ -55,19 +55,19 @@ export default function CountdownTimer({
 
   return (
     <div
-      className="text-sm text-slate-400"
+      className="text-sm text-ink-subtle"
       role="timer"
       aria-live="off"
       aria-label="Time until the next map"
     >
       {expired ? (
-        <span className="font-medium text-emerald-400">
+        <span className="font-medium text-land-300">
           New map available&hellip;
         </span>
       ) : (
         <>
           Next map in{" "}
-          <span className="font-mono font-medium tabular-nums text-slate-200">
+          <span className="font-mono font-medium tabular-nums text-ink-muted">
             {mounted && remainingMs !== null
               ? formatRemaining(remainingMs)
               : "--:--:--"}
