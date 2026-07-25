@@ -72,6 +72,16 @@
   --accent-hover: var(--ocean-600);
   --accent-ink: var(--sand-50); /* type on an accent fill */
   --focus: var(--ocean-600);
+
+  /* Feedback, resolved for a light surface -------------------------------
+     The dark shell used the 300 steps for win/lose type; on paper those are
+     tints, not ink (land-300 on --surface is 1.6:1). Feedback type takes the
+     dark end of each ramp, feedback fills take the light end. */
+  --positive: var(--land-700); /* #1b5c40 — 8.6:1 on surface */
+  --positive-wash: 234 245 239; /* #eaf5ef */
+  --negative: var(--clay-700); /* #7a2c22 — 8.9:1 on surface */
+  --negative-wash: 250 238 234; /* #faeeea */
+  --note: var(--sand-600); /* #8a6c37 — 5.3:1 on surface */
 }
 
 @layer base {
@@ -117,26 +127,30 @@
 }
 
 .globe {
-  --globe-size: clamp(400px, 116vw, 820px);
+  --globe-size: clamp(520px, 74vw, 900px);
   --globe-spin: 110s;
   /* Axial tilt, plus a viewpoint slightly above the equator, so the graticule
      reads like a globe on a stand rather than a wheel. */
   --globe-tilt: -16deg;
   --globe-pitch: 12deg;
+  /* Centred under the right-hand rail rather than under the whole page. The
+     rail is unboxed — ruled type straight on the parchment — so the sphere is
+     read *through* it instead of being covered by a panel. The plate stays
+     the one opaque object on the spread. */
+  --globe-x: 82%;
+  --globe-y: 52%;
 
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: var(--globe-x);
+  top: var(--globe-y);
   width: var(--globe-size);
   height: var(--globe-size);
   margin-top: calc(var(--globe-size) / -2);
   margin-left: calc(var(--globe-size) / -2);
   border-radius: 50%;
-  /* Higher than on the old dark shell: the sphere is now the page's one piece
-     of colour, and it has to survive being read through against paper. The
-     ocean stays in the light half of the ramp so dark type crossing the disc
-     keeps its contrast. */
-  opacity: 0.55;
+  /* Held down to a wash: rail copy is set directly over the disc, so the
+     darkest part of the limb still has to clear 4.5:1 against ink. */
+  opacity: 0.34;
   background: radial-gradient(
     circle at 34% 28%,
     rgb(var(--ocean-200)) 0%,
@@ -144,6 +158,14 @@
     rgb(var(--ocean-400)) 64%,
     rgb(var(--ocean-500)) 92%
   );
+}
+
+/* A phone screen is narrower than the sphere, so proportionally far more of
+   the reading area sits on it. Ease it further there. */
+@media (max-width: 640px) {
+  .globe {
+    opacity: 0.24;
+  }
 }
 
 /* Land --------------------------------------------------------------------- */
