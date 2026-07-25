@@ -63,7 +63,7 @@ export default function GuessForm({
         <button
           type="submit"
           disabled={isDisabled || value.trim().length === 0}
-          className="shrink-0 rounded-control bg-accent px-5 py-2.5 text-base font-semibold text-ocean-950 transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-sand-600/45 disabled:text-sand-50/75"
+          className="shrink-0 rounded-control bg-accent px-5 py-2.5 text-base font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-ocean-700/25 disabled:text-ink-subtle"
         >
           {submitting ? "Checking…" : "Guess"}
         </button>

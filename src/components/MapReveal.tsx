@@ -27,7 +27,7 @@ export default function MapReveal({
     <div className="relative">
       {/* The plate is mounted on sand and lifted off the ocean: it is the one
           thing on the page that should hold the eye. */}
-      <div className="overflow-hidden rounded-panel bg-sand-100 p-1.5 shadow-lifted ring-1 ring-sand-300/30">
+      <div className="overflow-hidden rounded-panel bg-surface p-1.5 shadow-lifted ring-1 ring-sand-300/60">
         <img
           src={displayUrl}
           alt={revealed ? alt : `${alt} (title and legend redacted)`}

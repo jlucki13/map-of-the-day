@@ -31,6 +31,7 @@ module.exports = {
         "ink-subtle": token("ink-subtle"),
         accent: token("accent"),
         "accent-hover": token("accent-hover"),
+        "accent-ink": token("accent-ink"),
       },
       fontFamily: {
         // No webfonts: the app must run with zero network access, so these are

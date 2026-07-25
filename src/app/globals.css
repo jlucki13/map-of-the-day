@@ -13,10 +13,11 @@
      land   correct / won
      clay   incorrect / lost / errors
 
-   The map images the game renders are choropleths on a near-white plate and may
-   use any sequential scheme (blues, greens, reds, purples). The shell therefore
-   stays deep and desaturated so it frames those plates instead of arguing with
-   them, and green/red are spent only on feedback.
+   The shell is a light parchment page — an atlas sheet — so the globe behind it
+   reads as a clear blue-green sphere rather than a dim shape on a dark field.
+   Warm paper against a cool earth keeps the two separable. The map plate stays
+   pure white so it remains the brightest object and the obvious hero, and
+   green/red are still spent only on feedback.
    ------------------------------------------------------------------------- */
 
 :root {
@@ -56,26 +57,30 @@
   --clay-400: 207 116 96; /* #cf7460 */
   --clay-300: 227 166 149; /* #e3a695 */
 
+  /* paper ---------------------------------------------------------------- */
+  --paper: 255 253 247; /* #fffdf7, the plate and panel white */
+
   /* semantic roles ------------------------------------------------------- */
-  --canvas: var(--ocean-950);
-  --surface: var(--ocean-900);
-  --surface-raised: var(--ocean-850);
-  --hairline: var(--ocean-800);
-  --ink: var(--sand-50); /* 15.8:1 on canvas */
-  --ink-muted: var(--sand-300); /* 9.1:1 on canvas */
-  --ink-subtle: 143 168 186; /* #8fa8ba, 7.4:1 on canvas */
-  --accent: var(--sand-400); /* primary action fill */
-  --accent-hover: var(--sand-300);
-  --focus: var(--ocean-300);
+  --canvas: var(--sand-50); /* parchment page */
+  --surface: var(--paper);
+  --surface-raised: 252 248 238; /* #fcf8ee */
+  --hairline: var(--sand-200);
+  --ink: var(--ocean-950); /* 16.4:1 on canvas */
+  --ink-muted: var(--ocean-800); /* 10.1:1 on canvas */
+  --ink-subtle: var(--ocean-700); /* 7.0:1 on canvas */
+  --accent: var(--ocean-700); /* primary action fill */
+  --accent-hover: var(--ocean-600);
+  --accent-ink: var(--sand-50); /* type on an accent fill */
+  --focus: var(--ocean-600);
 }
 
 @layer base {
   body {
-    /* Light from the ocean surface: one soft fall-off, no stacked gradients. */
+    /* Paper warms very slightly toward the top: one soft fall-off, no stack. */
     background-color: rgb(var(--canvas));
     background-image: radial-gradient(
       120% 70% at 50% -12%,
-      rgb(var(--ocean-900)) 0%,
+      rgb(var(--paper)) 0%,
       rgb(var(--canvas)) 62%
     );
     background-attachment: fixed;
@@ -127,13 +132,17 @@
   margin-top: calc(var(--globe-size) / -2);
   margin-left: calc(var(--globe-size) / -2);
   border-radius: 50%;
-  opacity: 0.46;
+  /* Higher than on the old dark shell: the sphere is now the page's one piece
+     of colour, and it has to survive being read through against paper. The
+     ocean stays in the light half of the ramp so dark type crossing the disc
+     keeps its contrast. */
+  opacity: 0.55;
   background: radial-gradient(
     circle at 34% 28%,
-    rgb(var(--ocean-700)) 0%,
-    rgb(var(--ocean-800)) 32%,
-    rgb(var(--ocean-900)) 60%,
-    rgb(var(--ocean-950)) 92%
+    rgb(var(--ocean-200)) 0%,
+    rgb(var(--ocean-300)) 34%,
+    rgb(var(--ocean-400)) 64%,
+    rgb(var(--ocean-500)) 92%
   );
 }
 
@@ -167,7 +176,7 @@
   bottom: 0;
   left: -150%;
   width: 400%; /* two whole worlds: one world spans twice the disc's diameter */
-  background-color: rgb(var(--land-600));
+  background-color: rgb(var(--land-500));
   -webkit-mask-image: url("/globe-land.svg");
   mask-image: url("/globe-land.svg");
   -webkit-mask-size: 50% 100%;
@@ -217,7 +226,7 @@
 .globe__meridian {
   position: absolute;
   inset: 0;
-  border: 1px solid rgb(var(--ocean-300) / 0.2);
+  border: 1px solid rgb(var(--ocean-700) / 0.22);
   border-radius: 50%;
   transform: rotateY(var(--meridian));
 }
@@ -229,7 +238,7 @@
   top: 50%;
   width: calc(var(--globe-size) * var(--lat-scale));
   height: calc(var(--globe-size) * var(--lat-scale));
-  border: 1px solid rgb(var(--ocean-300) / 0.17);
+  border: 1px solid rgb(var(--ocean-700) / 0.18);
   border-radius: 50%;
   transform: translate(-50%, -50%)
     translateY(calc(var(--globe-size) * var(--lat-offset))) rotateX(90deg);
@@ -243,13 +252,15 @@
   border-radius: 50%;
   background: radial-gradient(
     circle at 31% 25%,
-    rgb(var(--sand-100) / 0.09) 0%,
-    rgb(var(--sand-100) / 0) 45%
+    rgb(255 255 255 / 0.4) 0%,
+    rgb(255 255 255 / 0) 48%
   );
+  /* Limb darkening in ocean rather than near-black: on paper a black rim reads
+     as a drop shadow around a hole instead of a sphere turning away. */
   box-shadow:
-    inset 0 0 0 1px rgb(var(--ocean-500) / 0.22),
-    inset -14px -18px 60px 6px rgb(var(--ocean-950) / 0.8),
-    inset 0 0 34px 4px rgb(var(--ocean-950) / 0.45);
+    inset 0 0 0 1px rgb(var(--ocean-600) / 0.3),
+    inset -14px -18px 58px 4px rgb(var(--ocean-700) / 0.42),
+    inset 0 0 30px 4px rgb(var(--ocean-600) / 0.22);
 }
 
 @media (prefers-reduced-motion: reduce) {

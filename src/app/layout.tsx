@@ -3,7 +3,7 @@ import "./globals.css";
 
 // Matches --canvas, so mobile browser chrome continues the ocean.
 export const viewport: Viewport = {
-  themeColor: "#061523",
+  themeColor: "#f7f1e3",
 };
 
 export const metadata: Metadata = {

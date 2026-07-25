@@ -70,7 +70,7 @@ export default function NicknamePrompt({
         <button
           type="submit"
           disabled={submitting || nickname.trim().length === 0}
-          className="rounded-control bg-accent px-4 py-2 text-sm font-semibold text-ocean-950 transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-sand-600/45 disabled:text-sand-50/75"
+          className="rounded-control bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-ocean-700/25 disabled:text-ink-subtle"
         >
           {submitting ? "Saving…" : "Save"}
         </button>

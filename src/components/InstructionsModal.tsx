@@ -103,7 +103,7 @@ export default function InstructionsModal({
             ref={dismissRef}
             type="button"
             onClick={onClose}
-            className="w-full rounded-control bg-accent px-4 py-2.5 text-sm font-semibold text-ocean-950 transition duration-150 hover:bg-accent-hover active:translate-y-px"
+            className="w-full rounded-control bg-accent px-4 py-2.5 text-sm font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px"
           >
             Got it
           </button>
