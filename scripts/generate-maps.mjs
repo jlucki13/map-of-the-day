@@ -148,6 +148,155 @@ const US_ELEVATION = {
   Louisiana: 535, Delaware: 448, Florida: 345,
 };
 
+// Median household income (US dollars), 2022 American Community Survey.
+const US_MEDIAN_INCOME = {
+  "District of Columbia": 101722, Maryland: 98461, Massachusetts: 96505,
+  "New Jersey": 96346, Hawaii: 94814, California: 91905, "New Hampshire": 90845,
+  Washington: 90325, Connecticut: 90213, Colorado: 87598, Virginia: 87249,
+  Utah: 86833, Alaska: 86370, Minnesota: 84313, "New York": 81386,
+  "Rhode Island": 81370, Delaware: 79325, Illinois: 78433, Oregon: 76632,
+  Vermont: 74014, "North Dakota": 73959, Pennsylvania: 73170, Texas: 73035,
+  Arizona: 72581, Wisconsin: 72458, Wyoming: 72495, Nebraska: 71722,
+  Nevada: 71646, Georgia: 71355, Iowa: 70571, Idaho: 70214, Kansas: 69747,
+  "South Dakota": 69457, Florida: 67917, Maine: 68251, Indiana: 67173,
+  Ohio: 66990, Michigan: 66986, Montana: 66341, "North Carolina": 66186,
+  Missouri: 65920, Tennessee: 65254, "South Carolina": 63623, Oklahoma: 61364,
+  Kentucky: 60183, Alabama: 59609, "New Mexico": 58722, Louisiana: 57852,
+  Arkansas: 55432, "West Virginia": 55217, Mississippi: 52719,
+};
+
+// Average annual snowfall (inches) — approximate statewide averages from NOAA
+// climate normals.
+const US_SNOWFALL = {
+  Vermont: 89, Maine: 78, Wyoming: 77, "New Hampshire": 71, Colorado: 67,
+  Alaska: 64, Michigan: 61, "New York": 56, "North Dakota": 51,
+  Massachusetts: 51, Utah: 48, Wisconsin: 47, Minnesota: 46, Idaho: 45,
+  Pennsylvania: 42, Connecticut: 40, "South Dakota": 38, Montana: 38,
+  "Rhode Island": 33, Ohio: 32, "West Virginia": 31, Iowa: 30, Nebraska: 26,
+  "New Jersey": 24, Indiana: 24, Illinois: 22, Nevada: 21, Maryland: 20,
+  Kansas: 17, Oregon: 16, Missouri: 15, Delaware: 15, Virginia: 14,
+  "District of Columbia": 14, Kentucky: 13, Washington: 12, "New Mexico": 12,
+  Oklahoma: 7, Arizona: 6, "North Carolina": 5, Tennessee: 5, Arkansas: 5,
+  California: 4, Texas: 2, "South Carolina": 1.5, Georgia: 1.5, Alabama: 1,
+  Mississippi: 1, Louisiana: 0.4, Florida: 0.1, Hawaii: 0.1,
+};
+
+// Share of the state's land area classified as forest land (percent),
+// approximate USDA Forest Service Forest Inventory & Analysis figures.
+const US_FOREST = {
+  Maine: 89, "New Hampshire": 84, "West Virginia": 79, Vermont: 78,
+  Alabama: 71, "South Carolina": 68, Georgia: 67, Mississippi: 65,
+  "New York": 63, Virginia: 62, Massachusetts: 60, Connecticut: 59,
+  "North Carolina": 59, Pennsylvania: 59, Michigan: 56, Arkansas: 56,
+  "Rhode Island": 54, Tennessee: 52, Louisiana: 52, Washington: 52,
+  Florida: 51, Wisconsin: 49, Kentucky: 49, Oregon: 48, "New Jersey": 45,
+  Hawaii: 42, Idaho: 40, Maryland: 39, Texas: 37, Utah: 35, Colorado: 35,
+  Missouri: 35, Alaska: 35, Minnesota: 34, California: 33, Ohio: 31,
+  Delaware: 30, "New Mexico": 30, Oklahoma: 28, Montana: 27, Arizona: 26,
+  Indiana: 21, "District of Columbia": 20, Wyoming: 18, Nevada: 15,
+  Illinois: 14, Iowa: 8, Kansas: 5, "South Dakota": 4, Nebraska: 3,
+  "North Dakota": 2,
+};
+
+// Average daily low temperature in January (degrees Fahrenheit) — approximate
+// statewide averages from NOAA 1991-2020 climate normals.
+const US_JAN_LOW = {
+  Hawaii: 66, Florida: 51, Louisiana: 40, California: 39, Texas: 36,
+  Arizona: 36, Mississippi: 35, "South Carolina": 35, Alabama: 34, Georgia: 34,
+  Oregon: 32, "North Carolina": 30, Arkansas: 30, Washington: 30,
+  "District of Columbia": 29, Tennessee: 28, Oklahoma: 27, Virginia: 27,
+  Kentucky: 26, Delaware: 26, Nevada: 25, Maryland: 25, "New Jersey": 25,
+  "West Virginia": 23, Missouri: 22, Ohio: 22, "Rhode Island": 22,
+  "New Mexico": 22, Kansas: 21, Indiana: 21, Pennsylvania: 21, Connecticut: 21,
+  Illinois: 20, Massachusetts: 20, Utah: 20, Idaho: 20, Colorado: 17,
+  Nebraska: 17, Michigan: 17, "New York": 16, Iowa: 14, Wyoming: 13,
+  Montana: 13, "South Dakota": 11, "New Hampshire": 11, Wisconsin: 9,
+  Vermont: 9, Maine: 7, Minnesota: 4, "North Dakota": 2, Alaska: -8,
+};
+
+// Effective state minimum wage in 2024 (US dollars per hour). States with no
+// higher state standard are shown at the federal minimum of $7.25.
+const US_MIN_WAGE = {
+  "District of Columbia": 17.5, Washington: 16.28, California: 16.0,
+  Connecticut: 15.69, "New Jersey": 15.13, "New York": 15.0,
+  Massachusetts: 15.0, Maryland: 15.0, Colorado: 14.42, Arizona: 14.35,
+  Oregon: 14.2, Maine: 14.15, "Rhode Island": 14.0, Illinois: 14.0,
+  Hawaii: 14.0, Vermont: 13.67, Delaware: 13.25, Missouri: 12.3,
+  Nebraska: 12.0, Virginia: 12.0, Florida: 12.0, Nevada: 12.0,
+  "New Mexico": 12.0, Alaska: 11.73, "South Dakota": 11.2, Arkansas: 11.0,
+  Minnesota: 10.85, Ohio: 10.45, Michigan: 10.33, Montana: 10.3,
+  "West Virginia": 8.75, Wisconsin: 7.25, Pennsylvania: 7.25, Indiana: 7.25,
+  Iowa: 7.25, Kansas: 7.25, Kentucky: 7.25, "New Hampshire": 7.25,
+  "North Carolina": 7.25, "North Dakota": 7.25, Oklahoma: 7.25,
+  "South Carolina": 7.25, Texas: 7.25, Utah: 7.25, Idaho: 7.25, Georgia: 7.25,
+  Wyoming: 7.25, Alabama: 7.25, Mississippi: 7.25, Louisiana: 7.25,
+  Tennessee: 7.25,
+};
+
+// Mean travel time to work, in minutes (2022 American Community Survey).
+const US_COMMUTE = {
+  "New York": 33.3, Maryland: 33.0, "New Jersey": 31.7, "District of Columbia": 30.5,
+  Massachusetts: 29.9, Illinois: 28.6, California: 28.5, Virginia: 28.4,
+  Georgia: 28.3, Florida: 27.6, Hawaii: 27.6, Washington: 27.4,
+  "New Hampshire": 27.2, Pennsylvania: 27.0, Delaware: 26.6, Texas: 26.6,
+  Connecticut: 26.5, "West Virginia": 26.4, Louisiana: 25.7,
+  "South Carolina": 25.6, Tennessee: 25.6, Alabama: 25.4, Colorado: 25.4,
+  "Rhode Island": 25.4, Arizona: 25.4, Mississippi: 25.3,
+  "North Carolina": 25.1, Nevada: 25.0, Michigan: 24.8, Maine: 24.5,
+  Oregon: 24.4, Indiana: 24.1, Kentucky: 23.9, Missouri: 23.9, Minnesota: 23.9,
+  Ohio: 23.7, Vermont: 23.1, Oklahoma: 22.4, "New Mexico": 22.4,
+  Arkansas: 22.3, Wisconsin: 22.2, Utah: 22.1, Idaho: 21.5, Kansas: 19.7,
+  Iowa: 19.6, Alaska: 19.6, Montana: 18.9, Nebraska: 18.7, Wyoming: 17.9,
+  "North Dakota": 17.6, "South Dakota": 17.4,
+};
+
+// Life expectancy at birth, in years (CDC/NCHS state estimates for 2020).
+const US_LIFE_EXPECTANCY = {
+  Hawaii: 80.7, Washington: 79.2, Minnesota: 79.1, California: 79.0,
+  Massachusetts: 79.0, "New Hampshire": 79.0, Oregon: 78.8, Vermont: 78.8,
+  Utah: 78.6, Connecticut: 78.4, Idaho: 78.4, Colorado: 78.3,
+  "New Jersey": 78.2, Nebraska: 78.2, "Rhode Island": 78.2, Wisconsin: 78.1,
+  Iowa: 78.0, Maine: 77.9, "North Dakota": 77.9, "New York": 77.7,
+  Virginia: 77.6, Florida: 77.5, Maryland: 77.0, Illinois: 77.0,
+  Pennsylvania: 77.0, Montana: 76.9, Kansas: 76.9, Delaware: 76.7,
+  Alaska: 76.6, "South Dakota": 76.6, Texas: 76.5, Michigan: 76.5,
+  Wyoming: 76.5, Arizona: 76.3, Nevada: 76.3, "North Carolina": 76.1,
+  "District of Columbia": 76.0, Missouri: 75.7, Georgia: 75.6, Indiana: 75.6,
+  "South Carolina": 75.4, Ohio: 75.3, "New Mexico": 74.5, Oklahoma: 74.1,
+  Kentucky: 74.0, Arkansas: 73.8, Tennessee: 73.8, Alabama: 73.2,
+  Louisiana: 73.1, "West Virginia": 72.8, Mississippi: 71.9,
+};
+
+// Share of in-state utility-scale electricity net generation that comes from
+// wind (percent), approximate 2023 EIA figures.
+const US_WIND_SHARE = {
+  Iowa: 59, "South Dakota": 55, Kansas: 47, Oklahoma: 41, "North Dakota": 36,
+  "New Mexico": 32, Nebraska: 30, Colorado: 29, Minnesota: 24, Texas: 22,
+  Wyoming: 22, Maine: 21, Montana: 15, Idaho: 15, Vermont: 13, Illinois: 12,
+  Oregon: 12, Indiana: 10, Missouri: 8, Michigan: 8, California: 7,
+  Washington: 7, Hawaii: 6, "New York": 4, "West Virginia": 4, Wisconsin: 3,
+  Pennsylvania: 3, Utah: 3, Maryland: 3, "New Hampshire": 3, "Rhode Island": 3,
+  Ohio: 2, Arizona: 2, Alaska: 2, "New Jersey": 1.4, Massachusetts: 1.4,
+  Nevada: 1, "North Carolina": 0.9, Delaware: 0.3, Tennessee: 0.3,
+  Connecticut: 0.2, Virginia: 0.1, Alabama: 0, Arkansas: 0, Florida: 0,
+  Georgia: 0, Kentucky: 0, Louisiana: 0, Mississippi: 0, "South Carolina": 0,
+  "District of Columbia": 0,
+};
+
+// Corn for grain production, in millions of bushels (approximate 2023 USDA
+// NASS figures). States with no reported corn-for-grain crop are omitted.
+const US_CORN = {
+  Iowa: 2545, Illinois: 2255, Nebraska: 1795, Minnesota: 1585, Indiana: 1120,
+  "South Dakota": 850, Kansas: 765, Ohio: 680, Missouri: 595, Wisconsin: 555,
+  Michigan: 400, "North Dakota": 400, Texas: 320, Kentucky: 250,
+  Colorado: 175, Pennsylvania: 165, "North Carolina": 130, Mississippi: 130,
+  Tennessee: 130, Arkansas: 105, "New York": 100, Louisiana: 85, Georgia: 60,
+  Virginia: 55, Oklahoma: 55, Maryland: 45, "South Carolina": 45,
+  Alabama: 40, Delaware: 30, Washington: 30, Idaho: 30, California: 30,
+  Montana: 25, "New Mexico": 25, Wyoming: 20, Oregon: 10, Arizona: 10,
+  "New Jersey": 9, Utah: 8, Florida: 5, "West Virginia": 4,
+};
+
 // ~2020 population by country (millions).
 const WORLD_POPULATION = {
   China: 1411, India: 1380, "United States of America": 331, Indonesia: 274,
@@ -216,6 +365,135 @@ const WORLD_AREA = {
   Qatar: 12, Gambia: 11, Vanuatu: 12, Brunei: 6,
 };
 
+// GDP per capita, current US dollars, approximate 2022 World Bank figures
+// (values for a few closed or crisis economies are rough order-of-magnitude
+// estimates). Countries with no comparable figure render unshaded.
+const WORLD_GDP_PC = {
+  Luxembourg: 125000, Norway: 108000, Ireland: 104000, Switzerland: 93000,
+  Qatar: 88000, "United States of America": 76000, Iceland: 74000,
+  Denmark: 68000, Australia: 65000, Netherlands: 57000, Sweden: 56000,
+  Canada: 55000, Israel: 54000, "United Arab Emirates": 53000, Austria: 52000,
+  Finland: 51000, Belgium: 49000, Germany: 48000, "New Zealand": 48000,
+  "United Kingdom": 46000, France: 41000, Kuwait: 41000, Brunei: 37000,
+  Japan: 34000, Italy: 34000, Cyprus: 33000, "South Korea": 32000,
+  Taiwan: 32000, Bahamas: 31000, Spain: 30000, "Saudi Arabia": 30000,
+  Slovenia: 29000, Estonia: 28000, Czechia: 27000, Oman: 25000,
+  Lithuania: 25000, Portugal: 24000, Slovakia: 21000, Latvia: 21000,
+  Greece: 21000, Uruguay: 21000, Poland: 18000, Hungary: 18000,
+  "Trinidad and Tobago": 18000, Croatia: 17000, Panama: 17000, Chile: 15000,
+  Romania: 15000, Russia: 15000, Argentina: 13600, Bulgaria: 13000,
+  China: 12700, "Costa Rica": 12500, Malaysia: 12000, Mexico: 11500,
+  Kazakhstan: 11500, Turkey: 10600, "Dominican Rep.": 10100,
+  Montenegro: 10000, Cuba: 9500, Serbia: 9500, Gabon: 8800, "Eq. Guinea": 8500,
+  Turkmenistan: 8500, Brazil: 8900, Belarus: 7800, Azerbaijan: 7700,
+  Botswana: 7700, "Bosnia and Herz.": 7600, Peru: 7100, Armenia: 7000,
+  Macedonia: 7000, Thailand: 7000, Albania: 6800, "South Africa": 6800,
+  Georgia: 6700, Libya: 6700, Colombia: 6600, Belize: 6600, Ecuador: 6400,
+  Iraq: 5900, Suriname: 5900, Moldova: 5600, Guatemala: 5500, Kosovo: 5300,
+  Fiji: 5300, "El Salvador": 5100, Mongolia: 5000, Namibia: 4900,
+  Indonesia: 4800, Jordan: 4700, Ukraine: 4500, Iran: 4400, Algeria: 4300,
+  Egypt: 4300, Vietnam: 4200, eSwatini: 4100, Palestine: 3800, Tunisia: 3800,
+  Bolivia: 3600, Bhutan: 3600, Morocco: 3500, Philippines: 3500,
+  "Sri Lanka": 3500, Djibouti: 3500, Venezuela: 3500, Vanuatu: 3200,
+  Honduras: 3200, Angola: 3000, "Côte d'Ivoire": 2600, Congo: 2500,
+  "Timor-Leste": 2400, India: 2400, Uzbekistan: 2300, Nicaragua: 2300,
+  Ghana: 2200, Nigeria: 2200, Mauritania: 2200, "Solomon Is.": 2200,
+  Kenya: 2100, Laos: 2100, Cambodia: 1800, Haiti: 1700, Zimbabwe: 1700,
+  Pakistan: 1600, Senegal: 1600, Cameroon: 1600, Guinea: 1500, Zambia: 1400,
+  Benin: 1400, Nepal: 1300, Myanmar: 1200, Tanzania: 1200, Ethiopia: 1100,
+  Sudan: 1100, Lesotho: 1100, Rwanda: 1000, Uganda: 1000, Togo: 1000,
+  Mali: 900, "Burkina Faso": 900, Gambia: 850, "Guinea-Bissau": 800,
+  Liberia: 800, Chad: 700, Yemen: 700, Eritrea: 650, "Dem. Rep. Congo": 650,
+  Malawi: 650, Somalia: 600, Niger: 600, Mozambique: 550, Madagascar: 500,
+  "Central African Rep.": 500, "Sierra Leone": 500, Afghanistan: 400,
+  "S. Sudan": 400, Burundi: 240, Bangladesh: 2700, "Papua New Guinea": 2700,
+  Paraguay: 6200, Jamaica: 6000, Guyana: 18400, Syria: 900, Lebanon: 4100,
+  "North Korea": 1200, Greenland: 57000, "Puerto Rico": 35000,
+  "New Caledonia": 37000, Kyrgyzstan: 1700, Tajikistan: 1100,
+};
+
+// Urban share of the population (percent), approximate 2022 World Bank figures.
+const WORLD_URBAN = {
+  Kuwait: 100, Qatar: 99, Belgium: 98, Uruguay: 96, Iceland: 94,
+  "Puerto Rico": 94, Netherlands: 93, Israel: 93, Japan: 92, Argentina: 92,
+  Jordan: 92, Luxembourg: 92, Lebanon: 89, Chile: 88, Denmark: 88, Sweden: 88,
+  Venezuela: 88, Oman: 88, Brazil: 87, "United Arab Emirates": 87,
+  "New Zealand": 87, Australia: 86, Finland: 86, "United Kingdom": 84,
+  "Saudi Arabia": 84, "Dominican Rep.": 84, "United States of America": 83,
+  Norway: 83, Bahamas: 83, "Costa Rica": 82, Colombia: 82, Canada: 82,
+  Mexico: 81, Spain: 81, France: 81, Libya: 81, "South Korea": 81, Greece: 80,
+  Taiwan: 80, Belarus: 80, Brunei: 79, Germany: 78, Peru: 78, Malaysia: 78,
+  Djibouti: 78, Turkey: 77, Iran: 77, Cuba: 77, Palestine: 77, Russia: 75,
+  Algeria: 75, "El Salvador": 75, Czechia: 74, Switzerland: 74,
+  "Eq. Guinea": 74, Bulgaria: 76, Botswana: 72, "New Caledonia": 72,
+  Hungary: 72, Iraq: 71, Italy: 71, Bolivia: 71, Tunisia: 70, Ukraine: 70,
+  Estonia: 69, Mongolia: 69, Panama: 69, Angola: 68, Congo: 68,
+  "South Africa": 68, Montenegro: 68, Latvia: 68, Lithuania: 68, Cyprus: 67,
+  Portugal: 67, Suriname: 66, Morocco: 65, Ecuador: 65, Ireland: 64,
+  Albania: 64, Armenia: 63, Gambia: 63, China: 63, "North Korea": 63,
+  Paraguay: 63, Poland: 60, Honduras: 60, Georgia: 60, Austria: 59,
+  Macedonia: 59, Haiti: 59, Nicaragua: 59, Indonesia: 58, Cameroon: 58,
+  Ghana: 58, Fiji: 58, Croatia: 58, Kazakhstan: 58, Serbia: 57,
+  Azerbaijan: 57, Jamaica: 57, Mauritania: 57, Syria: 56, Slovenia: 55,
+  Romania: 54, Slovakia: 54, Nigeria: 53, Thailand: 53, Turkmenistan: 53,
+  Namibia: 53, Liberia: 53, "Trinidad and Tobago": 53, Guatemala: 53,
+  "Côte d'Ivoire": 52, Uzbekistan: 50, Benin: 49, Senegal: 49,
+  "Bosnia and Herz.": 49, Philippines: 48, Somalia: 47, "Dem. Rep. Congo": 47,
+  Belize: 46, "Guinea-Bissau": 45, Mali: 45, Zambia: 45, "Sierra Leone": 44,
+  Bhutan: 44, Egypt: 43, Togo: 43, "Central African Rep.": 43, Moldova: 43,
+  Kosovo: 43, Eritrea: 42, Madagascar: 40, Bangladesh: 39, Vietnam: 39,
+  Yemen: 39, Guinea: 38, Mozambique: 38, Pakistan: 38, Kyrgyzstan: 37,
+  Laos: 37, Sudan: 36, Tanzania: 36, India: 35, Myanmar: 32, Zimbabwe: 32,
+  "Burkina Faso": 32, "Timor-Leste": 32, Lesotho: 30, Kenya: 29,
+  Tajikistan: 28, Guyana: 27, Afghanistan: 26, Uganda: 26, Cambodia: 25,
+  "Solomon Is.": 26, Vanuatu: 26, Chad: 24, eSwatini: 24, Ethiopia: 23,
+  Nepal: 21, "S. Sudan": 21, "Sri Lanka": 19, Rwanda: 18, Malawi: 18,
+  Niger: 17, Burundi: 14, "Papua New Guinea": 13, Gabon: 90, Greenland: 87,
+};
+
+// Total fertility rate — births per woman — approximate 2021 World Bank
+// figures.
+const WORLD_FERTILITY = {
+  Niger: 6.8, Chad: 6.3, Somalia: 6.3, "Dem. Rep. Congo": 6.2,
+  "Central African Rep.": 6.0, Mali: 6.0, Angola: 5.3, Nigeria: 5.2,
+  Burundi: 5.2, Benin: 5.0, "Burkina Faso": 4.8, Tanzania: 4.7,
+  Afghanistan: 4.6, Mozambique: 4.6, Gambia: 4.6, Uganda: 4.5, Cameroon: 4.5,
+  "S. Sudan": 4.5, Guinea: 4.4, Sudan: 4.4, "Côte d'Ivoire": 4.4,
+  Mauritania: 4.4, Senegal: 4.3, Zambia: 4.3, Togo: 4.2, Congo: 4.2,
+  "Eq. Guinea": 4.2, Ethiopia: 4.1, Liberia: 4.1, "Guinea-Bissau": 4.0,
+  "Sierra Leone": 4.0, Eritrea: 4.0, "Solomon Is.": 4.0, Malawi: 3.9,
+  Rwanda: 3.8, Yemen: 3.8, Vanuatu: 3.8, Madagascar: 3.7, Ghana: 3.6,
+  Palestine: 3.6, Gabon: 3.5, Zimbabwe: 3.5, Iraq: 3.5, Pakistan: 3.5,
+  Kenya: 3.3, Namibia: 3.3, Uzbekistan: 3.3, Tajikistan: 3.2,
+  "Papua New Guinea": 3.2, "Timor-Leste": 3.1, Lesotho: 3.0, Kyrgyzstan: 3.0,
+  Kazakhstan: 3.0, eSwatini: 2.9, Egypt: 2.9, Algeria: 2.9, Israel: 2.9,
+  Botswana: 2.8, Jordan: 2.8, Haiti: 2.8, Mongolia: 2.8, Syria: 2.8,
+  Turkmenistan: 2.7, Philippines: 2.7, Oman: 2.6, Bolivia: 2.6, Laos: 2.5,
+  Paraguay: 2.5, "South Africa": 2.4, Libya: 2.4, Guatemala: 2.4,
+  Honduras: 2.4, "Saudi Arabia": 2.4, Guyana: 2.4, Suriname: 2.4, Fiji: 2.4,
+  Morocco: 2.3, Cambodia: 2.3, Panama: 2.3, Nicaragua: 2.3,
+  "Dominican Rep.": 2.3, Indonesia: 2.2, Myanmar: 2.2, Peru: 2.2,
+  Venezuela: 2.2, Tunisia: 2.1, Lebanon: 2.1, Kuwait: 2.1, India: 2.0,
+  Bangladesh: 2.0, Nepal: 2.0, "Sri Lanka": 2.0, Ecuador: 2.0, Belize: 2.0,
+  Georgia: 2.0, Vietnam: 1.9, Argentina: 1.9, Turkey: 1.9, "New Caledonia": 1.9,
+  Malaysia: 1.8, Mexico: 1.8, "North Korea": 1.8, Brunei: 1.8, France: 1.8,
+  Ireland: 1.8, Czechia: 1.8, Romania: 1.8, Moldova: 1.8, Qatar: 1.8,
+  "El Salvador": 1.8, "United States of America": 1.7, Denmark: 1.7,
+  Sweden: 1.7, Iceland: 1.7, Colombia: 1.7, Montenegro: 1.7, Kosovo: 1.7,
+  Iran: 1.7, Azerbaijan: 1.7, Australia: 1.7, "New Zealand": 1.7,
+  "United Kingdom": 1.6, Netherlands: 1.6, Belgium: 1.6, Norway: 1.6,
+  Estonia: 1.6, Latvia: 1.6, Slovakia: 1.6, Hungary: 1.6, Bulgaria: 1.6,
+  Slovenia: 1.6, Armenia: 1.6, Brazil: 1.6, "Trinidad and Tobago": 1.6,
+  Germany: 1.5, Switzerland: 1.5, Austria: 1.5, Finland: 1.5, Croatia: 1.5,
+  Serbia: 1.5, Macedonia: 1.5, Russia: 1.5, Chile: 1.5, Uruguay: 1.5,
+  Cuba: 1.5, "Costa Rica": 1.5, "United Arab Emirates": 1.5, Canada: 1.4,
+  Luxembourg: 1.4, Lithuania: 1.4, Greece: 1.4, Portugal: 1.4, Albania: 1.4,
+  Belarus: 1.4, Bhutan: 1.4, Jamaica: 1.4, Bahamas: 1.4, Japan: 1.3,
+  Italy: 1.3, Poland: 1.3, Cyprus: 1.3, "Bosnia and Herz.": 1.3,
+  Thailand: 1.3, China: 1.2, Spain: 1.2, Ukraine: 1.2, Taiwan: 1.0,
+  "Puerto Rico": 0.9, "South Korea": 0.8, Djibouti: 2.8, Greenland: 1.9,
+};
+
 // ---------------------------------------------------------------------------
 // Formatters (no units — bare magnitudes keep the legend a fair, wordless hint)
 // ---------------------------------------------------------------------------
@@ -225,6 +503,12 @@ const peopleMillions = (m) =>
   m >= 1000 ? `${(m / 1000).toFixed(2)}B` : m >= 100 ? `${Math.round(m)}M` : `${m}M`;
 const peopleAbs = (n) =>
   n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : `${(n / 1e6).toFixed(1)}M`;
+const round0 = (n) => `${Math.round(n)}`;
+const oneDec = (n) => n.toFixed(1);
+// Keeps small magnitudes legible (0.1) without cluttering large ones (45).
+const mixedDec = (n) => (Math.abs(n) >= 10 ? `${Math.round(n)}` : n.toFixed(1));
+const thousandsK = (n) =>
+  n >= 1000 ? `${Math.round(n / 1000)}k` : `${Math.round(n)}`;
 
 // ---------------------------------------------------------------------------
 // Map specs
@@ -292,7 +576,7 @@ const MAPS = [
       "The smallest states all share the minimum of three; California tops out at 54.",
     ],
     data: US_ELECTORAL,
-    interpolator: chromatic.interpolatePurples,
+    interpolator: chromatic.interpolatePuBuGn,
     scaleType: "sqrt",
     fmt: (n) => `${Math.round(n)}`,
   },
@@ -308,7 +592,7 @@ const MAPS = [
       "One large southern state has 254 of them; Delaware, Hawaii, and Rhode Island have a handful.",
     ],
     data: US_COUNTIES,
-    interpolator: chromatic.interpolateYlOrRd,
+    interpolator: chromatic.interpolateYlOrBr,
     scaleType: "sqrt",
     fmt: (n) => `${Math.round(n)}`,
   },
@@ -340,7 +624,7 @@ const MAPS = [
       "Two countries in Asia tower over everyone else, each above a billion.",
     ],
     data: WORLD_POPULATION,
-    interpolator: chromatic.interpolateReds,
+    interpolator: chromatic.interpolateBlues,
     scaleType: "sqrt",
     fmt: peopleMillions,
   },
@@ -356,9 +640,275 @@ const MAPS = [
       "The largest by a wide margin stretches across northern Eurasia.",
     ],
     data: WORLD_AREA,
-    interpolator: chromatic.interpolateBuPu,
+    interpolator: chromatic.interpolateGreens,
     scaleType: "sqrt",
     fmt: (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}M` : intComma(n)),
+  },
+  {
+    id: "us-median-income",
+    scope: "us",
+    title: "Median Household Income by State (2022)",
+    aliases: [
+      "median household income",
+      "household income",
+      "median income",
+      "typical family earnings",
+      "average household earnings",
+    ],
+    description:
+      "Median household income by state in 2022 dollars, from the U.S. Census Bureau's American Community Survey. The Washington–Boston corridor plus Maryland, Virginia, and the West Coast sit highest; Mississippi, West Virginia, and Arkansas lowest. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The pattern follows money rather than land, weather, or head counts.",
+      "The suburbs of the capital push Maryland and Virginia near the top, while Mississippi and West Virginia anchor the bottom.",
+    ],
+    data: US_MEDIAN_INCOME,
+    interpolator: chromatic.interpolateBuGn,
+    scaleType: "linear",
+    fmt: thousandsK,
+  },
+  {
+    id: "us-snowfall",
+    scope: "us",
+    title: "Average Annual Snowfall by State (inches)",
+    aliases: [
+      "annual snowfall",
+      "average snowfall",
+      "how much it snows each year",
+      "inches of snow per year",
+      "yearly snow total",
+    ],
+    description:
+      "Approximate statewide average annual snowfall in inches, based on NOAA climate normals. Vermont, Maine, Wyoming, and the mountain West lead; the Gulf Coast and Florida are effectively at zero. Statewide averages smooth over big local extremes such as the Cascades and the Great Lakes belts. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A winter weather measurement — along the Gulf Coast it barely registers at all.",
+      "High-altitude and northern-tier states dominate; Vermont leads the East and Hawaii and Florida sit at the very bottom.",
+    ],
+    data: US_SNOWFALL,
+    interpolator: chromatic.interpolateBlues,
+    scaleType: "sqrt",
+    fmt: mixedDec,
+  },
+  {
+    id: "us-forest-cover",
+    scope: "us",
+    title: "Percent of Land Covered by Forest",
+    aliases: [
+      "forest cover",
+      "percent forested",
+      "tree cover",
+      "share of land that is forest",
+      "woodland cover",
+    ],
+    description:
+      "Approximate share of each state's land area classified as forest land, per the USDA Forest Service's Forest Inventory and Analysis program. Maine is close to 90 percent; North Dakota and Nebraska are only a few percent. Boundaries: us-atlas (public domain).",
+    hints: [
+      "This is about what physically covers the ground, not who owns it or how high it rises.",
+      "Northern New England and the Southeast run highest, while the Great Plains states are nearly bare.",
+    ],
+    data: US_FOREST,
+    interpolator: chromatic.interpolateYlGn,
+    scaleType: "linear",
+    fmt: round0,
+  },
+  {
+    id: "us-january-low",
+    scope: "us",
+    title: "Average January Low Temperature (°F)",
+    aliases: [
+      "average january low temperature",
+      "january low temperature",
+      "coldest month overnight low",
+      "winter overnight low",
+      "average winter low",
+    ],
+    description:
+      "Approximate statewide average daily minimum temperature in January, in degrees Fahrenheit, based on NOAA 1991–2020 climate normals. Hawaii is near 66; North Dakota is near 2 and Alaska is below zero. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A climate figure whose gradient runs almost perfectly with latitude.",
+      "Exactly one state comes out negative — the one reaching into the Arctic — and the tropical outlier in the Pacific is warmer than anywhere else by a wide margin.",
+    ],
+    data: US_JAN_LOW,
+    interpolator: chromatic.interpolateGnBu,
+    scaleType: "linear",
+    reverse: true,
+    fmt: round0,
+  },
+  {
+    id: "us-minimum-wage",
+    scope: "us",
+    title: "State Minimum Wage in 2024 (per hour)",
+    aliases: [
+      "minimum wage",
+      "state minimum wage",
+      "lowest legal hourly pay",
+      "hourly pay floor",
+      "minimum hourly pay",
+    ],
+    description:
+      "Effective state minimum wage in 2024, in dollars per hour, from U.S. Department of Labor listings. Twenty states have no higher standard of their own and sit at the federal 7.25; Washington, D.C. tops the list at 17.50. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Set by legislatures, not by nature — and roughly a third of the map sits at one identical value.",
+      "A solid block of southern and plains states shares the federal figure of 7.25, while the Pacific coast, the Northeast, and the capital run far above it.",
+    ],
+    data: US_MIN_WAGE,
+    interpolator: chromatic.interpolateGreens,
+    scaleType: "linear",
+    fmt: (n) => n.toFixed(2),
+  },
+  {
+    id: "us-commute-time",
+    scope: "us",
+    title: "Average Commute Time to Work (minutes)",
+    aliases: [
+      "average commute time",
+      "commute time",
+      "travel time to work",
+      "how long people travel to work",
+      "commuting minutes",
+    ],
+    description:
+      "Mean travel time to work for workers aged 16 and over, in minutes, from the 2022 American Community Survey. New York and Maryland top 33 minutes; the Dakotas and Wyoming are under 18. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Measured in minutes, and it reflects daily routine rather than climate or terrain.",
+      "The dense Northeast corridor is highest, the wide-open Dakotas lowest, and the whole spread is only about a quarter of an hour.",
+    ],
+    data: US_COMMUTE,
+    interpolator: chromatic.interpolatePuBu,
+    scaleType: "linear",
+    fmt: oneDec,
+  },
+  {
+    id: "us-life-expectancy",
+    scope: "us",
+    title: "Life Expectancy at Birth by State (years)",
+    aliases: [
+      "life expectancy",
+      "average lifespan",
+      "how long people live",
+      "expected years of life",
+      "average life span",
+    ],
+    description:
+      "Life expectancy at birth in years, from CDC/NCHS state estimates for 2020. Hawaii leads at about 80.7 years and Mississippi trails at about 71.9 — a spread of under a decade nationwide. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A public-health outcome, and the entire national range spans less than ten units.",
+      "Hawaii, Minnesota, and the Pacific Northwest lead; the Deep South and Appalachia trail by several years.",
+    ],
+    data: US_LIFE_EXPECTANCY,
+    interpolator: chromatic.interpolatePuBuGn,
+    scaleType: "linear",
+    fmt: oneDec,
+  },
+  {
+    id: "us-wind-share",
+    scope: "us",
+    title: "Share of Electricity from Wind (%)",
+    aliases: [
+      "share of electricity from wind",
+      "wind power share",
+      "percent of power from wind",
+      "wind energy share",
+      "wind generation share",
+    ],
+    description:
+      "Approximate share of each state's utility-scale electricity net generation supplied by wind in 2023, per the U.S. Energy Information Administration. Iowa and South Dakota exceed half; most of the Southeast is at or near zero. Boundaries: us-atlas (public domain).",
+    hints: [
+      "An electricity statistic — and across almost the whole Southeast it is essentially nil.",
+      "A tall corridor from the Dakotas down through Iowa, Kansas, and Oklahoma dominates, thanks to relentless open-plains gusts.",
+    ],
+    data: US_WIND_SHARE,
+    interpolator: chromatic.interpolateYlGnBu,
+    scaleType: "sqrt",
+    fmt: mixedDec,
+  },
+  {
+    id: "us-corn-production",
+    scope: "us",
+    title: "Corn Production (million bushels, 2023)",
+    aliases: [
+      "corn production",
+      "corn harvest",
+      "bushels of corn",
+      "corn output",
+      "how much corn each state grows",
+    ],
+    description:
+      "Approximate corn-for-grain production in millions of bushels for 2023, from USDA NASS crop production reports. Iowa and Illinois together account for roughly a third of the national crop; states with no reported corn-for-grain harvest are left unshaded. Boundaries: us-atlas (public domain).",
+    hints: [
+      "An agricultural output measure, and a tight cluster of Midwest states accounts for most of the national total.",
+      "Iowa and Illinois are far ahead of everyone; the arid Southwest and New England barely register or report nothing at all.",
+    ],
+    data: US_CORN,
+    interpolator: chromatic.interpolateYlOrBr,
+    scaleType: "sqrt",
+    fmt: intComma,
+  },
+  {
+    id: "world-gdp-per-capita",
+    scope: "world",
+    title: "GDP per Capita by Country (~2022)",
+    aliases: [
+      "gdp per capita",
+      "income per person",
+      "gross domestic product per person",
+      "output per person",
+      "gdp per person",
+    ],
+    description:
+      "Approximate GDP per capita in current U.S. dollars around 2022, based on World Bank figures. Luxembourg, Norway, Ireland, Switzerland, and Qatar sit above 85,000 while several countries in central Africa are under 1,000. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "An economic yardstick on which small states like Luxembourg and Qatar outrank far larger economies.",
+      "The scale spans more than a factor of two hundred; central Africa is at the low end and northern Europe plus the Gulf at the high end.",
+    ],
+    data: WORLD_GDP_PC,
+    interpolator: chromatic.interpolateYlGnBu,
+    scaleType: "sqrt",
+    fmt: thousandsK,
+  },
+  {
+    id: "world-urban-share",
+    scope: "world",
+    title: "Urban Share of Population (%)",
+    aliases: [
+      "urban population share",
+      "percent living in cities",
+      "urbanization rate",
+      "share of people in cities",
+      "urbanisation",
+    ],
+    description:
+      "Approximate share of the population living in urban areas around 2022, per World Bank data. Kuwait, Qatar, Belgium, and Uruguay are above 95 percent; Papua New Guinea, Burundi, Niger, and Sri Lanka are under 20. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "A demographic split about where inside a country people are settled, not how many of them there are.",
+      "South America, Japan, and the Gulf run above 85 percent, while Sri Lanka, Nepal, Papua New Guinea, and much of East Africa stay below 30.",
+    ],
+    data: WORLD_URBAN,
+    interpolator: chromatic.interpolateBuGn,
+    scaleType: "linear",
+    fmt: round0,
+  },
+  {
+    id: "world-fertility-rate",
+    scope: "world",
+    title: "Births per Woman by Country (~2021)",
+    aliases: [
+      "fertility rate",
+      "total fertility rate",
+      "births per woman",
+      "birth rate",
+      "average number of children per woman",
+      "children per woman",
+    ],
+    description:
+      "Total fertility rate — the average number of children a woman would bear over her lifetime at current rates — around 2021, per World Bank data. Niger, Chad, and Somalia are above 6; South Korea is the world's lowest at about 0.8. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "A demographic rate that has fallen below the replacement level across nearly all of Europe and East Asia.",
+      "The Sahel and central Africa sit at the top of the range, above six, while South Korea is the lowest on Earth at well under one.",
+    ],
+    data: WORLD_FERTILITY,
+    interpolator: chromatic.interpolateYlOrBr,
+    scaleType: "linear",
+    fmt: oneDec,
   },
 ];
 

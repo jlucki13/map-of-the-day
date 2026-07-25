@@ -284,5 +284,438 @@
       "This is about sheer territorial size, not how many people live there.",
       "The largest by a wide margin stretches across northern Eurasia."
     ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-median-income",
+    "title": "Median Household Income by State (2022)",
+    "aliases": [
+      "median household income",
+      "household income",
+      "median income",
+      "typical family earnings",
+      "average household earnings"
+    ],
+    "description": "Median household income by state in 2022 dollars, from the U.S. Census Bureau's American Community Survey. The Washington–Boston corridor plus Maryland, Virginia, and the West Coast sit highest; Mississippi, West Virginia, and Arkansas lowest. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-median-income.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The pattern follows money rather than land, weather, or head counts.",
+      "The suburbs of the capital push Maryland and Virginia near the top, while Mississippi and West Virginia anchor the bottom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-snowfall",
+    "title": "Average Annual Snowfall by State (inches)",
+    "aliases": [
+      "annual snowfall",
+      "average snowfall",
+      "how much it snows each year",
+      "inches of snow per year",
+      "yearly snow total"
+    ],
+    "description": "Approximate statewide average annual snowfall in inches, based on NOAA climate normals. Vermont, Maine, Wyoming, and the mountain West lead; the Gulf Coast and Florida are effectively at zero. Statewide averages smooth over big local extremes such as the Cascades and the Great Lakes belts. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-snowfall.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A winter weather measurement — along the Gulf Coast it barely registers at all.",
+      "High-altitude and northern-tier states dominate; Vermont leads the East and Hawaii and Florida sit at the very bottom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-forest-cover",
+    "title": "Percent of Land Covered by Forest",
+    "aliases": [
+      "forest cover",
+      "percent forested",
+      "tree cover",
+      "share of land that is forest",
+      "woodland cover"
+    ],
+    "description": "Approximate share of each state's land area classified as forest land, per the USDA Forest Service's Forest Inventory and Analysis program. Maine is close to 90 percent; North Dakota and Nebraska are only a few percent. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-forest-cover.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "This is about what physically covers the ground, not who owns it or how high it rises.",
+      "Northern New England and the Southeast run highest, while the Great Plains states are nearly bare."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-january-low",
+    "title": "Average January Low Temperature (°F)",
+    "aliases": [
+      "average january low temperature",
+      "january low temperature",
+      "coldest month overnight low",
+      "winter overnight low",
+      "average winter low"
+    ],
+    "description": "Approximate statewide average daily minimum temperature in January, in degrees Fahrenheit, based on NOAA 1991–2020 climate normals. Hawaii is near 66; North Dakota is near 2 and Alaska is below zero. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-january-low.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A climate figure whose gradient runs almost perfectly with latitude.",
+      "Exactly one state comes out negative — the one reaching into the Arctic — and the tropical outlier in the Pacific is warmer than anywhere else by a wide margin."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-minimum-wage",
+    "title": "State Minimum Wage in 2024 (per hour)",
+    "aliases": [
+      "minimum wage",
+      "state minimum wage",
+      "lowest legal hourly pay",
+      "hourly pay floor",
+      "minimum hourly pay"
+    ],
+    "description": "Effective state minimum wage in 2024, in dollars per hour, from U.S. Department of Labor listings. Twenty states have no higher standard of their own and sit at the federal 7.25; Washington, D.C. tops the list at 17.50. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-minimum-wage.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Set by legislatures, not by nature — and roughly a third of the map sits at one identical value.",
+      "A solid block of southern and plains states shares the federal figure of 7.25, while the Pacific coast, the Northeast, and the capital run far above it."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-commute-time",
+    "title": "Average Commute Time to Work (minutes)",
+    "aliases": [
+      "average commute time",
+      "commute time",
+      "travel time to work",
+      "how long people travel to work",
+      "commuting minutes"
+    ],
+    "description": "Mean travel time to work for workers aged 16 and over, in minutes, from the 2022 American Community Survey. New York and Maryland top 33 minutes; the Dakotas and Wyoming are under 18. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-commute-time.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Measured in minutes, and it reflects daily routine rather than climate or terrain.",
+      "The dense Northeast corridor is highest, the wide-open Dakotas lowest, and the whole spread is only about a quarter of an hour."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-life-expectancy",
+    "title": "Life Expectancy at Birth by State (years)",
+    "aliases": [
+      "life expectancy",
+      "average lifespan",
+      "how long people live",
+      "expected years of life",
+      "average life span"
+    ],
+    "description": "Life expectancy at birth in years, from CDC/NCHS state estimates for 2020. Hawaii leads at about 80.7 years and Mississippi trails at about 71.9 — a spread of under a decade nationwide. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-life-expectancy.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A public-health outcome, and the entire national range spans less than ten units.",
+      "Hawaii, Minnesota, and the Pacific Northwest lead; the Deep South and Appalachia trail by several years."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-wind-share",
+    "title": "Share of Electricity from Wind (%)",
+    "aliases": [
+      "share of electricity from wind",
+      "wind power share",
+      "percent of power from wind",
+      "wind energy share",
+      "wind generation share"
+    ],
+    "description": "Approximate share of each state's utility-scale electricity net generation supplied by wind in 2023, per the U.S. Energy Information Administration. Iowa and South Dakota exceed half; most of the Southeast is at or near zero. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-wind-share.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "An electricity statistic — and across almost the whole Southeast it is essentially nil.",
+      "A tall corridor from the Dakotas down through Iowa, Kansas, and Oklahoma dominates, thanks to relentless open-plains gusts."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-corn-production",
+    "title": "Corn Production (million bushels, 2023)",
+    "aliases": [
+      "corn production",
+      "corn harvest",
+      "bushels of corn",
+      "corn output",
+      "how much corn each state grows"
+    ],
+    "description": "Approximate corn-for-grain production in millions of bushels for 2023, from USDA NASS crop production reports. Iowa and Illinois together account for roughly a third of the national crop; states with no reported corn-for-grain harvest are left unshaded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-corn-production.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "An agricultural output measure, and a tight cluster of Midwest states accounts for most of the national total.",
+      "Iowa and Illinois are far ahead of everyone; the arid Southwest and New England barely register or report nothing at all."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-gdp-per-capita",
+    "title": "GDP per Capita by Country (~2022)",
+    "aliases": [
+      "gdp per capita",
+      "income per person",
+      "gross domestic product per person",
+      "output per person",
+      "gdp per person"
+    ],
+    "description": "Approximate GDP per capita in current U.S. dollars around 2022, based on World Bank figures. Luxembourg, Norway, Ireland, Switzerland, and Qatar sit above 85,000 while several countries in central Africa are under 1,000. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-gdp-per-capita.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "An economic yardstick on which small states like Luxembourg and Qatar outrank far larger economies.",
+      "The scale spans more than a factor of two hundred; central Africa is at the low end and northern Europe plus the Gulf at the high end."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-urban-share",
+    "title": "Urban Share of Population (%)",
+    "aliases": [
+      "urban population share",
+      "percent living in cities",
+      "urbanization rate",
+      "share of people in cities",
+      "urbanisation"
+    ],
+    "description": "Approximate share of the population living in urban areas around 2022, per World Bank data. Kuwait, Qatar, Belgium, and Uruguay are above 95 percent; Papua New Guinea, Burundi, Niger, and Sri Lanka are under 20. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-urban-share.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A demographic split about where inside a country people are settled, not how many of them there are.",
+      "South America, Japan, and the Gulf run above 85 percent, while Sri Lanka, Nepal, Papua New Guinea, and much of East Africa stay below 30."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-fertility-rate",
+    "title": "Births per Woman by Country (~2021)",
+    "aliases": [
+      "fertility rate",
+      "total fertility rate",
+      "births per woman",
+      "birth rate",
+      "average number of children per woman",
+      "children per woman"
+    ],
+    "description": "Total fertility rate — the average number of children a woman would bear over her lifetime at current rates — around 2021, per World Bank data. Niger, Chad, and Somalia are above 6; South Korea is the world's lowest at about 0.8. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-fertility-rate.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A demographic rate that has fallen below the replacement level across nearly all of Europe and East Asia.",
+      "The Sahel and central Africa sit at the top of the range, above six, while South Korea is the lowest on Earth at well under one."
+    ]
   }
 ]
