@@ -56,33 +56,19 @@ export default function ResultBanner({
   }
 
   return (
-    // No card: the rail is ruled type on parchment, so the result arrives as a
-    // struck rule and a verdict rather than another box. On paper the feedback
-    // ramps invert — dark ink, light wash — because the dark shell's 300-step
-    // tints read at about 1.6:1 here.
     <section
       aria-live="polite"
       className={
-        "settle-in border-t-2 pt-4 " +
-        (won ? "border-positive" : "border-negative")
+        "settle-in rounded-panel border bg-surface p-5 shadow-plate " +
+        (won ? "border-land-600/50" : "border-clay-700/60")
       }
     >
-      <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span
-          className={
-            "font-display text-2xl leading-none " +
-            (won ? "text-positive" : "text-negative")
-          }
-        >
-          {won ? "Correct" : "Out of guesses"}
+      <p className="flex flex-wrap items-baseline gap-x-2 text-lg font-semibold">
+        <span className={won ? "text-positive" : "text-negative"}>
+          {won ? "Correct." : "Out of guesses."}
         </span>
         {won && scoreAwarded && (
-          <span
-            className={
-              "rounded-chip px-2 py-1 font-mono text-xs font-semibold tabular-nums " +
-              "bg-positive-wash text-positive"
-            }
-          >
+          <span className="font-mono text-base tabular-nums text-note">
             +{scoreAwarded.points}{" "}
             {scoreAwarded.points === 1 ? "point" : "points"}
           </span>
@@ -90,11 +76,11 @@ export default function ResultBanner({
       </p>
 
       {won && scoreAwarded && (
-        <div className="mt-4">
+        <div className="mt-3">
           {hasNickname ? (
             <Link
               href="/leaderboard"
-              className="text-sm font-medium text-accent underline decoration-ocean-600/40 underline-offset-4 transition-colors duration-150 hover:text-accent-hover hover:decoration-ocean-600"
+              className="text-sm font-medium text-accent underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-accent-hover"
             >
               View leaderboard &rarr;
             </Link>
@@ -108,59 +94,61 @@ export default function ResultBanner({
       )}
 
       {reveal && (
-        <div className="mt-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-subtle">
-            The answer was
-          </p>
-          {/* The plate's title block, restored. */}
-          <h2 className="mt-1.5 font-display text-[26px] leading-[1.2] tracking-tight text-ink">
-            {reveal.title}
-          </h2>
-          {reveal.aliases.length > 0 && (
-            <p className="mt-3 text-sm leading-relaxed text-ink-subtle">
-              <span className="text-ink-muted">Also accepted:</span>{" "}
-              {reveal.aliases.join(", ")}
+        <div className="mt-5 space-y-4 border-t border-hairline/70 pt-5">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-ink-subtle">
+              The answer was
             </p>
-          )}
+            {/* The plate's title block, restored. */}
+            <h2 className="mt-1 font-display text-2xl leading-snug text-ink">
+              {reveal.title}
+            </h2>
+            {reveal.aliases.length > 0 && (
+              <p className="mt-2.5 text-sm text-ink-subtle">
+                Also accepted: {reveal.aliases.join(", ")}
+              </p>
+            )}
+          </div>
 
           {reveal.description && (
-            <p className="mt-4 border-t border-hairline pt-4 text-[15px] leading-relaxed text-ink-muted">
+            <p className="max-w-[68ch] text-sm leading-relaxed text-ink-muted">
               {reveal.description}
             </p>
           )}
 
-          <div className="mt-5 border-t border-hairline pt-4">
+          <p className="text-xs leading-relaxed text-ink-subtle">
+            Map by {reveal.attribution.author} &middot;{" "}
+            {reveal.attribution.licenseUrl ? (
+              <a
+                href={reveal.attribution.licenseUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-ink-muted"
+              >
+                {reveal.attribution.license}
+              </a>
+            ) : (
+              reveal.attribution.license
+            )}{" "}
+            &middot;{" "}
+            <a
+              href={reveal.attribution.sourcePageUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-ink-muted"
+            >
+              {sourceLinkLabel(reveal.attribution.sourcePageUrl)}
+            </a>
+          </p>
+
+          <div>
             <button
               type="button"
               onClick={copyShareGrid}
-              className="rounded-control bg-surface px-4 py-2 text-sm font-medium text-ink-muted ring-1 ring-inset ring-sand-300 transition-colors duration-150 hover:bg-surface-raised hover:text-ink"
+              className="rounded-control border border-hairline bg-surface-raised/80 px-4 py-2 text-sm font-medium text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:text-ink"
             >
               {copied ? "Copied" : "Copy result"}
             </button>
-            <p className="mt-3 text-xs leading-relaxed text-ink-subtle">
-              Map by {reveal.attribution.author} &middot;{" "}
-              {reveal.attribution.licenseUrl ? (
-                <a
-                  href={reveal.attribution.licenseUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline decoration-ocean-700/40 underline-offset-2 transition-colors duration-150 hover:text-ink-muted hover:decoration-ocean-700"
-                >
-                  {reveal.attribution.license}
-                </a>
-              ) : (
-                reveal.attribution.license
-              )}{" "}
-              &middot;{" "}
-              <a
-                href={reveal.attribution.sourcePageUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="underline decoration-ocean-700/40 underline-offset-2 transition-colors duration-150 hover:text-ink-muted hover:decoration-ocean-700"
-              >
-                {sourceLinkLabel(reveal.attribution.sourcePageUrl)}
-              </a>
-            </p>
           </div>
         </div>
       )}

@@ -24,32 +24,30 @@ export default function MapReveal({
     canToggle && !showOriginal ? redactedImageUrl : canToggle ? originalImageUrl! : redactedImageUrl;
 
   return (
-    // The plate is the one opaque object on the spread — square-cornered and
-    // squarely mounted, the way a plate is tipped into a book.
-    <figure className="relative m-0">
-      <div className="overflow-hidden bg-surface p-2.5 shadow-lifted ring-1 ring-sand-300/70 sm:p-3">
+    <div className="relative">
+      {/* The plate is mounted on sand and lifted off the ocean: it is the one
+          thing on the page that should hold the eye. */}
+      <div className="overflow-hidden rounded-panel bg-surface p-1.5 shadow-lifted ring-1 ring-sand-300/60">
         <img
           src={displayUrl}
           alt={revealed ? alt : `${alt} (title and legend redacted)`}
           loading="eager"
-          className="block h-auto w-full max-w-full select-none"
+          className="block h-auto w-full max-w-full select-none rounded-[10px]"
           draggable={false}
         />
       </div>
 
-      {/* A plate caption on a rule, not a floating chip. */}
-      <figcaption className="mt-2 flex items-baseline justify-between gap-4 border-t border-hairline pt-2 text-[11px] uppercase tracking-[0.14em] text-ink-subtle">
-        <span>{revealed ? "Plate, restored" : "Plate, title block covered"}</span>
-        {canToggle && (
+      {canToggle && (
+        <div className="mt-2 flex justify-end">
           <button
             type="button"
             onClick={() => setShowOriginal((v) => !v)}
-            className="shrink-0 font-medium uppercase tracking-[0.14em] underline decoration-sand-400 underline-offset-4 transition-colors duration-150 hover:text-ink hover:decoration-ocean-700"
+            className="rounded-chip border border-hairline bg-surface/80 px-3 py-1 text-xs font-medium text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:bg-surface-raised hover:text-ink"
           >
-            {showOriginal ? "Show redacted" : "Show original"}
+            {showOriginal ? "Show redacted version" : "Show original"}
           </button>
-        )}
-      </figcaption>
-    </figure>
+        </div>
+      )}
+    </div>
   );
 }

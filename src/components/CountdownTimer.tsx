@@ -54,22 +54,20 @@ export default function CountdownTimer({
   const expired = mounted && remainingMs !== null && remainingMs <= 0;
 
   return (
-    // Set as a dateline: uppercase, tracked, small. It is the least urgent
-    // fact on the page and should never rival the question.
     <div
-      className="text-[11px] uppercase tracking-[0.14em] text-ink-subtle"
+      className="text-sm text-ink-subtle"
       role="timer"
       aria-live="off"
       aria-label="Time until the next map"
     >
       {expired ? (
-        <span className="font-semibold text-positive">
-          New map available
+        <span className="font-medium text-positive">
+          New map available&hellip;
         </span>
       ) : (
         <>
-          Next plate in{" "}
-          <span className="font-mono tracking-normal tabular-nums text-ink-muted">
+          Next map in{" "}
+          <span className="font-mono font-medium tabular-nums text-ink-muted">
             {mounted && remainingMs !== null
               ? formatRemaining(remainingMs)
               : "--:--:--"}
