@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { quietAction } from "./styles";
 
 export interface NavProps {
   /**
@@ -13,29 +14,27 @@ export interface NavProps {
 }
 
 /**
- * Shared header nav used by both the game page and the leaderboard page, so the
- * title/link markup isn't duplicated.
+ * A masthead rather than a bar: the wordmark sits on the same rule that opens
+ * the desk, and the links are set small and quiet at the far end. One line at
+ * every width down to 320px, 44px of content height.
  */
-const secondaryAction =
-  "rounded-control border border-hairline bg-surface/80 px-3 py-1.5 text-sm font-medium text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:bg-surface-raised hover:text-ink";
-
 export default function Nav({ onOpenInstructions, active = "game" }: NavProps) {
   return (
-    <nav className="flex items-center justify-between gap-3 border-b border-hairline/70 pb-4">
+    <nav className="flex h-11 items-center justify-between gap-3">
       <Link
         href="/"
-        className="font-display text-xl tracking-tight text-ink transition-colors duration-150 hover:text-sand-200"
+        className="font-display text-[19px] tracking-tight text-ink transition-colors duration-150 hover:text-ocean-700 sm:text-[21px]"
       >
         Map of the Day
       </Link>
 
       <div className="flex items-center gap-2">
         {active === "leaderboard" ? (
-          <Link href="/" className={secondaryAction}>
+          <Link href="/" className={quietAction}>
             Back to game
           </Link>
         ) : (
-          <Link href="/leaderboard" className={secondaryAction}>
+          <Link href="/leaderboard" className={quietAction}>
             Leaderboard
           </Link>
         )}
@@ -46,7 +45,7 @@ export default function Nav({ onOpenInstructions, active = "game" }: NavProps) {
             onClick={onOpenInstructions}
             aria-label="How to play"
             title="How to play"
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-hairline bg-surface/80 text-sm font-semibold text-ink-muted transition-colors duration-150 hover:border-ocean-700 hover:bg-surface-raised hover:text-ink"
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-sand-300 bg-surface/90 text-xs font-bold text-ink-muted transition-colors duration-150 hover:border-ocean-600 hover:bg-surface-raised hover:text-ink"
           >
             ?
           </button>

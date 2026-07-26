@@ -9,15 +9,21 @@ export interface CountdownTimerProps {
   onExpire?: () => void;
 }
 
-function formatRemaining(ms: number): string {
+function remainingFields(ms: number) {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
   const pad = (n: number) => String(n).padStart(2, "0");
-  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  return [
+    { value: pad(Math.floor(totalSeconds / 3600)), unit: "hr" },
+    { value: pad(Math.floor((totalSeconds % 3600) / 60)), unit: "min" },
+    { value: pad(totalSeconds % 60), unit: "sec" },
+  ];
 }
 
+/**
+ * The clock at the foot of the rail, read as an instrument: three labelled
+ * fields rather than one run-together string, so the eye can land on "hours"
+ * without parsing colons.
+ */
 export default function CountdownTimer({
   nextRotationAt,
   onExpire,
@@ -52,26 +58,34 @@ export default function CountdownTimer({
   }, [nextRotationAt]);
 
   const expired = mounted && remainingMs !== null && remainingMs <= 0;
+  const fields =
+    mounted && remainingMs !== null
+      ? remainingFields(remainingMs)
+      : [
+          { value: "--", unit: "hr" },
+          { value: "--", unit: "min" },
+          { value: "--", unit: "sec" },
+        ];
 
   return (
-    <div
-      className="text-sm text-ink-subtle"
-      role="timer"
-      aria-live="off"
-      aria-label="Time until the next map"
-    >
+    <div role="timer" aria-live="off" aria-label="Time until the next map">
       {expired ? (
-        <span className="font-medium text-positive">
-          New map available&hellip;
-        </span>
+        <p className="text-sm font-semibold text-good">New map ready</p>
       ) : (
         <>
-          Next map in{" "}
-          <span className="font-mono font-medium tabular-nums text-ink-muted">
-            {mounted && remainingMs !== null
-              ? formatRemaining(remainingMs)
-              : "--:--:--"}
-          </span>
+          <p className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-ink-subtle">
+            Next map in
+          </p>
+          <div className="mt-1.5 flex items-baseline gap-3">
+            {fields.map(({ value, unit }) => (
+              <span key={unit} className="flex items-baseline gap-1">
+                <span className="font-mono text-lg font-medium tabular-nums text-ink">
+                  {value}
+                </span>
+                <span className="text-[11px] text-ink-subtle">{unit}</span>
+              </span>
+            ))}
+          </div>
         </>
       )}
     </div>

@@ -47,36 +47,36 @@ export default function NicknamePrompt({
   }
 
   return (
-    <form onSubmit={submit} className="space-y-2">
+    <form onSubmit={submit}>
       <label
         htmlFor="nickname-input"
-        className="block text-sm font-medium text-ink-muted"
+        className="block text-sm font-semibold text-ink"
       >
-        Claim your {points} {points === 1 ? "point" : "points"} on the
-        leaderboard
+        Claim your {points} {points === 1 ? "point" : "points"}
       </label>
-      <div className="flex gap-2">
-        <input
-          id="nickname-input"
-          type="text"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          maxLength={24}
-          placeholder="Your nickname"
-          aria-invalid={Boolean(error) || undefined}
-          aria-describedby={error ? "nickname-error" : undefined}
-          className="min-w-0 flex-1 rounded-control border border-hairline bg-surface-raised px-3 py-2 text-sm text-ink outline-none transition-colors duration-150 placeholder:text-ink-subtle/80 hover:border-ocean-700 focus:border-ocean-600"
-        />
-        <button
-          type="submit"
-          disabled={submitting || nickname.trim().length === 0}
-          className="rounded-control bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-ocean-700/25 disabled:text-ink-subtle"
-        >
-          {submitting ? "Saving…" : "Save"}
-        </button>
-      </div>
+      <p className="mt-1 text-sm leading-relaxed text-ink-subtle">
+        Pick a name and your score joins the all-time board.
+      </p>
+      <input
+        id="nickname-input"
+        type="text"
+        value={nickname}
+        onChange={(e) => setNickname(e.target.value)}
+        maxLength={24}
+        placeholder="Your nickname"
+        aria-invalid={Boolean(error) || undefined}
+        aria-describedby={error ? "nickname-error" : undefined}
+        className="mt-2.5 block w-full rounded-control border border-sand-300 bg-surface-raised px-3.5 py-2.5 text-[15px] text-ink outline-none transition-colors duration-150 placeholder:text-ink-subtle/70 hover:border-ocean-600 focus:border-ocean-600"
+      />
+      <button
+        type="submit"
+        disabled={submitting || nickname.trim().length === 0}
+        className="mt-2 w-full rounded-control bg-accent px-4 py-2.5 text-sm font-semibold text-accent-ink shadow-plate transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:border disabled:border-sand-300 disabled:bg-surface-raised disabled:text-ink-subtle disabled:shadow-none"
+      >
+        {submitting ? "Saving…" : "Save"}
+      </button>
       {error && (
-        <p id="nickname-error" role="alert" className="text-xs text-negative">
+        <p id="nickname-error" role="alert" className="mt-2 text-sm text-bad">
           {error}
         </p>
       )}

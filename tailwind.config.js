@@ -32,9 +32,18 @@ module.exports = {
         accent: token("accent"),
         "accent-hover": token("accent-hover"),
         "accent-ink": token("accent-ink"),
-        positive: token("positive"),
-        negative: token("negative"),
+
+        // Feedback. Use these rather than a raw land-/clay- step so the
+        // light-surface contrast decisions live in one place.
+        good: token("good"),
+        "good-fill": token("good-fill"),
+        "good-line": token("good-line"),
+        bad: token("bad"),
+        "bad-fill": token("bad-fill"),
+        "bad-line": token("bad-line"),
         note: token("note"),
+        "note-fill": token("note-fill"),
+        "note-line": token("note-line"),
       },
       fontFamily: {
         // No webfonts: the app must run with zero network access, so these are
@@ -75,10 +84,14 @@ module.exports = {
         panel: "16px",
       },
       boxShadow: {
-        // Panels sit on the ocean, so depth is offset plus blur in the canvas
-        // colour, never a black halo.
-        plate: "0 18px 44px -24px rgb(var(--ocean-950) / 0.9)",
-        lifted: "0 24px 60px -20px rgb(var(--ocean-950) / 0.95)",
+        // Two shadows only, both tinted with the page's own ocean rather than
+        // black: a contact edge that says "this sheet rests on the paper", and
+        // a wider fall-off that says how far off it is. The old values carried
+        // near-opaque ocean-950 and read as soot on parchment.
+        plate:
+          "0 1px 2px rgb(var(--ocean-950) / 0.05), 0 10px 24px -14px rgb(var(--ocean-950) / 0.22)",
+        lifted:
+          "0 1px 3px rgb(var(--ocean-950) / 0.07), 0 22px 48px -22px rgb(var(--ocean-950) / 0.34)",
       },
       transitionTimingFunction: {
         settle: "cubic-bezier(0.16, 1, 0.3, 1)",
