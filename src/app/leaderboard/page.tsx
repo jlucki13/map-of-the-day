@@ -60,7 +60,7 @@ export default function LeaderboardPage() {
       )}
 
       {!loading && error && (
-        <div className="rounded-panel border border-clay-700/60 bg-clay-900 p-5 text-clay-300 shadow-plate">
+        <div className="rounded-panel border border-clay-500/30 bg-clay-500/10 p-5 text-negative shadow-plate">
           {error}
         </div>
       )}
@@ -91,7 +91,7 @@ export default function LeaderboardPage() {
                     return (
                       <tr
                         key={e.rank}
-                        className={isYou ? "bg-land-700/20" : undefined}
+                        className={isYou ? "bg-land-500/10" : undefined}
                       >
                         <td className="px-4 py-3 font-mono tabular-nums text-ink-subtle">
                           {e.rank}
@@ -99,7 +99,7 @@ export default function LeaderboardPage() {
                         <td className="px-4 py-3 font-medium text-ink">
                           {e.nickname}
                           {isYou && (
-                            <span className="ml-2 rounded-chip bg-land-600/30 px-1.5 py-0.5 text-xs font-normal text-land-300">
+                            <span className="ml-2 rounded-chip bg-land-500/15 px-1.5 py-0.5 text-xs font-normal text-positive">
                               you
                             </span>
                           )}
@@ -115,13 +115,13 @@ export default function LeaderboardPage() {
                   })}
 
                   {you && !youInList && (
-                    <tr className="bg-land-700/20">
+                    <tr className="bg-land-500/10">
                       <td className="px-4 py-3 font-mono tabular-nums text-ink-subtle">
                         {you.rank}
                       </td>
                       <td className="px-4 py-3 font-medium text-ink">
                         {you.nickname || "You (unnamed)"}
-                        <span className="ml-2 rounded-chip bg-land-600/30 px-1.5 py-0.5 text-xs font-normal text-land-300">
+                        <span className="ml-2 rounded-chip bg-land-500/15 px-1.5 py-0.5 text-xs font-normal text-positive">
                           you
                         </span>
                       </td>

@@ -64,11 +64,11 @@ export default function ResultBanner({
       }
     >
       <p className="flex flex-wrap items-baseline gap-x-2 text-lg font-semibold">
-        <span className={won ? "text-land-300" : "text-clay-300"}>
+        <span className={won ? "text-positive" : "text-negative"}>
           {won ? "Correct." : "Out of guesses."}
         </span>
         {won && scoreAwarded && (
-          <span className="font-mono text-base tabular-nums text-sand-300">
+          <span className="font-mono text-base tabular-nums text-note">
             +{scoreAwarded.points}{" "}
             {scoreAwarded.points === 1 ? "point" : "points"}
           </span>
@@ -80,7 +80,7 @@ export default function ResultBanner({
           {hasNickname ? (
             <Link
               href="/leaderboard"
-              className="text-sm font-medium text-ocean-300 underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-ocean-200"
+              className="text-sm font-medium text-accent underline decoration-ocean-700 underline-offset-2 transition-colors duration-150 hover:text-accent-hover"
             >
               View leaderboard &rarr;
             </Link>

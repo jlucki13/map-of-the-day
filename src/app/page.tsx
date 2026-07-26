@@ -150,7 +150,7 @@ export default function Page() {
         )}
 
         {!loading && loadError && (
-          <div className="rounded-panel border border-clay-700/60 bg-clay-900 p-5 text-clay-300 shadow-plate">
+          <div className="rounded-panel border border-clay-500/30 bg-clay-500/10 p-5 text-negative shadow-plate">
             {loadError}
           </div>
         )}

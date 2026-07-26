@@ -61,7 +61,7 @@ export default function CountdownTimer({
       aria-label="Time until the next map"
     >
       {expired ? (
-        <span className="font-medium text-land-300">
+        <span className="font-medium text-positive">
           New map available&hellip;
         </span>
       ) : (

@@ -72,6 +72,14 @@
   --accent-hover: var(--ocean-600);
   --accent-ink: var(--sand-50); /* type on an accent fill */
   --focus: var(--ocean-600);
+
+  /* feedback roles ------------------------------------------------------- */
+  /* On a light page, feedback ink has to come from the DARK end of each ramp
+     and fills from the light end. The light ends (land-300, clay-300) were
+     legible as type on the old dark shell and are not legible on paper. */
+  --positive: var(--land-700); /* 8.9:1 on surface */
+  --negative: var(--clay-700); /* 9.2:1 on surface */
+  --note: var(--sand-600); /* hint labels on the sand wash */
 }
 
 @layer base {

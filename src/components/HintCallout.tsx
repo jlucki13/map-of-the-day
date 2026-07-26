@@ -13,8 +13,8 @@ export default function HintCallout({ hints }: HintCalloutProps) {
     <div className="settle-in rounded-control border border-sand-400/25 bg-sand-500/10 p-4">
       <ul className="space-y-2">
         {sorted.map((hint) => (
-          <li key={hint.order} className="flex gap-2 text-sm text-sand-100">
-            <span className="shrink-0 font-semibold text-sand-300">
+          <li key={hint.order} className="flex gap-2 text-sm text-ink-muted">
+            <span className="shrink-0 font-semibold text-note">
               Hint {hint.order}
             </span>
             <span>{hint.text}</span>

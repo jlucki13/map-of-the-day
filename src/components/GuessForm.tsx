@@ -72,7 +72,7 @@ export default function GuessForm({
         <p
           id="guess-form-error"
           role="alert"
-          className="mt-2 text-sm font-medium text-clay-300"
+          className="mt-2 text-sm font-medium text-negative"
         >
           {error}
         </p>

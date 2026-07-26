@@ -76,7 +76,7 @@ export default function NicknamePrompt({
         </button>
       </div>
       {error && (
-        <p id="nickname-error" role="alert" className="text-xs text-clay-300">
+        <p id="nickname-error" role="alert" className="text-xs text-negative">
           {error}
         </p>
       )}
