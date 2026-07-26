@@ -43,11 +43,11 @@ export default function InstructionsModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="instructions-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-950/80 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-950/45 p-4 backdrop-blur-[2px]"
       onClick={onClose}
     >
       <div
-        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-panel border border-hairline bg-surface p-6 shadow-lifted"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-panel border border-hairline bg-surface p-6 shadow-lifted sm:p-7"
         onClick={(e) => e.stopPropagation()}
       >
         <h2
@@ -75,18 +75,27 @@ export default function InstructionsModal({
           <div>
             <p className="font-semibold text-ink">Scoring</p>
             <p className="mt-1">Win in fewer guesses, earn more points.</p>
-            <ul className="mt-3 divide-y divide-hairline/60 border-y border-hairline/60 font-mono text-xs tabular-nums text-ink-subtle">
+            {/* Six pairs read faster as a strip of chips than as six hairline
+                rows, and it keeps the modal short enough not to scroll. */}
+            <ul className="mt-3 grid grid-cols-3 gap-1.5">
               {[
-                ["1st guess", "10"],
-                ["2nd guess", "8"],
-                ["3rd guess", "5"],
-                ["4th guess", "2"],
-                ["5th guess", "1"],
+                ["1st", "10"],
+                ["2nd", "8"],
+                ["3rd", "5"],
+                ["4th", "2"],
+                ["5th", "1"],
                 ["No win", "0"],
               ].map(([label, points]) => (
-                <li key={label} className="flex justify-between py-1.5">
-                  <span>{label}</span>
-                  <span className="text-sand-300">{points}</span>
+                <li
+                  key={label}
+                  className="rounded-control border border-hairline bg-surface-raised px-2.5 py-2 text-center"
+                >
+                  <span className="block font-mono text-lg font-semibold tabular-nums text-ink">
+                    {points}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-ink-subtle">
+                    {label}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -103,7 +112,7 @@ export default function InstructionsModal({
             ref={dismissRef}
             type="button"
             onClick={onClose}
-            className="w-full rounded-control bg-accent px-4 py-2.5 text-sm font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px"
+            className="w-full rounded-control bg-accent px-4 py-3 text-sm font-semibold text-accent-ink shadow-plate transition duration-150 hover:bg-accent-hover active:translate-y-px"
           >
             Got it
           </button>
