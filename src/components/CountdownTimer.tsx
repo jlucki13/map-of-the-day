@@ -55,7 +55,7 @@ export default function CountdownTimer({
 
   return (
     <div
-      className="text-xs text-ink-subtle"
+      className="text-sm text-ink-subtle"
       role="timer"
       aria-live="off"
       aria-label="Time until the next map"
@@ -67,7 +67,7 @@ export default function CountdownTimer({
       ) : (
         <>
           Next map in{" "}
-          <span className="font-mono tabular-nums text-ink-muted">
+          <span className="font-mono font-medium tabular-nums text-ink-muted">
             {mounted && remainingMs !== null
               ? formatRemaining(remainingMs)
               : "--:--:--"}

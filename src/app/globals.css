@@ -73,20 +73,13 @@
   --accent-ink: var(--sand-50); /* type on an accent fill */
   --focus: var(--ocean-600);
 
-  /* Feedback, resolved for a light surface -------------------------------
-     The dark shell used the 300 steps for win/lose type. On paper those are
-     tints, not ink: land-300 on --surface is 1.6:1. Feedback type therefore
-     takes the dark end of each ramp and feedback *fills* take the light end,
-     so a glyph on a fill and a word on paper are both legible. */
-  --positive: var(--land-700); /* #1b5c40 — 8.6:1 on surface */
-  --positive-fill: var(--land-400); /* chip/pip background */
-  --positive-wash: 234 245 239; /* #eaf5ef — panel tint */
-  --negative: var(--clay-700); /* #7a2c22 — 8.9:1 on surface */
-  --negative-fill: var(--clay-400);
-  --negative-wash: 250 238 234; /* #faeeea */
-  /* Hints are the reader's marginalia: sand ink, not sand tint. */
-  --note: var(--sand-600); /* #8a6c37 — 5.3:1 on surface */
-  --note-wash: 249 243 230; /* #f9f3e6 */
+  /* feedback roles ------------------------------------------------------- */
+  /* On a light page, feedback ink has to come from the DARK end of each ramp
+     and fills from the light end. The light ends (land-300, clay-300) were
+     legible as type on the old dark shell and are not legible on paper. */
+  --positive: var(--land-700); /* 8.9:1 on surface */
+  --negative: var(--clay-700); /* 9.2:1 on surface */
+  --note: var(--sand-600); /* hint labels on the sand wash */
 }
 
 @layer base {
@@ -132,31 +125,26 @@
 }
 
 .globe {
-  --globe-size: clamp(480px, 68vw, 820px);
+  --globe-size: clamp(400px, 116vw, 820px);
   --globe-spin: 110s;
   /* Axial tilt, plus a viewpoint slightly above the equator, so the graticule
      reads like a globe on a stand rather than a wheel. */
   --globe-tilt: -16deg;
   --globe-pitch: 12deg;
-  /* Where the sphere's centre sits, as a fraction of the viewport. Parked off
-     the bottom-right corner so the viewport crops it: a whole disc floating
-     behind a centred column reads as a backdrop the content is covering up,
-     while a cropped one reads as an object the page is resting on. */
-  --globe-x: 90%;
-  --globe-y: 84%;
 
   position: absolute;
-  left: var(--globe-x);
-  top: var(--globe-y);
+  left: 50%;
+  top: 50%;
   width: var(--globe-size);
   height: var(--globe-size);
   margin-top: calc(var(--globe-size) / -2);
   margin-left: calc(var(--globe-size) / -2);
   border-radius: 50%;
-  /* The sphere is the page's one piece of colour and has to survive being read
-     across, so the ocean stays in the light half of the ramp. Lower than the
-     centred version needed: off in the corner it is scenery, not a subject. */
-  opacity: 0.48;
+  /* Higher than on the old dark shell: the sphere is now the page's one piece
+     of colour, and it has to survive being read through against paper. The
+     ocean stays in the light half of the ramp so dark type crossing the disc
+     keeps its contrast. */
+  opacity: 0.55;
   background: radial-gradient(
     circle at 34% 28%,
     rgb(var(--ocean-200)) 0%,

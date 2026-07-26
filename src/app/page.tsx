@@ -116,126 +116,89 @@ export default function Page() {
     <>
       <GlobeBackground />
 
-      {/* Spacing rhythm, rather than one repeated gap: the masthead sits tight
-          to the question, the plate is given generous air on both sides
-          because it is the subject, and the deck below it is a single close
-          group. Uniform spacing was making every band read as equally
-          important. */}
-      <main className="relative z-10 mx-auto flex min-h-[100dvh] max-w-3xl flex-col px-5 pb-10 pt-7 sm:px-6">
+      <main className="relative z-10 mx-auto flex min-h-[100dvh] max-w-2xl flex-col gap-6 px-4 py-8">
         <Nav active="game" onOpenInstructions={() => setInstructionsOpen(true)} />
 
         <InstructionsModal open={instructionsOpen} onClose={closeInstructions} />
 
-        <header className="mt-6 sm:mt-7">
-          <h1 className="max-w-[16ch] text-balance font-display text-[26px] leading-[1.15] tracking-tight text-ink sm:max-w-none sm:text-[34px]">
-            {finished ? "Today's map" : "What is this map measuring?"}
-          </h1>
-          <p className="mt-1.5 max-w-[46ch] text-sm text-ink-subtle sm:mt-2 sm:text-[15px]">
-            {finished
-              ? "The title block is back. A new plate lands tomorrow."
-              : "The title block is covered. Five tries to name the topic."}
-          </p>
-        </header>
-
-        <div className="mb-14 mt-6 sm:mt-8">
-          {loading && (
-            <div
-              role="status"
-              className="flex h-[22rem] items-center justify-center rounded-panel bg-surface text-sm text-ink-subtle shadow-plate ring-1 ring-sand-300/70"
-            >
-              Unrolling today&apos;s map&hellip;
-            </div>
-          )}
-
-          {!loading && loadError && (
-            <div
-              role="alert"
-              className="rounded-panel bg-negative-wash p-6 shadow-plate ring-1 ring-negative/25"
-            >
-              <p className="font-display text-lg text-negative">
-                That map didn&apos;t arrive
+        <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+          <div>
+            <h1 className="text-lg font-semibold tracking-tight text-ink">
+              {finished ? "Today's map" : "What is this map measuring?"}
+            </h1>
+            {!finished && (
+              <p className="mt-0.5 text-sm text-ink-subtle">
+                The title is hidden. Five tries.
               </p>
-              <p className="mt-1.5 max-w-[52ch] text-sm leading-relaxed text-ink-muted">
-                {loadError}
-              </p>
-            </div>
-          )}
-
-          {!loading && view && session && (
-            <>
-              <MapReveal
-                redactedImageUrl={view.redactedImageUrl}
-                originalImageUrl={session.reveal?.originalImageUrl}
-                revealed={finished}
-              />
-
-              {/* Finished: the answer follows the plate immediately, because
-                  that pairing is the whole payoff. The round's record moves
-                  below it, where it is a souvenir rather than an input. */}
-              {finished ? (
-                <div className="mt-7 space-y-5">
-                  <ResultBanner
-                    status={session.status}
-                    reveal={session.reveal}
-                    scoreAwarded={session.scoreAwarded}
-                  />
-
-                  <section className="rounded-panel bg-surface/70 p-5 ring-1 ring-sand-300/60">
-                    <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-subtle">
-                      Your round
-                    </h2>
-                    <div className="mt-3">
-                      <GuessPips
-                        guessHistory={session.guessHistory}
-                        maxGuesses={MAX_GUESSES}
-                        finished
-                      />
-                    </div>
-                    {session.hintsRevealed.length > 0 && (
-                      <div className="mt-5 border-t border-hairline pt-4">
-                        <HintCallout hints={session.hintsRevealed} bare />
-                      </div>
-                    )}
-                  </section>
-                </div>
-              ) : (
-                /* The deck: progress, any hints, and the input are one
-                   instrument, so they share one container and tight internal
-                   spacing instead of floating as three separate bands. */
-                <section className="mt-7 rounded-panel bg-surface-raised p-5 shadow-plate ring-1 ring-sand-300/70 sm:p-6">
-                  <GuessPips
-                    guessHistory={session.guessHistory}
-                    maxGuesses={MAX_GUESSES}
-                  />
-
-                  {session.hintsRevealed.length > 0 && (
-                    <div className="mt-5">
-                      <HintCallout hints={session.hintsRevealed} />
-                    </div>
-                  )}
-
-                  <div className="mt-5">
-                    <GuessForm
-                      disabled={finished}
-                      submitting={submitting}
-                      error={guessError}
-                      onSubmit={(guess) => void submitGuess(guess)}
-                    />
-                  </div>
-                </section>
-              )}
-            </>
-          )}
-        </div>
-
-        <footer className="mt-auto flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-hairline pt-5 text-xs text-ink-subtle">
-          <p>Source and attribution appear after each round.</p>
+            )}
+          </div>
           {view && (
             <CountdownTimer
               nextRotationAt={view.nextRotationAt}
               onExpire={() => void fetchPuzzle()}
             />
           )}
+        </header>
+
+        {loading && (
+          <div
+            role="status"
+            className="flex h-64 items-center justify-center rounded-panel border border-hairline bg-surface text-sm text-ink-subtle shadow-plate"
+          >
+            Unrolling today&apos;s map&hellip;
+          </div>
+        )}
+
+        {!loading && loadError && (
+          <div className="rounded-panel border border-clay-500/30 bg-clay-500/10 p-5 text-negative shadow-plate">
+            {loadError}
+          </div>
+        )}
+
+        {!loading && view && session && (
+          <>
+            <MapReveal
+              redactedImageUrl={view.redactedImageUrl}
+              originalImageUrl={session.reveal?.originalImageUrl}
+              revealed={finished}
+            />
+
+            <div className="flex items-center justify-between gap-4">
+              <GuessPips
+                guessHistory={session.guessHistory}
+                maxGuesses={MAX_GUESSES}
+              />
+              {!finished && (
+                <p className="text-sm text-ink-muted">
+                  <span className="font-mono tabular-nums">
+                    {session.guessesRemaining}
+                  </span>{" "}
+                  {session.guessesRemaining === 1 ? "guess" : "guesses"} left
+                </p>
+              )}
+            </div>
+
+            {!finished && <HintCallout hints={session.hintsRevealed} />}
+
+            <ResultBanner
+              status={session.status}
+              reveal={session.reveal}
+              scoreAwarded={session.scoreAwarded}
+            />
+
+            {!finished && (
+              <GuessForm
+                disabled={finished}
+                submitting={submitting}
+                error={guessError}
+                onSubmit={(guess) => void submitGuess(guess)}
+              />
+            )}
+          </>
+        )}
+
+        <footer className="mt-auto pt-10 text-center text-xs text-ink-subtle">
+          Thematic data maps. Source and attribution appear after each round.
         </footer>
       </main>
     </>
