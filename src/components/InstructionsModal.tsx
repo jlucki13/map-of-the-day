@@ -86,7 +86,7 @@ export default function InstructionsModal({
               ].map(([label, points]) => (
                 <li key={label} className="flex justify-between py-1.5">
                   <span>{label}</span>
-                  <span className="text-note">{points}</span>
+                  <span className="font-semibold text-ink">{points}</span>
                 </li>
               ))}
             </ul>

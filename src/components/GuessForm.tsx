@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type KeyboardEvent } from "react";
+import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 
 export interface GuessFormProps {
   disabled: boolean;
@@ -16,12 +16,19 @@ export default function GuessForm({
   onSubmit,
 }: GuessFormProps) {
   const [value, setValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isDisabled = disabled || submitting;
 
   function submit() {
     const trimmed = value.trim();
-    if (!trimmed || isDisabled) return;
+    if (isDisabled) return;
+    // An empty submit is not an error, it is an unfinished thought: send the
+    // player back to the field rather than greying out the only way forward.
+    if (!trimmed) {
+      inputRef.current?.focus();
+      return;
+    }
     onSubmit(trimmed);
     setValue("");
   }
@@ -40,11 +47,17 @@ export default function GuessForm({
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
+      <label
+        htmlFor="guess-input"
+        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted"
+      >
+        Name the topic
+      </label>
+      {/* The rail is unboxed ruled type, so this is the one solid control on
+          the spread: paper white against the parchment, with a full ring. */}
       <div className="flex items-stretch gap-2">
-        <label htmlFor="guess-input" className="sr-only">
-          What is this map measuring?
-        </label>
         <input
+          ref={inputRef}
           id="guess-input"
           type="text"
           inputMode="text"
@@ -58,12 +71,15 @@ export default function GuessForm({
           onKeyDown={handleKeyDown}
           aria-invalid={Boolean(error) || undefined}
           aria-describedby={error ? "guess-form-error" : undefined}
-          className="flex-1 rounded-control border border-hairline bg-surface-raised px-4 py-2.5 text-base text-ink outline-none transition-colors duration-150 placeholder:text-ink-subtle/80 hover:border-ocean-700 focus:border-ocean-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-w-0 flex-1 rounded-control bg-surface px-3.5 py-3 text-base text-ink shadow-[inset_0_1px_2px_rgb(var(--ocean-950)/0.07)] outline-none ring-1 ring-inset ring-sand-300 transition duration-150 placeholder:text-ink-subtle/70 hover:ring-ocean-600/60 focus:ring-2 focus:ring-ocean-600 disabled:cursor-not-allowed disabled:opacity-60"
         />
         <button
           type="submit"
-          disabled={isDisabled || value.trim().length === 0}
-          className="shrink-0 rounded-control bg-accent px-5 py-2.5 text-base font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-ocean-700/25 disabled:text-ink-subtle"
+          /* Deliberately not disabled on an empty field. Greying it out at
+             rest made the page's one primary action look permanently
+             unavailable on arrival. It only dims while a guess is in flight. */
+          disabled={isDisabled}
+          className="shrink-0 rounded-control bg-accent px-5 text-base font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-wait disabled:bg-ocean-700/40"
         >
           {submitting ? "Checking…" : "Guess"}
         </button>

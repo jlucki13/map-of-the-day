@@ -32,8 +32,13 @@ module.exports = {
         accent: token("accent"),
         "accent-hover": token("accent-hover"),
         "accent-ink": token("accent-ink"),
+
+        // Feedback, already resolved for the light shell. Prefer these over
+        // reaching into the land/clay ramps directly.
         positive: token("positive"),
+        "positive-wash": token("positive-wash"),
         negative: token("negative"),
+        "negative-wash": token("negative-wash"),
         note: token("note"),
       },
       fontFamily: {
