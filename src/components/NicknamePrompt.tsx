@@ -65,12 +65,12 @@ export default function NicknamePrompt({
           placeholder="Your nickname"
           aria-invalid={Boolean(error) || undefined}
           aria-describedby={error ? "nickname-error" : undefined}
-          className="min-w-0 flex-1 rounded-control border border-hairline bg-surface-raised px-3 py-2 text-sm text-ink outline-none transition-colors duration-150 placeholder:text-ink-subtle/80 hover:border-ocean-700 focus:border-ocean-600"
+          className="min-w-0 flex-1 rounded-control bg-surface px-3 py-2 text-sm text-ink outline-none ring-1 ring-inset ring-sand-300 transition duration-150 placeholder:text-ink-subtle/70 hover:ring-ocean-600/60 focus:ring-2 focus:ring-ocean-600"
         />
         <button
           type="submit"
           disabled={submitting || nickname.trim().length === 0}
-          className="rounded-control bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-ocean-700/25 disabled:text-ink-subtle"
+          className="rounded-control bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:bg-ocean-700/15 disabled:text-ocean-700/70 disabled:ring-1 disabled:ring-inset disabled:ring-ocean-700/25"
         >
           {submitting ? "Saving…" : "Save"}
         </button>
