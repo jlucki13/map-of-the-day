@@ -79,8 +79,11 @@ export default function LeaderboardPage() {
 
   const entries = view?.entries ?? [];
   const you = view?.you ?? null;
-  // Whether the viewer's own row is already visible in the top list.
-  const youInList = you !== null && entries.some((e) => e.rank === you.rank);
+  // The server flags the viewer's own row directly. Matching on rank instead
+  // would misfire for a viewer who has points but no nickname: they are absent
+  // from the list, yet the provisional rank they are given can collide with a
+  // real row's, badging a stranger as "You".
+  const youInList = entries.some((e) => e.isViewer);
 
   return (
     <>
@@ -156,7 +159,7 @@ export default function LeaderboardPage() {
                     <StandingRow
                       key={e.rank}
                       entry={e}
-                      isYou={you !== null && e.rank === you.rank}
+                      isYou={e.isViewer === true}
                     />
                   ))}
                   {you && !youInList && (
@@ -169,7 +172,8 @@ export default function LeaderboardPage() {
         </div>
 
         <footer className="mt-auto pt-14 text-xs text-ink-subtle">
-          Scores are kept against this browser&apos;s session.
+          One row per nickname — points you win in another browser add up here
+          once you claim the same name.
         </footer>
       </main>
     </>

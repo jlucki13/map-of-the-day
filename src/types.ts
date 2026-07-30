@@ -114,11 +114,28 @@ export interface PublicSessionView {
 
 // ---- Leaderboard client-facing views ----
 
+/**
+ * One row of the public board. A row is one NICKNAME, not one session: a
+ * player who has played from several browsers holds several server-side ids,
+ * and their scores are summed into a single row here (see src/lib/leaderboard).
+ * Consequently `rank` is a rank among merged rows and is contiguous 1..N.
+ *
+ * Nothing that identifies a session may be added to this shape.
+ */
 export interface PublicLeaderboardEntry {
   rank: number;
   nickname: string;
   totalScore: number;
   gamesWon: number;
+  /**
+   * True on the caller's own row (both inside `entries` and on `you`).
+   * Optional and purely a rendering convenience — it says "this is you" to the
+   * person who already knows they are themselves, and reveals nothing about
+   * anyone else. Prefer it over comparing `you.rank` to an entry's rank: a
+   * viewer who has points but has not claimed a nickname is absent from
+   * `entries`, yet their provisional `rank` can coincide with a real row's.
+   */
+  isViewer?: boolean;
 }
 
 export interface PublicLeaderboardView {

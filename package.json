@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test": "node --test --import ./test/register.mjs test/*.test.ts",
     "generate:maps": "node scripts/generate-maps.mjs"
   },
   "dependencies": {
