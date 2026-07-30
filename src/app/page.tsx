@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CountdownTimer,
   GlobeBackground,
@@ -8,6 +8,7 @@ import {
   GuessLedger,
   HintCallout,
   InstructionsModal,
+  LeaderboardRail,
   MapReveal,
   Nav,
   ResultBanner,
@@ -33,6 +34,14 @@ export default function Page() {
    * the page view and lost on reload (the ledger degrades to outcomes only).
    */
   const [myGuesses, setMyGuesses] = useState<string[]>([]);
+  /**
+   * Bumped whenever standings might have changed, so LeaderboardRail refetches
+   * instead of sitting on whatever it loaded at mount. A round finishing may
+   * have just posted a score; claiming a nickname may have just made the
+   * viewer's own row visible for the first time.
+   */
+  const [boardRefreshKey, setBoardRefreshKey] = useState(0);
+  const bumpBoard = useCallback(() => setBoardRefreshKey((k) => k + 1), []);
 
   // First-visit popup: show once ever, gated by localStorage. The "?" button
   // reopens it regardless of this flag.
@@ -124,29 +133,42 @@ export default function Page() {
   const finished = session ? session.status !== "in_progress" : false;
   const remaining = session?.guessesRemaining ?? MAX_GUESSES;
 
+  // A win or loss may have just posted a score, so refresh the board exactly
+  // once per finish rather than on every render finished stays true.
+  const wasFinishedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !wasFinishedRef.current) {
+      bumpBoard();
+    }
+    wasFinishedRef.current = finished;
+  }, [finished, bumpBoard]);
+
   return (
     <>
       <GlobeBackground />
 
-      <main className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[76rem] flex-col px-4 pb-12 pt-5 sm:px-8">
+      <main className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[76rem] flex-col px-4 pb-12 pt-5 sm:px-8 2xl:max-w-[88rem]">
         <Nav active="game" onOpenInstructions={() => setInstructionsOpen(true)} />
 
         <InstructionsModal open={instructionsOpen} onClose={closeInstructions} />
 
         <div className="mt-4 border-t border-hairline pt-7 sm:pt-8">
           {loading && (
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-12">
+            <div className="game-grid">
               <div
                 role="status"
                 aria-label="Loading today's map"
-                className="skeleton aspect-[4/3] w-full rounded-panel ring-1 ring-sand-300/70"
+                className="area-map skeleton aspect-[4/3] w-full rounded-panel ring-1 ring-sand-300/70"
               />
-              <div className="hidden space-y-4 lg:block">
+              <div className="area-rail hidden space-y-4 lg:block">
                 <div className="skeleton h-6 w-3/4 rounded-chip" />
                 <div className="skeleton h-[52px] w-full rounded-control" />
                 <div className="skeleton h-[46px] w-full rounded-control" />
                 <div className="skeleton h-40 w-full rounded-control" />
               </div>
+              {/* Independent of the puzzle fetch, so it can start loading (and
+                  show its own skeleton) right away rather than waiting on it. */}
+              <LeaderboardRail className="area-board" />
             </div>
           )}
 
@@ -160,18 +182,20 @@ export default function Page() {
               sits in one rail beside it, so nothing about the round is below
               the fold on a laptop. */}
           {!loading && view && session && !finished && (
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start lg:gap-12">
-              <MapReveal
-                redactedImageUrl={view.redactedImageUrl}
-                originalImageUrl={session.reveal?.originalImageUrl}
-                revealed={false}
-              />
+            <div className="game-grid">
+              <div className="area-map">
+                <MapReveal
+                  redactedImageUrl={view.redactedImageUrl}
+                  originalImageUrl={session.reveal?.originalImageUrl}
+                  revealed={false}
+                />
+              </div>
 
               {/* An instrument panel standing on the desk. Opaque on purpose:
                   the globe is deliberately strong on this layout, and the one
                   thing a player must be able to read cannot be set over
                   drifting land. */}
-              <div className="rounded-panel border border-hairline bg-surface p-5 shadow-plate lg:sticky lg:top-6 lg:p-6">
+              <div className="area-rail rounded-panel border border-hairline bg-surface p-5 shadow-plate lg:sticky lg:top-6 lg:p-6">
                 <h1 className="text-lg font-semibold leading-snug tracking-tight text-ink">
                   What is this map measuring?
                 </h1>
@@ -218,11 +242,20 @@ export default function Page() {
                   />
                 </div>
               </div>
+
+              <LeaderboardRail
+                className="area-board"
+                refreshSignal={boardRefreshKey}
+              />
             </div>
           )}
 
           {/* Finished: the rail has nothing left to control, so it goes, the
-              map is uncovered at full width and the round gets a caption. */}
+              map is uncovered at full width and the round gets a caption. A
+              third column here would fight the caption for the reader's eye,
+              so the board isn't promoted to one — it follows the result as
+              the next thing worth a look, capped to the same card width it
+              gets everywhere else rather than stretching the full plate. */}
           {!loading && view && session && finished && (
             <div className="space-y-9">
               <div className="mx-auto w-full max-w-4xl">
@@ -239,6 +272,12 @@ export default function Page() {
                 scoreAwarded={session.scoreAwarded}
                 guessHistory={session.guessHistory}
                 maxGuesses={MAX_GUESSES}
+                onNicknameSaved={bumpBoard}
+              />
+
+              <LeaderboardRail
+                className="max-w-[28rem]"
+                refreshSignal={boardRefreshKey}
               />
             </div>
           )}

@@ -13,6 +13,12 @@ export interface ResultBannerProps {
   scoreAwarded?: { points: number; hasNickname: boolean };
   guessHistory: { outcome: "correct" | "incorrect" }[];
   maxGuesses: number;
+  /**
+   * Fired once a nickname is saved, in addition to the banner's own local
+   * state update — lets the page refresh anything that reads standings, since
+   * the viewer's own row on the leaderboard may only now exist.
+   */
+  onNicknameSaved?: () => void;
 }
 
 /**
@@ -45,6 +51,7 @@ export default function ResultBanner({
   scoreAwarded,
   guessHistory,
   maxGuesses,
+  onNicknameSaved,
 }: ResultBannerProps) {
   const [copied, setCopied] = useState(false);
   // Locally track a name saved via the inline prompt so we can swap it out for
@@ -155,7 +162,10 @@ export default function ResultBanner({
           <div className="border-t border-hairline pt-5">
             <NicknamePrompt
               points={scoreAwarded.points}
-              onSaved={(name) => setSavedNickname(name)}
+              onSaved={(name) => {
+                setSavedNickname(name);
+                onNicknameSaved?.();
+              }}
             />
           </div>
         )}

@@ -399,3 +399,66 @@
   height: 1px;
   background: rgb(var(--hairline));
 }
+
+/* ---------------------------------------------------------------------------
+   The game page's three instruments — map, rail, leaderboard — as one named
+   grid, so the same three elements can change position instead of needing
+   three different layouts:
+
+     mobile/tablet  everything stacks, map first
+     laptop (lg+)   map + rail win the width; the board drops below both,
+                    capped to a modest card rather than stretching full width
+     wide desktop   there is finally room for a fourth panel, so the board
+                    stands to the map's left, sized like the rail on its right
+
+   The round's own controls (map, rail) never move or resize because of this:
+   only the board's position changes.
+   ------------------------------------------------------------------------- */
+
+.game-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "map"
+    "rail"
+    "board";
+}
+
+.game-grid > .area-map {
+  grid-area: map;
+  min-width: 0;
+}
+
+.game-grid > .area-rail {
+  grid-area: rail;
+  min-width: 0;
+}
+
+.game-grid > .area-board {
+  grid-area: board;
+  min-width: 0;
+  /* Capped so that when this area spans the full row (the "board board" row
+     below lg) it reads as a card left-aligned under the map, not a list
+     stretched the width of the desk with all its rows crammed to one side. */
+  max-width: 28rem;
+}
+
+@media (min-width: 1024px) {
+  .game-grid {
+    column-gap: 3rem;
+    row-gap: 2rem;
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    grid-template-areas:
+      "map rail"
+      "board board";
+  }
+}
+
+@media (min-width: 1536px) {
+  .game-grid {
+    grid-template-columns: 18rem minmax(0, 1fr) 21rem;
+    grid-template-areas: "board map rail";
+  }
+}
