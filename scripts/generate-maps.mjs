@@ -1,10 +1,21 @@
 /**
  * Build-time generator for the curated THEMATIC map dataset.
  *
- * Renders a set of choropleth maps from public-domain boundaries
+ * Renders a set of thematic maps from public-domain boundaries
  * (us-atlas / world-atlas → US Census TIGER + Natural Earth, both public
- * domain) shaded by real public statistics, into self-hosted PNGs under
+ * domain) driven by real public statistics, into self-hosted PNGs under
  * public/generated-maps/, and emits src/data/static-maps.json.
+ *
+ * Nine cartographic forms are supported, selected by `form` on each spec:
+ *   choropleth    sequential colour ramp over polygons (the default)
+ *   symbol        circles at feature centroids, area-scaled by value
+ *   point-symbol  the same, but at explicit lat/lon coordinates
+ *   dot           dot density, N seeded dots rejection-sampled per polygon
+ *   categorical   qualitative / binary classes with a discrete swatch legend
+ *   tilegrid      equal-size square per state in a rough geographic grid
+ *   points        located markers with no polygon shading at all
+ *   flow          width-scaled arcs between origin-destination pairs
+ *   bivariate     three-by-three colour matrix over two variables
  *
  * Why generate our own: the "guess the topic" game needs thematic data maps,
  * and freely-licensed ones can't be fetched/verified from the build sandbox
@@ -13,9 +24,16 @@
  * a dataset that actually works offline in mock mode.
  *
  * Each map renders with its title visible (that PNG is the stored "original"
- * shown at reveal); the ONLY redacted region is the title band at the top.
- * The legend is a bare numeric color scale with no words, so it leaks nothing
- * while still giving players a fair hint about the variable's magnitude.
+ * shown at reveal). For most forms the ONLY redacted region is the title band
+ * at the top, because the legend is a bare numeric scale with no words — it
+ * leaks nothing while still giving players a fair hint about magnitude.
+ * The class-map forms (categorical / binary, and categorical tile grids) need
+ * words in their legend, so they emit a SECOND redaction region covering just
+ * the label strip: the swatches survive (the player still sees "this is a
+ * three-class map") while the words that name the classes are covered.
+ *
+ * Dot-density placement uses a seeded PRNG keyed on the map id and the
+ * feature name, so regenerating never churns the committed PNGs.
  *
  * Run manually after changing data/specs:  node scripts/generate-maps.mjs
  * (dev-only deps: d3-geo, d3-scale, d3-scale-chromatic, topojson-client,
@@ -25,7 +43,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { geoPath, geoNaturalEarth1 } from "d3-geo";
+import { geoPath, geoNaturalEarth1, geoAlbersUsa } from "d3-geo";
 import { scaleSequential, scaleSequentialSqrt } from "d3-scale";
 import * as chromatic from "d3-scale-chromatic";
 import { feature } from "topojson-client";
@@ -494,6 +512,636 @@ const WORLD_FERTILITY = {
   "Puerto Rico": 0.9, "South Korea": 0.8, Djibouti: 2.8, Greenland: 1.9,
 };
 
+// ===========================================================================
+// Datasets for the non-choropleth forms (symbols, dots, categories, tiles,
+// points, flows, bivariate). Same rule as above: keys are the EXACT atlas
+// feature name.
+// ===========================================================================
+
+// Two-letter postal abbreviations, used by the tile-grid cartogram form.
+const US_ABBR = {
+  Alabama: "AL", Alaska: "AK", Arizona: "AZ", Arkansas: "AR", California: "CA",
+  Colorado: "CO", Connecticut: "CT", Delaware: "DE",
+  "District of Columbia": "DC", Florida: "FL", Georgia: "GA", Hawaii: "HI",
+  Idaho: "ID", Illinois: "IL", Indiana: "IN", Iowa: "IA", Kansas: "KS",
+  Kentucky: "KY", Louisiana: "LA", Maine: "ME", Maryland: "MD",
+  Massachusetts: "MA", Michigan: "MI", Minnesota: "MN", Mississippi: "MS",
+  Missouri: "MO", Montana: "MT", Nebraska: "NE", Nevada: "NV",
+  "New Hampshire": "NH", "New Jersey": "NJ", "New Mexico": "NM",
+  "New York": "NY", "North Carolina": "NC", "North Dakota": "ND", Ohio: "OH",
+  Oklahoma: "OK", Oregon: "OR", Pennsylvania: "PA", "Rhode Island": "RI",
+  "South Carolina": "SC", "South Dakota": "SD", Tennessee: "TN", Texas: "TX",
+  Utah: "UT", Vermont: "VT", Virginia: "VA", Washington: "WA",
+  "West Virginia": "WV", Wisconsin: "WI", Wyoming: "WY",
+};
+
+// Rough geographic tile layout: [row, column] on an 8 x 12 grid.
+const US_TILE_GRID = {
+  AK: [0, 0], ME: [0, 11],
+  VT: [1, 9], NH: [1, 10], MA: [1, 11],
+  WI: [2, 6], MI: [2, 7], NY: [2, 9], CT: [2, 10], RI: [2, 11],
+  WA: [3, 1], ID: [3, 2], MT: [3, 3], ND: [3, 4], MN: [3, 5], IL: [3, 6],
+  IN: [3, 7], OH: [3, 8], PA: [3, 9], NJ: [3, 10],
+  OR: [4, 1], NV: [4, 2], WY: [4, 3], SD: [4, 4], IA: [4, 5], MO: [4, 6],
+  KY: [4, 7], WV: [4, 8], VA: [4, 9], MD: [4, 10], DE: [4, 11],
+  CA: [5, 1], UT: [5, 2], CO: [5, 3], NE: [5, 4], KS: [5, 5], AR: [5, 6],
+  TN: [5, 7], NC: [5, 8], SC: [5, 9], DC: [5, 10],
+  AZ: [6, 2], NM: [6, 3], OK: [6, 4], LA: [6, 5], MS: [6, 6], AL: [6, 7],
+  GA: [6, 8],
+  HI: [7, 0], TX: [7, 5], FL: [7, 9],
+};
+
+// Franchises in the four established North American leagues (NFL, NBA, MLB,
+// NHL) counted by the state their home venue sits in for the 2024-25 seasons.
+// Canadian clubs are excluded; the two New York NFL clubs and the Washington
+// NFL club count where their stadiums actually are (New Jersey, Maryland).
+// States with none are absent (no symbol drawn).
+const US_PRO_TEAMS = {
+  California: 15, Florida: 9, "New York": 8, Texas: 8, Pennsylvania: 7,
+  Ohio: 6, Illinois: 5, Massachusetts: 4, Michigan: 4, Minnesota: 4,
+  Colorado: 4, Missouri: 4, Georgia: 3, Maryland: 3, "North Carolina": 3,
+  "New Jersey": 3, "District of Columbia": 3, Arizona: 3, Wisconsin: 3,
+  Tennessee: 3, Washington: 3, Nevada: 2, Indiana: 2, Utah: 2, Louisiana: 2,
+  Oklahoma: 1, Oregon: 1,
+};
+
+// Average number of tornadoes reported per year, approximate NOAA Storm
+// Prediction Center 1991-2020 state averages (rounded).
+const US_TORNADOES = {
+  Texas: 155, Kansas: 96, Oklahoma: 68, Florida: 66, Nebraska: 57,
+  Illinois: 54, Colorado: 53, Iowa: 51, Mississippi: 48, Alabama: 47,
+  Missouri: 45, Minnesota: 45, Louisiana: 37, "South Dakota": 36,
+  Arkansas: 33, "North Carolina": 31, Georgia: 30, "North Dakota": 30,
+  Tennessee: 29, "South Carolina": 26, Wisconsin: 24, Indiana: 24,
+  Kentucky: 21, Ohio: 19, Virginia: 18, Pennsylvania: 16, Michigan: 15,
+  "New Mexico": 12, Montana: 12, Wyoming: 12, Maryland: 11, California: 11,
+  "New York": 10, Arizona: 5, Utah: 5, Idaho: 4, "West Virginia": 4,
+  Washington: 3, Oregon: 3, "New Jersey": 3, Maine: 3, Nevada: 2,
+  Massachusetts: 2, "New Hampshire": 2, Connecticut: 1, Delaware: 1,
+  Vermont: 1, Hawaii: 1, "Rhode Island": 0.3, Alaska: 0.1,
+  "District of Columbia": 0.1,
+};
+
+// Number of farms, approximate 2022 USDA Census of Agriculture counts
+// (rounded; the national total is about 1.9 million).
+const US_FARMS = {
+  Texas: 231000, Missouri: 87000, Iowa: 86000, Oklahoma: 78000, Ohio: 76000,
+  Illinois: 71000, Kentucky: 69000, Minnesota: 66000, Tennessee: 65000,
+  California: 63000, Wisconsin: 58000, Kansas: 55000, Indiana: 53000,
+  Pennsylvania: 49000, Michigan: 45000, Nebraska: 44000, Florida: 44000,
+  "North Carolina": 42000, Virginia: 41000, Arkansas: 39000, Alabama: 39000,
+  Georgia: 39000, Colorado: 39000, Oregon: 35000, Mississippi: 34000,
+  Washington: 32000, "New York": 30000, "South Dakota": 29000,
+  "North Dakota": 26000, Louisiana: 26000, Montana: 24000, "New Mexico": 24000,
+  Idaho: 22000, "South Carolina": 22000, "West Virginia": 22000,
+  Arizona: 19000, Utah: 18000, Maryland: 12000, Wyoming: 11000,
+  "New Jersey": 9500, Maine: 7600, Hawaii: 7300, Massachusetts: 7100,
+  Vermont: 6500, Connecticut: 5500, "New Hampshire": 4100, Nevada: 3400,
+  Delaware: 2300, "Rhode Island": 1200, Alaska: 1000,
+  "District of Columbia": 20,
+};
+
+// Hogs and pigs on farms, approximate USDA NASS December 2023 inventory in
+// head. The national total is roughly 75 million.
+const US_HOGS = {
+  Iowa: 24400000, Minnesota: 8900000, "North Carolina": 8000000,
+  Illinois: 5400000, Indiana: 4400000, Nebraska: 3700000, Missouri: 3400000,
+  Ohio: 2400000, Oklahoma: 2100000, Kansas: 2000000, "South Dakota": 1900000,
+  Pennsylvania: 1300000, Michigan: 1200000, Texas: 1000000, Colorado: 700000,
+  Utah: 700000, Kentucky: 400000, Wisconsin: 400000, Mississippi: 350000,
+  Virginia: 250000, Montana: 200000, "South Carolina": 200000,
+  "North Dakota": 140000, Arkansas: 130000, Tennessee: 130000, Arizona: 130000,
+  California: 100000, Georgia: 100000, Wyoming: 100000, Alabama: 60000,
+  "New York": 60000, Idaho: 40000, Washington: 30000, Oregon: 20000,
+  Florida: 20000, Maryland: 20000, Hawaii: 12000, "New Jersey": 8000,
+  "West Virginia": 6000, Massachusetts: 6000, Louisiana: 5000, Delaware: 5000,
+  Maine: 4000, "New Mexico": 3000, Vermont: 3000, "New Hampshire": 3000,
+  Connecticut: 3000, "Rhode Island": 2000, Nevada: 2000, Alaska: 1000,
+};
+
+// Crude oil production, approximate 2023 EIA state totals in millions of
+// barrels for the year. Federal offshore production is not assigned to any
+// state and is therefore not shown.
+const US_OIL = {
+  Texas: 1970, "New Mexico": 664, "North Dakota": 424, Colorado: 168,
+  Alaska: 156, Oklahoma: 150, California: 116, Wyoming: 100, Utah: 55,
+  Louisiana: 33, Kansas: 27, Montana: 24, Ohio: 21, "West Virginia": 12,
+  Mississippi: 8, Illinois: 8, Alabama: 6, Pennsylvania: 5, Arkansas: 4,
+  Michigan: 3, Nebraska: 2, Indiana: 2, Kentucky: 2, Florida: 1,
+  "South Dakota": 0.5, Tennessee: 0.2, Nevada: 0.2, Missouri: 0.1,
+  Arizona: 0.1,
+};
+
+// Legal status of cannabis for adult use, as of 2024 (state law only —
+// cannabis remains federally controlled).
+const US_CANNABIS = {
+  Alaska: "rec", Arizona: "rec", California: "rec", Colorado: "rec",
+  Connecticut: "rec", Delaware: "rec", Illinois: "rec", Maine: "rec",
+  Maryland: "rec", Massachusetts: "rec", Michigan: "rec", Minnesota: "rec",
+  Missouri: "rec", Montana: "rec", Nevada: "rec", "New Jersey": "rec",
+  "New Mexico": "rec", "New York": "rec", Ohio: "rec", Oregon: "rec",
+  "Rhode Island": "rec", Vermont: "rec", Virginia: "rec", Washington: "rec",
+  "District of Columbia": "rec",
+  Alabama: "med", Arkansas: "med", Florida: "med", Hawaii: "med",
+  Kentucky: "med", Louisiana: "med", Mississippi: "med",
+  "New Hampshire": "med", "North Dakota": "med", Oklahoma: "med",
+  Pennsylvania: "med", "South Dakota": "med", Utah: "med",
+  "West Virginia": "med",
+  Georgia: "none", Idaho: "none", Indiana: "none", Iowa: "none",
+  Kansas: "none", Nebraska: "none", "North Carolina": "none",
+  "South Carolina": "none", Tennessee: "none", Texas: "none",
+  Wisconsin: "none", Wyoming: "none",
+};
+
+// Largest single source of in-state utility-scale electricity net generation
+// in 2023, from EIA state electricity profiles. A handful of states are
+// near-ties (see the map description).
+const US_POWER_SOURCE = {
+  Alabama: "gas", Alaska: "gas", Arizona: "gas", Arkansas: "gas",
+  California: "gas", Connecticut: "gas", Delaware: "gas", Florida: "gas",
+  Georgia: "gas", Louisiana: "gas", Massachusetts: "gas", Michigan: "gas",
+  Mississippi: "gas", Nevada: "gas", "New Jersey": "gas", "New Mexico": "gas",
+  "New York": "gas", "North Carolina": "gas", Ohio: "gas", Oklahoma: "gas",
+  Pennsylvania: "gas", "Rhode Island": "gas", Texas: "gas", Virginia: "gas",
+  Wisconsin: "gas",
+  Colorado: "coal", Indiana: "coal", Kentucky: "coal", Missouri: "coal",
+  Montana: "coal", Nebraska: "coal", "North Dakota": "coal", Utah: "coal",
+  "West Virginia": "coal", Wyoming: "coal",
+  Illinois: "nuclear", Maryland: "nuclear", Minnesota: "nuclear",
+  "New Hampshire": "nuclear", "South Carolina": "nuclear",
+  Tennessee: "nuclear",
+  Idaho: "hydro", Maine: "hydro", Oregon: "hydro", Vermont: "hydro",
+  Washington: "hydro",
+  Iowa: "wind", Kansas: "wind", "South Dakota": "wind",
+  Hawaii: "petroleum",
+};
+
+// Jurisdictions where a state agency controls the wholesale and/or retail
+// distribution of distilled spirits ("control" or ABC states); everywhere
+// else spirits are sold under private licence.
+const US_LIQUOR_CONTROL_STATES = [
+  "Alabama", "Idaho", "Iowa", "Maine", "Michigan", "Mississippi", "Montana",
+  "New Hampshire", "North Carolina", "Ohio", "Oregon", "Pennsylvania", "Utah",
+  "Vermont", "Virginia", "West Virginia", "Wyoming",
+];
+
+// States whose statutes still authorise capital punishment (2024). Several
+// of them, including California, Oregon and Pennsylvania, are under a
+// governor's moratorium and are not carrying out executions.
+const US_DEATH_PENALTY_STATES = [
+  "Alabama", "Arizona", "Arkansas", "California", "Florida", "Georgia",
+  "Idaho", "Indiana", "Kansas", "Kentucky", "Louisiana", "Mississippi",
+  "Missouri", "Montana", "Nebraska", "Nevada", "North Carolina", "Ohio",
+  "Oklahoma", "Oregon", "Pennsylvania", "South Carolina", "South Dakota",
+  "Tennessee", "Texas", "Utah", "Wyoming",
+];
+
+// States with a statutory ban on union-security ("agency shop") agreements,
+// as of 2024. Michigan's repeal took effect in February 2024.
+const US_RIGHT_TO_WORK_STATES = [
+  "Alabama", "Arizona", "Arkansas", "Florida", "Georgia", "Idaho", "Indiana",
+  "Iowa", "Kansas", "Kentucky", "Louisiana", "Mississippi", "Nebraska",
+  "Nevada", "North Carolina", "North Dakota", "Oklahoma", "South Carolina",
+  "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "West Virginia",
+  "Wisconsin", "Wyoming",
+];
+
+// State-level general sales tax rate in 2024 (percent). Where a state levies
+// a mandatory statewide local add-on (Utah, Virginia, California) the
+// combined statutory floor is shown. Five states levy none.
+const US_SALES_TAX = {
+  California: 7.25, Indiana: 7.0, Mississippi: 7.0, "Rhode Island": 7.0,
+  Tennessee: 7.0, Minnesota: 6.875, Nevada: 6.85, "New Jersey": 6.625,
+  Arkansas: 6.5, Kansas: 6.5, Washington: 6.5, Connecticut: 6.35,
+  Illinois: 6.25, Massachusetts: 6.25, Texas: 6.25, Utah: 6.1, Florida: 6.0,
+  Idaho: 6.0, Iowa: 6.0, Kentucky: 6.0, Maryland: 6.0, Michigan: 6.0,
+  Pennsylvania: 6.0, "South Carolina": 6.0, Vermont: 6.0,
+  "West Virginia": 6.0, "District of Columbia": 6.0, Ohio: 5.75,
+  Arizona: 5.6, Maine: 5.5, Nebraska: 5.5, Virginia: 5.3,
+  "North Dakota": 5.0, Wisconsin: 5.0, "New Mexico": 4.875,
+  "North Carolina": 4.75, Oklahoma: 4.5, Louisiana: 4.45,
+  Missouri: 4.225, "South Dakota": 4.2, Alabama: 4.0, Georgia: 4.0,
+  Hawaii: 4.0, "New York": 4.0, Wyoming: 4.0, Colorado: 2.9, Alaska: 0,
+  Delaware: 0, Montana: 0, "New Hampshire": 0, Oregon: 0,
+};
+
+// Share of adults with a body mass index of 30 or more (percent),
+// approximate CDC Behavioral Risk Factor Surveillance System 2022 estimates.
+const US_OBESITY = {
+  "West Virginia": 41.0, Louisiana: 40.1, Oklahoma: 40.0, Alabama: 39.9,
+  Mississippi: 39.5, Arkansas: 38.7, "South Dakota": 38.4, Delaware: 38.0,
+  Kentucky: 37.7, Ohio: 37.5, Iowa: 37.4, Missouri: 37.3, Indiana: 36.8,
+  Tennessee: 36.5, Texas: 36.1, Kansas: 36.0, Nebraska: 36.0,
+  "North Carolina": 36.0, "South Carolina": 36.0, Wisconsin: 36.0,
+  Michigan: 35.4, "North Dakota": 35.0, Georgia: 34.5, Illinois: 34.0,
+  Pennsylvania: 33.4, Virginia: 33.4, Arizona: 33.0, Maine: 33.0,
+  Minnesota: 33.0, Wyoming: 32.5, Alaska: 32.0, Maryland: 32.0,
+  Nevada: 32.0, "New Hampshire": 32.0, "New Mexico": 32.0, Florida: 31.0,
+  Idaho: 31.0, Oregon: 31.0, Connecticut: 30.0, "New York": 30.0,
+  "Rhode Island": 30.0, Utah: 30.0, Washington: 30.0, "New Jersey": 29.0,
+  California: 28.0, Montana: 28.0, Vermont: 28.0, Massachusetts: 27.2,
+  Hawaii: 25.9, Colorado: 25.0, "District of Columbia": 24.3,
+};
+
+// Share of each state's total area owned by the federal government
+// (percent), from the Congressional Research Service's compilation of the
+// five major federal land-holding agencies. Figures are approximate.
+const US_FEDERAL_LAND = {
+  Nevada: 80.1, Utah: 63.1, Idaho: 61.9, Alaska: 60.9, Oregon: 52.9,
+  Wyoming: 48.1, California: 45.4, Arizona: 38.6, Colorado: 35.9,
+  "New Mexico": 34.7, Montana: 29.0, Washington: 28.5,
+  "District of Columbia": 25.0, Hawaii: 20.0, "New Hampshire": 13.9,
+  Florida: 13.0, Michigan: 10.0, Virginia: 9.9, Arkansas: 9.4, Vermont: 7.5,
+  "West Virginia": 7.4, "North Carolina": 7.3, Minnesota: 6.8,
+  "South Dakota": 5.4, Wisconsin: 5.3, Mississippi: 5.0, Tennessee: 4.9,
+  Louisiana: 4.6, "South Carolina": 4.6, Georgia: 4.1, Kentucky: 4.1,
+  "North Dakota": 3.9, Missouri: 3.8, "New Jersey": 3.6, Maryland: 3.1,
+  Alabama: 2.7, Delaware: 2.4, Pennsylvania: 2.2, Texas: 1.8, Indiana: 1.7,
+  Oklahoma: 1.6, Illinois: 1.5, Massachusetts: 1.2, Maine: 1.1,
+  Nebraska: 1.1, Ohio: 1.0, "New York": 0.8, Kansas: 0.6,
+  "Rhode Island": 0.4, Connecticut: 0.3, Iowa: 0.3,
+};
+
+// Per-capita consumption of ethanol from all alcoholic beverages, in gallons
+// per person aged 14 and over, approximate NIAAA surveillance estimates.
+// New Hampshire and Delaware are inflated by heavy cross-border buying.
+const US_ALCOHOL = {
+  "New Hampshire": 4.67, "District of Columbia": 3.65, Delaware: 3.52,
+  Nevada: 3.42, Montana: 3.34, "North Dakota": 3.18, Vermont: 3.06,
+  Wisconsin: 2.95, Idaho: 2.87, Colorado: 2.85, Maine: 2.83, Alaska: 2.77,
+  Wyoming: 2.66, Oregon: 2.6, Minnesota: 2.6, "Rhode Island": 2.55,
+  "South Dakota": 2.55, Florida: 2.51, Massachusetts: 2.46, Hawaii: 2.44,
+  Louisiana: 2.42, Iowa: 2.35, Missouri: 2.34, Illinois: 2.3, Nebraska: 2.3,
+  "South Carolina": 2.3, "New Mexico": 2.29, California: 2.29, Texas: 2.24,
+  Michigan: 2.24, Arizona: 2.23, Connecticut: 2.22, Washington: 2.16,
+  Pennsylvania: 2.13, Virginia: 2.1, "New Jersey": 2.05, Ohio: 2.02,
+  Maryland: 2.02, Mississippi: 2.01, "New York": 1.98,
+  "North Carolina": 1.98, Indiana: 1.95, Tennessee: 1.94, Alabama: 1.9,
+  Kentucky: 1.86, Kansas: 1.85, Georgia: 1.82, Oklahoma: 1.71,
+  Arkansas: 1.7, "West Virginia": 1.6, Utah: 1.34,
+};
+
+// The thirty busiest U.S. airports by total passengers handled in 2023
+// (arrivals plus departures, in millions). Figures are rounded reported
+// totals; coordinates are the airfield location.
+const US_AIRPORTS = [
+  { name: "ATL", lat: 33.641, lon: -84.428, value: 104.7 },
+  { name: "DFW", lat: 32.900, lon: -97.040, value: 81.8 },
+  { name: "DEN", lat: 39.856, lon: -104.674, value: 77.8 },
+  { name: "LAX", lat: 33.942, lon: -118.408, value: 75.1 },
+  { name: "ORD", lat: 41.974, lon: -87.907, value: 73.9 },
+  { name: "JFK", lat: 40.641, lon: -73.778, value: 62.5 },
+  { name: "MCO", lat: 28.431, lon: -81.308, value: 57.7 },
+  { name: "LAS", lat: 36.084, lon: -115.154, value: 57.6 },
+  { name: "CLT", lat: 35.214, lon: -80.947, value: 53.4 },
+  { name: "MIA", lat: 25.796, lon: -80.287, value: 52.3 },
+  { name: "SEA", lat: 47.450, lon: -122.309, value: 50.9 },
+  { name: "SFO", lat: 37.621, lon: -122.379, value: 50.2 },
+  { name: "EWR", lat: 40.690, lon: -74.175, value: 49.1 },
+  { name: "PHX", lat: 33.434, lon: -112.012, value: 48.7 },
+  { name: "IAH", lat: 29.990, lon: -95.337, value: 45.3 },
+  { name: "BOS", lat: 42.366, lon: -71.010, value: 40.7 },
+  { name: "FLL", lat: 26.074, lon: -80.151, value: 35.1 },
+  { name: "MSP", lat: 44.885, lon: -93.222, value: 34.5 },
+  { name: "DTW", lat: 42.216, lon: -83.355, value: 31.4 },
+  { name: "LGA", lat: 40.777, lon: -73.874, value: 30.6 },
+  { name: "PHL", lat: 39.874, lon: -75.242, value: 27.9 },
+  { name: "SLC", lat: 40.790, lon: -111.979, value: 26.9 },
+  { name: "BWI", lat: 39.177, lon: -76.668, value: 26.1 },
+  { name: "IAD", lat: 38.953, lon: -77.457, value: 25.1 },
+  { name: "DCA", lat: 38.851, lon: -77.040, value: 25.0 },
+  { name: "TPA", lat: 27.976, lon: -82.533, value: 24.6 },
+  { name: "SAN", lat: 32.734, lon: -117.193, value: 24.4 },
+  { name: "BNA", lat: 36.126, lon: -86.677, value: 22.7 },
+  { name: "AUS", lat: 30.198, lon: -97.666, value: 21.1 },
+  { name: "MDW", lat: 41.787, lon: -87.752, value: 20.5 },
+  { name: "HNL", lat: 21.319, lon: -157.922, value: 20.5 },
+];
+
+// Every commercial nuclear power station licensed and operating in the United
+// States (site locations, one marker per site; several sites host two or
+// three reactors). Retired stations such as Indian Point, Palisades and
+// Three Mile Island are not shown.
+const US_NUCLEAR_SITES = [
+  { name: "Browns Ferry", lat: 34.704, lon: -87.119 },
+  { name: "Farley", lat: 31.223, lon: -85.112 },
+  { name: "Arkansas Nuclear One", lat: 35.310, lon: -93.231 },
+  { name: "Palo Verde", lat: 33.389, lon: -112.865 },
+  { name: "Diablo Canyon", lat: 35.211, lon: -120.855 },
+  { name: "Millstone", lat: 41.310, lon: -72.168 },
+  { name: "St. Lucie", lat: 27.349, lon: -80.246 },
+  { name: "Turkey Point", lat: 25.435, lon: -80.331 },
+  { name: "Hatch", lat: 31.934, lon: -82.345 },
+  { name: "Vogtle", lat: 33.143, lon: -81.762 },
+  { name: "Braidwood", lat: 41.244, lon: -88.229 },
+  { name: "Byron", lat: 42.075, lon: -89.281 },
+  { name: "Clinton", lat: 40.172, lon: -88.834 },
+  { name: "Dresden", lat: 41.390, lon: -88.270 },
+  { name: "LaSalle", lat: 41.246, lon: -88.669 },
+  { name: "Quad Cities", lat: 41.726, lon: -90.310 },
+  { name: "Waterford", lat: 29.996, lon: -90.472 },
+  { name: "River Bend", lat: 30.757, lon: -91.334 },
+  { name: "Wolf Creek", lat: 38.239, lon: -95.689 },
+  { name: "Calvert Cliffs", lat: 38.434, lon: -76.442 },
+  { name: "D.C. Cook", lat: 41.976, lon: -86.565 },
+  { name: "Fermi", lat: 41.963, lon: -83.258 },
+  { name: "Monticello", lat: 45.334, lon: -93.850 },
+  { name: "Prairie Island", lat: 44.622, lon: -92.633 },
+  { name: "Callaway", lat: 38.762, lon: -91.781 },
+  { name: "Grand Gulf", lat: 32.008, lon: -91.048 },
+  { name: "Cooper", lat: 40.362, lon: -95.641 },
+  { name: "Seabrook", lat: 42.899, lon: -70.851 },
+  { name: "Salem / Hope Creek", lat: 39.462, lon: -75.535 },
+  { name: "Brunswick", lat: 33.958, lon: -78.010 },
+  { name: "Harris", lat: 35.633, lon: -78.955 },
+  { name: "McGuire", lat: 35.433, lon: -80.948 },
+  { name: "Nine Mile Point / FitzPatrick", lat: 43.521, lon: -76.404 },
+  { name: "Ginna", lat: 43.278, lon: -77.310 },
+  { name: "Davis-Besse", lat: 41.597, lon: -83.086 },
+  { name: "Perry", lat: 41.801, lon: -81.144 },
+  { name: "Beaver Valley", lat: 40.622, lon: -80.434 },
+  { name: "Limerick", lat: 40.226, lon: -75.586 },
+  { name: "Peach Bottom", lat: 39.759, lon: -76.269 },
+  { name: "Susquehanna", lat: 41.089, lon: -76.148 },
+  { name: "Catawba", lat: 35.052, lon: -81.070 },
+  { name: "Oconee", lat: 34.794, lon: -82.898 },
+  { name: "Robinson", lat: 34.404, lon: -80.159 },
+  { name: "Summer", lat: 34.298, lon: -81.320 },
+  { name: "Sequoyah", lat: 35.226, lon: -85.091 },
+  { name: "Watts Bar", lat: 35.603, lon: -84.790 },
+  { name: "Comanche Peak", lat: 32.298, lon: -97.785 },
+  { name: "South Texas Project", lat: 28.795, lon: -96.048 },
+  { name: "North Anna", lat: 38.060, lon: -77.789 },
+  { name: "Surry", lat: 37.166, lon: -76.698 },
+  { name: "Columbia", lat: 46.471, lon: -119.333 },
+  { name: "Point Beach", lat: 44.281, lon: -87.537 },
+];
+
+// All 63 units of the National Park System carrying the "National Park"
+// designation. The two outside the projected map (American Samoa and the
+// Virgin Islands) are dropped when the map is drawn.
+const US_NATIONAL_PARKS = [
+  { name: "Acadia", lat: 44.35, lon: -68.21 },
+  { name: "Arches", lat: 38.68, lon: -109.57 },
+  { name: "Badlands", lat: 43.86, lon: -102.34 },
+  { name: "Big Bend", lat: 29.25, lon: -103.25 },
+  { name: "Biscayne", lat: 25.49, lon: -80.21 },
+  { name: "Black Canyon of the Gunnison", lat: 38.57, lon: -107.72 },
+  { name: "Bryce Canyon", lat: 37.57, lon: -112.18 },
+  { name: "Canyonlands", lat: 38.20, lon: -109.93 },
+  { name: "Capitol Reef", lat: 38.20, lon: -111.17 },
+  { name: "Carlsbad Caverns", lat: 32.17, lon: -104.44 },
+  { name: "Channel Islands", lat: 34.01, lon: -119.42 },
+  { name: "Congaree", lat: 33.78, lon: -80.78 },
+  { name: "Crater Lake", lat: 42.94, lon: -122.10 },
+  { name: "Cuyahoga Valley", lat: 41.24, lon: -81.55 },
+  { name: "Death Valley", lat: 36.51, lon: -117.08 },
+  { name: "Denali", lat: 63.33, lon: -150.50 },
+  { name: "Dry Tortugas", lat: 24.63, lon: -82.87 },
+  { name: "Everglades", lat: 25.32, lon: -80.93 },
+  { name: "Gates of the Arctic", lat: 67.78, lon: -153.30 },
+  { name: "Gateway Arch", lat: 38.63, lon: -90.19 },
+  { name: "Glacier", lat: 48.80, lon: -114.00 },
+  { name: "Glacier Bay", lat: 58.50, lon: -137.00 },
+  { name: "Grand Canyon", lat: 36.06, lon: -112.14 },
+  { name: "Grand Teton", lat: 43.73, lon: -110.80 },
+  { name: "Great Basin", lat: 38.98, lon: -114.30 },
+  { name: "Great Sand Dunes", lat: 37.73, lon: -105.51 },
+  { name: "Great Smoky Mountains", lat: 35.68, lon: -83.53 },
+  { name: "Guadalupe Mountains", lat: 31.92, lon: -104.87 },
+  { name: "Haleakala", lat: 20.72, lon: -156.17 },
+  { name: "Hawaii Volcanoes", lat: 19.38, lon: -155.20 },
+  { name: "Hot Springs", lat: 34.51, lon: -93.05 },
+  { name: "Indiana Dunes", lat: 41.65, lon: -87.06 },
+  { name: "Isle Royale", lat: 48.10, lon: -88.55 },
+  { name: "Joshua Tree", lat: 33.79, lon: -115.90 },
+  { name: "Katmai", lat: 58.50, lon: -155.00 },
+  { name: "Kenai Fjords", lat: 59.92, lon: -149.65 },
+  { name: "Kings Canyon", lat: 36.80, lon: -118.55 },
+  { name: "Kobuk Valley", lat: 67.55, lon: -159.28 },
+  { name: "Lake Clark", lat: 60.97, lon: -153.42 },
+  { name: "Lassen Volcanic", lat: 40.49, lon: -121.51 },
+  { name: "Mammoth Cave", lat: 37.18, lon: -86.10 },
+  { name: "Mesa Verde", lat: 37.23, lon: -108.46 },
+  { name: "Mount Rainier", lat: 46.85, lon: -121.75 },
+  { name: "New River Gorge", lat: 37.88, lon: -81.06 },
+  { name: "North Cascades", lat: 48.70, lon: -121.20 },
+  { name: "Olympic", lat: 47.80, lon: -123.60 },
+  { name: "Petrified Forest", lat: 35.07, lon: -109.78 },
+  { name: "Pinnacles", lat: 36.48, lon: -121.16 },
+  { name: "Redwood", lat: 41.30, lon: -124.00 },
+  { name: "Rocky Mountain", lat: 40.40, lon: -105.58 },
+  { name: "Saguaro", lat: 32.25, lon: -110.50 },
+  { name: "Sequoia", lat: 36.43, lon: -118.68 },
+  { name: "Shenandoah", lat: 38.53, lon: -78.35 },
+  { name: "Theodore Roosevelt", lat: 46.98, lon: -103.54 },
+  { name: "Virgin Islands", lat: 18.34, lon: -64.73 },
+  { name: "Voyageurs", lat: 48.50, lon: -92.88 },
+  { name: "White Sands", lat: 32.78, lon: -106.17 },
+  { name: "Wind Cave", lat: 43.57, lon: -103.48 },
+  { name: "Wrangell-St. Elias", lat: 61.00, lon: -142.00 },
+  { name: "Yellowstone", lat: 44.60, lon: -110.50 },
+  { name: "Yosemite", lat: 37.83, lon: -119.50 },
+  { name: "Zion", lat: 37.30, lon: -113.05 },
+  { name: "American Samoa", lat: -14.25, lon: -170.68 },
+];
+
+// Heaviest domestic origin-and-destination airline markets. Arc width is
+// scaled to approximate annual round-trip passengers in millions; the
+// volumes are rounded estimates and the ranking is what the map is about.
+const US_AIR_ROUTES = [
+  { from: [33.942, -118.408], to: [40.641, -73.778], value: 3.0 },
+  { from: [33.641, -84.428], to: [28.431, -81.308], value: 2.9 },
+  { from: [33.942, -118.408], to: [37.621, -122.379], value: 2.6 },
+  { from: [33.942, -118.408], to: [36.084, -115.154], value: 2.4 },
+  { from: [33.942, -118.408], to: [41.974, -87.907], value: 2.1 },
+  { from: [33.942, -118.408], to: [47.450, -122.309], value: 2.0 },
+  { from: [40.641, -73.778], to: [37.621, -122.379], value: 1.8 },
+  { from: [41.974, -87.907], to: [40.777, -73.874], value: 1.7 },
+  { from: [32.900, -97.040], to: [33.942, -118.408], value: 1.7 },
+  { from: [33.942, -118.408], to: [39.856, -104.674], value: 1.7 },
+  { from: [33.641, -84.428], to: [26.074, -80.151], value: 1.6 },
+  { from: [39.856, -104.674], to: [41.974, -87.907], value: 1.6 },
+  { from: [33.641, -84.428], to: [40.777, -73.874], value: 1.5 },
+  { from: [36.084, -115.154], to: [37.621, -122.379], value: 1.4 },
+  { from: [33.641, -84.428], to: [27.976, -82.533], value: 1.4 },
+  { from: [33.942, -118.408], to: [33.434, -112.012], value: 1.4 },
+  { from: [40.641, -73.778], to: [28.431, -81.308], value: 1.3 },
+  { from: [28.431, -81.308], to: [40.690, -74.175], value: 1.3 },
+  { from: [47.450, -122.309], to: [37.621, -122.379], value: 1.3 },
+  { from: [39.856, -104.674], to: [33.434, -112.012], value: 1.3 },
+  { from: [41.974, -87.907], to: [37.621, -122.379], value: 1.3 },
+  { from: [39.874, -75.242], to: [28.431, -81.308], value: 1.0 },
+  { from: [32.900, -97.040], to: [41.974, -87.907], value: 1.2 },
+  { from: [42.366, -71.010], to: [38.851, -77.040], value: 1.2 },
+  { from: [33.641, -84.428], to: [25.796, -80.287], value: 1.2 },
+  { from: [40.777, -73.874], to: [25.796, -80.287], value: 1.1 },
+];
+
+// ---------------------------------------------------------------------------
+// World datasets for the new forms
+// ---------------------------------------------------------------------------
+
+// Countries with ten or more inscribed UNESCO World Heritage sites, counted
+// after the 2024 session of the World Heritage Committee.
+const WORLD_HERITAGE = {
+  Italy: 60, China: 59, Germany: 54, France: 53, Spain: 50, India: 43,
+  Mexico: 35, "United Kingdom": 35, Russia: 32, Iran: 28, Japan: 26,
+  "United States of America": 26, Brazil: 24, Canada: 22, Turkey: 21,
+  Australia: 20, Greece: 19, Portugal: 17, Poland: 17, Czechia: 17,
+  Belgium: 16, "South Korea": 16, Sweden: 15, Switzerland: 13,
+  Netherlands: 13, Peru: 13, Austria: 12, Argentina: 12, Bulgaria: 10,
+  Croatia: 10, Denmark: 10, Indonesia: 10, "South Africa": 10,
+};
+
+// Territorial carbon dioxide emissions from fossil fuels and industry,
+// approximate annual figures in millions of tonnes around 2022-2023. Values
+// below about 5 Mt are omitted (their symbols would be invisible anyway).
+const WORLD_CO2 = {
+  China: 11500, "United States of America": 4900, India: 2800, Russia: 1650,
+  Japan: 1050, Iran: 750, Indonesia: 700, "Saudi Arabia": 620, Germany: 650,
+  "South Korea": 600, Canada: 550, Brazil: 480, Mexico: 470, Turkey: 420,
+  "South Africa": 400, Australia: 390, Vietnam: 340, "United Kingdom": 320,
+  Italy: 320, France: 300, Poland: 300, Thailand: 280, Kazakhstan: 280,
+  Taiwan: 280, Egypt: 250, Malaysia: 250, Spain: 230, Pakistan: 230,
+  "United Arab Emirates": 230, Iraq: 200, Argentina: 190, Algeria: 160,
+  Philippines: 150, Ukraine: 130, Netherlands: 130, Nigeria: 130, Qatar: 130,
+  Uzbekistan: 120, Kuwait: 110, Colombia: 100, Venezuela: 100,
+  Bangladesh: 100, Chile: 90, Czechia: 90, Belgium: 90, Turkmenistan: 90,
+  Romania: 70, Morocco: 70, Oman: 70, Peru: 60, Greece: 60, Austria: 60,
+  Israel: 60, Belarus: 60, Libya: 55, "North Korea": 50,
+  Hungary: 45, Serbia: 45, Sweden: 40, Norway: 40, Portugal: 40,
+  Finland: 40, Bulgaria: 40, Azerbaijan: 40, Ecuador: 40,
+  "Trinidad and Tobago": 40, Switzerland: 35, Ireland: 35, "New Zealand": 35,
+  Denmark: 30, Myanmar: 30, Mongolia: 30, Slovakia: 30, Tunisia: 30,
+  "Dominican Rep.": 30, Angola: 25, Bolivia: 25, Jordan: 25, Syria: 25,
+  "Sri Lanka": 25, Laos: 25, "Bosnia and Herz.": 22, Cuba: 20, Ghana: 20,
+  Kenya: 20, Ethiopia: 20, Sudan: 20, Guatemala: 20, Cambodia: 20,
+  Croatia: 18, Nepal: 15, Tanzania: 15, "Côte d'Ivoire": 15, Georgia: 12,
+  Panama: 12, Lithuania: 12, Kyrgyzstan: 12, Brunei: 12, Senegal: 12,
+  Yemen: 10, Zimbabwe: 10, Mozambique: 10, Honduras: 10, Cameroon: 10,
+  Afghanistan: 10, Estonia: 10, "Costa Rica": 9, Zambia: 8, Paraguay: 8,
+  Macedonia: 8, Cyprus: 8, Luxembourg: 8, Tajikistan: 8, Benin: 8,
+  Jamaica: 8, Uruguay: 7, Armenia: 7, Latvia: 7, "El Salvador": 7,
+  Botswana: 6, Moldova: 6, Uganda: 6, Gabon: 6, Albania: 5, Nicaragua: 5,
+  "Dem. Rep. Congo": 5, Mali: 5, "Burkina Faso": 5,
+};
+
+// Countries and territories where road traffic keeps to the left.
+const WORLD_LEFT_HAND_TRAFFIC = [
+  "United Kingdom", "Ireland", "Cyprus", "India", "Pakistan", "Bangladesh",
+  "Nepal", "Sri Lanka", "Bhutan", "Thailand", "Malaysia", "Indonesia",
+  "Timor-Leste", "Japan", "Australia", "New Zealand", "Papua New Guinea",
+  "Fiji", "Solomon Is.", "Kenya", "Tanzania", "Uganda", "Zambia", "Zimbabwe",
+  "Malawi", "Mozambique", "South Africa", "Namibia", "Botswana", "Lesotho",
+  "eSwatini", "Jamaica", "Bahamas", "Trinidad and Tobago", "Guyana",
+  "Suriname", "Brunei", "Falkland Is.",
+];
+
+// Countries whose domestic mains supply is nominally in the 100-127 volt
+// band rather than the 220-240 volt band used by most of the world. Brazil
+// is deliberately left out: it uses both, region by region.
+const WORLD_LOW_VOLTAGE = [
+  "United States of America", "Canada", "Mexico", "Guatemala", "Belize",
+  "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama", "Colombia",
+  "Venezuela", "Ecuador", "Cuba", "Dominican Rep.", "Haiti", "Jamaica",
+  "Bahamas", "Trinidad and Tobago", "Puerto Rico", "Japan", "Taiwan",
+  "Liberia", "Suriname",
+];
+
+// Sovereign states with a hereditary monarch as head of state, including the
+// Commonwealth realms that share one. Micro-states below the resolution of
+// the 110m boundary file are not represented.
+const WORLD_MONARCHIES = [
+  "United Kingdom", "Spain", "Sweden", "Norway", "Denmark", "Netherlands",
+  "Belgium", "Luxembourg", "Japan", "Thailand", "Cambodia", "Malaysia",
+  "Brunei", "Bhutan", "Saudi Arabia", "Jordan", "Kuwait", "Qatar", "Oman",
+  "United Arab Emirates", "Morocco", "Lesotho", "eSwatini", "Canada",
+  "Australia", "New Zealand", "Papua New Guinea", "Solomon Is.", "Jamaica",
+  "Bahamas", "Belize", "Greenland", "Falkland Is.",
+];
+
+// The urban agglomerations the UN's World Urbanization Prospects counted
+// above ten million residents.
+const WORLD_MEGACITIES = [
+  { name: "Tokyo", lat: 35.68, lon: 139.69 },
+  { name: "Delhi", lat: 28.61, lon: 77.21 },
+  { name: "Shanghai", lat: 31.23, lon: 121.47 },
+  { name: "Sao Paulo", lat: -23.55, lon: -46.63 },
+  { name: "Mexico City", lat: 19.43, lon: -99.13 },
+  { name: "Cairo", lat: 30.04, lon: 31.24 },
+  { name: "Mumbai", lat: 19.08, lon: 72.88 },
+  { name: "Beijing", lat: 39.90, lon: 116.41 },
+  { name: "Dhaka", lat: 23.81, lon: 90.41 },
+  { name: "Osaka", lat: 34.69, lon: 135.50 },
+  { name: "New York", lat: 40.71, lon: -74.01 },
+  { name: "Karachi", lat: 24.86, lon: 67.01 },
+  { name: "Buenos Aires", lat: -34.60, lon: -58.38 },
+  { name: "Chongqing", lat: 29.56, lon: 106.55 },
+  { name: "Istanbul", lat: 41.01, lon: 28.98 },
+  { name: "Kolkata", lat: 22.57, lon: 88.36 },
+  { name: "Manila", lat: 14.60, lon: 120.98 },
+  { name: "Lagos", lat: 6.52, lon: 3.38 },
+  { name: "Rio de Janeiro", lat: -22.91, lon: -43.17 },
+  { name: "Tianjin", lat: 39.34, lon: 117.36 },
+  { name: "Kinshasa", lat: -4.44, lon: 15.27 },
+  { name: "Guangzhou", lat: 23.13, lon: 113.26 },
+  { name: "Los Angeles", lat: 34.05, lon: -118.24 },
+  { name: "Moscow", lat: 55.76, lon: 37.62 },
+  { name: "Shenzhen", lat: 22.54, lon: 114.06 },
+  { name: "Lahore", lat: 31.55, lon: 74.34 },
+  { name: "Bangalore", lat: 12.97, lon: 77.59 },
+  { name: "Paris", lat: 48.86, lon: 2.35 },
+  { name: "Bogota", lat: 4.71, lon: -74.07 },
+  { name: "Jakarta", lat: -6.21, lon: 106.85 },
+  { name: "Chennai", lat: 13.08, lon: 80.27 },
+  { name: "Lima", lat: -12.05, lon: -77.04 },
+  { name: "Bangkok", lat: 13.76, lon: 100.50 },
+];
+
+// ---------------------------------------------------------------------------
+// Derived two-class datasets. Built by expanding a membership list over every
+// feature in the atlas, so a categorical map can never silently leave a
+// state or country unshaded because a key was missed.
+// ---------------------------------------------------------------------------
+
+const US_FEATURE_NAMES = usStates.map((f) => f.properties.name);
+const WORLD_FEATURE_NAMES = worldCountries
+  .map((f) => f.properties.name)
+  .filter((n) => n !== "Antarctica");
+
+function expandMembership(featureNames, members, inKey, outKey) {
+  const set = new Set(members);
+  const missing = members.filter((m) => !featureNames.includes(m));
+  if (missing.length) {
+    throw new Error(`membership list has unknown features: ${missing.join(", ")}`);
+  }
+  return Object.fromEntries(
+    featureNames.map((n) => [n, set.has(n) ? inKey : outKey]),
+  );
+}
+
+const US_LIQUOR_CONTROL = expandMembership(
+  US_FEATURE_NAMES, US_LIQUOR_CONTROL_STATES, "control", "licence",
+);
+const US_DEATH_PENALTY = expandMembership(
+  US_FEATURE_NAMES, US_DEATH_PENALTY_STATES, "yes", "no",
+);
+const US_RIGHT_TO_WORK = expandMembership(
+  US_FEATURE_NAMES, US_RIGHT_TO_WORK_STATES, "yes", "no",
+);
+const WORLD_DRIVING_SIDE = expandMembership(
+  WORLD_FEATURE_NAMES, WORLD_LEFT_HAND_TRAFFIC, "left", "right",
+);
+const WORLD_MONARCHY = expandMembership(
+  WORLD_FEATURE_NAMES, WORLD_MONARCHIES, "monarchy", "republic",
+);
+const WORLD_VOLTAGE = expandMembership(
+  WORLD_FEATURE_NAMES, WORLD_LOW_VOLTAGE, "low", "high",
+);
+// Brazil runs both bands, so it is deliberately excluded from the map.
+delete WORLD_VOLTAGE.Brazil;
+
 // ---------------------------------------------------------------------------
 // Formatters (no units — bare magnitudes keep the legend a fair, wordless hint)
 // ---------------------------------------------------------------------------
@@ -910,6 +1558,649 @@ const MAPS = [
     scaleType: "linear",
     fmt: oneDec,
   },
+
+  // =========================================================================
+  // Non-choropleth forms
+  // =========================================================================
+
+  {
+    id: "us-pro-sports-teams",
+    scope: "us",
+    form: "symbol",
+    title: "Major League Sports Franchises per State",
+    aliases: [
+      "major league sports teams",
+      "professional sports teams",
+      "number of pro sports teams",
+      "sports franchises",
+      "big four sports teams",
+      "nfl nba mlb nhl teams",
+      "pro teams per state",
+    ],
+    description:
+      "Circles are area-scaled to the number of franchises in the four established North American leagues — football, basketball, baseball and ice hockey — playing their home games in each state for the 2024-25 seasons. California has 15, Florida 9, and New York and Texas 8 each; 24 states have none. Clubs are counted where their venue actually is, which puts both New York football clubs in New Jersey and the Washington football club in Maryland. Canadian franchises are excluded. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The circles count organisations that play a scheduled season and sell tickets — not people, not acres, not money.",
+      "One state has fifteen, Florida nine, and New York and Texas eight apiece; almost half the states have none at all.",
+    ],
+    data: US_PRO_TEAMS,
+    symbolColor: "#1d4ed8",
+    maxRadius: 34,
+    fmt: (n) => `${Math.round(n)}`,
+  },
+  {
+    id: "us-busiest-airports",
+    scope: "us",
+    form: "point-symbol",
+    title: "Busiest U.S. Airports by Passengers (2023)",
+    aliases: [
+      "busiest airports",
+      "airport passenger traffic",
+      "how many passengers each airport handles",
+      "airport traffic",
+      "biggest airports",
+      "passengers per airport",
+      "busiest airports by passengers",
+    ],
+    description:
+      "The thirty-one busiest U.S. airfields, drawn at their actual coordinates with circle area proportional to total passengers handled in 2023 (arrivals plus departures, in millions). Atlanta leads at about 104.7 million, ahead of Dallas–Fort Worth, Denver, Los Angeles and Chicago O'Hare. Totals are rounded reported figures. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Each circle sits on a single facility rather than covering a whole state, and its size counts human beings passing through.",
+      "The biggest bubble is on Atlanta, then Dallas–Fort Worth and Denver; New York and Washington each carry three separate circles.",
+    ],
+    places: US_AIRPORTS,
+    symbolColor: "#0e7490",
+    maxRadius: 30,
+    fmt: (n) => `${Math.round(n)}M`,
+  },
+  {
+    id: "us-tornadoes",
+    scope: "us",
+    form: "symbol",
+    title: "Average Tornadoes per Year by State",
+    aliases: [
+      "tornadoes per year",
+      "annual tornado count",
+      "tornado frequency",
+      "how many tornadoes each state gets",
+      "tornado activity",
+      "twisters per year",
+      "average number of tornadoes",
+    ],
+    description:
+      "Approximate average annual count of confirmed events per state from NOAA Storm Prediction Center records for 1991-2020, drawn as area-scaled circles. Texas averages about 155 a year, Kansas about 96 and Oklahoma about 68; Alaska and Rhode Island average well under one. Counts are rounded and are sensitive to reporting density. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A weather tally, and the biggest circles run up a well-known alley through the middle of the country.",
+      "Texas averages about 155 a year and Kansas about 96, while Alaska and Rhode Island average well under one.",
+    ],
+    data: US_TORNADOES,
+    symbolColor: "#7c2d12",
+    maxRadius: 32,
+    fmt: (n) => (n >= 10 ? `${Math.round(n)}` : n.toFixed(1)),
+  },
+  {
+    id: "us-farms",
+    scope: "us",
+    form: "dot",
+    title: "Number of Farms by State",
+    aliases: [
+      "number of farms",
+      "farms per state",
+      "how many farms",
+      "farm count",
+      "count of farms",
+      "agricultural holdings",
+      "number of farms in each state",
+    ],
+    description:
+      "A dot-density map: one dot per 2,000 separately operated holdings, scattered at random inside each state. Counts are approximate 2022 USDA Census of Agriculture figures; the national total is about 1.9 million. Texas has by far the most at roughly 231,000, followed by Missouri, Iowa and Oklahoma; Rhode Island and Alaska have about a thousand each. Dots are placed by a seeded random process and carry no sub-state meaning. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Each dot stands for a fixed number of separately operated businesses working the land — this counts the businesses, not the acreage.",
+      "Texas has by far the most, around 231,000; the dense band runs from the southern Plains up through Missouri, Iowa and Kentucky.",
+    ],
+    data: US_FARMS,
+    dotUnit: 2000,
+    dotColor: "#166534",
+    fmt: intComma,
+  },
+  {
+    id: "us-hogs",
+    scope: "us",
+    form: "dot",
+    title: "Hogs and Pigs on Farms by State",
+    aliases: [
+      "hog inventory",
+      "pigs per state",
+      "number of pigs",
+      "hog farming",
+      "pig population",
+      "swine inventory",
+      "how many pigs each state has",
+      "hogs",
+    ],
+    description:
+      "A dot-density map with one dot per 150,000 head, from approximate USDA NASS December 2023 inventory. Iowa alone holds roughly a third of the national total of about 75 million, with Minnesota and North Carolina distant second and third. Dots are scattered at random inside each state by a seeded process and carry no sub-state meaning. Boundaries: us-atlas (public domain).",
+    hints: [
+      "One dot per fixed head-count of an animal raised mostly indoors and mostly for meat.",
+      "Iowa alone holds about a third of the national total; Minnesota and North Carolina are the only other heavy clusters.",
+    ],
+    data: US_HOGS,
+    dotUnit: 150000,
+    dotColor: "#9d174d",
+    fmt: intComma,
+  },
+  {
+    id: "us-oil-production",
+    scope: "us",
+    form: "dot",
+    title: "Crude Oil Production by State (2023)",
+    aliases: [
+      "crude oil production",
+      "oil production",
+      "how much oil each state produces",
+      "petroleum output",
+      "barrels of oil produced",
+      "oil output",
+      "oil drilling by state",
+    ],
+    description:
+      "A dot-density map with one dot per 5 million barrels produced during 2023, from approximate U.S. Energy Information Administration state totals. Texas alone accounts for roughly half the onshore state total; New Mexico and North Dakota follow. Federal offshore production in the Gulf is not assigned to any state and is not shown. Dots are scattered at random within each state by a seeded process. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Each dot represents a fixed volume pumped out of the ground over one year.",
+      "One state accounts for roughly half the national figure; New Mexico and North Dakota come next, and nearly all of the East is empty.",
+    ],
+    data: US_OIL,
+    dotUnit: 5,
+    dotColor: "#1f2937",
+    fmt: (n) => `${intComma(n)}M`,
+  },
+  {
+    id: "us-cannabis-laws",
+    scope: "us",
+    form: "categorical",
+    title: "State Cannabis Laws (2024)",
+    aliases: [
+      "cannabis legalization",
+      "marijuana laws",
+      "weed legality",
+      "legal marijuana",
+      "cannabis legality by state",
+      "is marijuana legal",
+      "pot laws",
+      "recreational cannabis legality",
+    ],
+    description:
+      "Three legal statuses under state law as of 2024: adult recreational plus medical use (24 states and the District of Columbia), medical use only (14 states), and neither (12 states). The whole West Coast and most of the Northeast are in the most permissive class; a block through the South and the Plains is in the strictest. The substance remains federally controlled regardless of state law. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Three discrete statuses rather than a sliding scale — this is about what a legislature or a ballot measure has permitted.",
+      "The entire West Coast and most of the Northeast share the most permissive class, while a dozen states through the South and Plains sit in the strictest.",
+    ],
+    data: US_CANNABIS,
+    categories: [
+      { key: "rec", label: "Adult use + medical", color: "#08519c" },
+      { key: "med", label: "Medical only", color: "#6baed6" },
+      { key: "none", label: "Neither", color: "#e2e8f0" },
+    ],
+  },
+  {
+    id: "us-electricity-source",
+    scope: "us",
+    form: "categorical",
+    title: "Largest Source of Electricity by State (2023)",
+    aliases: [
+      "main electricity source",
+      "largest source of electricity",
+      "leading power source",
+      "top electricity generation source",
+      "what generates the most power in each state",
+      "dominant energy source for power",
+      "biggest source of electricity generation",
+    ],
+    description:
+      "The single largest source of in-state utility-scale net generation in 2023, from EIA state electricity profiles. Natural gas leads in 25 states, coal in 10, nuclear in 6, hydro in 5, wind in 3, and burned oil in Hawaii alone. Several states are near-ties — Minnesota's four leading sources were within about three points of each other in 2023, and Colorado, Wisconsin, Maryland and North Carolina were close calls too. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Six discrete classes describing where the current in the wires physically comes from.",
+      "Hawaii is alone in its class, burning imported liquid fuel; Iowa, Kansas and South Dakota share a class the open plains made possible.",
+    ],
+    data: US_POWER_SOURCE,
+    allowUncovered: ["District of Columbia"],
+    categories: [
+      { key: "gas", label: "Natural gas", color: "#e08214" },
+      { key: "coal", label: "Coal", color: "#4d4d4d" },
+      { key: "nuclear", label: "Nuclear", color: "#7b3294" },
+      { key: "hydro", label: "Hydro", color: "#2b8cbe" },
+      { key: "wind", label: "Wind", color: "#41ab5d" },
+      { key: "petroleum", label: "Petroleum", color: "#b2182b" },
+    ],
+  },
+  {
+    id: "us-liquor-control",
+    scope: "us",
+    form: "categorical",
+    title: "State-Controlled Liquor Sales",
+    aliases: [
+      "alcoholic beverage control states",
+      "abc states",
+      "state run liquor stores",
+      "control states",
+      "government liquor monopoly",
+      "state liquor monopoly",
+      "who sells spirits",
+      "liquor control states",
+    ],
+    description:
+      "Seventeen jurisdictions run a state agency that controls the wholesale and, in most cases, the retail distribution of distilled spirits; everywhere else spirits move entirely through private licensees. Utah, Idaho, Oregon and Montana in the West, then Iowa, Michigan, Ohio, Pennsylvania, Virginia and West Virginia, and New Hampshire, Vermont and Maine in the Northeast. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Two classes, decided by statute: in one group a government agency stands between the distillery and the shelf.",
+      "Seventeen states are in the smaller class — Utah, Idaho, Oregon and Montana out west, then a run through Ohio, Pennsylvania and Virginia up into northern New England.",
+    ],
+    data: US_LIQUOR_CONTROL,
+    categories: [
+      { key: "control", label: "State agency controls sales", color: "#4a1486" },
+      { key: "licence", label: "Private licensees only", color: "#dcd6ec" },
+    ],
+  },
+  {
+    id: "us-death-penalty",
+    scope: "us",
+    form: "categorical",
+    title: "States That Still Authorise Capital Punishment",
+    aliases: [
+      "death penalty",
+      "capital punishment",
+      "states with the death penalty",
+      "is the death penalty legal",
+      "execution laws",
+      "death penalty status",
+      "death penalty by state",
+    ],
+    description:
+      "Twenty-seven state criminal codes still authorise the sentence; twenty-three states and the District of Columbia have abolished it. Several states in the first group, including California, Oregon and Pennsylvania, are under a governor's moratorium and are not carrying out sentences. Status as of 2024. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A yes-or-no question answered by each state's criminal code rather than by any measurable quantity.",
+      "Twenty-seven states are in the yes class. All of New England, everything north of Pennsylvania on the Atlantic, and most of the Upper Midwest are in the other.",
+    ],
+    data: US_DEATH_PENALTY,
+    categories: [
+      { key: "yes", label: "Authorised by statute", color: "#a50f15" },
+      { key: "no", label: "Abolished", color: "#dbe5ee" },
+    ],
+  },
+  {
+    id: "us-right-to-work",
+    scope: "us",
+    form: "tilegrid",
+    title: "Right-to-Work States",
+    aliases: [
+      "right to work laws",
+      "right to work",
+      "union security bans",
+      "states with right to work laws",
+      "labor union laws",
+      "agency shop bans",
+      "right to work states",
+    ],
+    description:
+      "Each state is drawn as an equal-size square in a rough geographic grid. Twenty-six states have a statute barring union-security agreements that would require workers in an organised shop to pay dues or fees; the other 24 and the District of Columbia do not. Michigan's repeal took effect in February 2024. Rendered as a tile cartogram so that Rhode Island and Alaska carry the same visual weight. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Every square is one state at equal size, and the two colours split them by a workplace statute — nothing geographic or economic.",
+      "Twenty-six states are in one class: the whole South, the Plains and the Mountain West, plus Wisconsin and Iowa. Michigan left that group in 2024.",
+    ],
+    data: US_RIGHT_TO_WORK,
+    categories: [
+      { key: "yes", label: "Statute in force", color: "#e08214" },
+      { key: "no", label: "No such statute", color: "#8073ac" },
+    ],
+  },
+  {
+    id: "us-sales-tax",
+    scope: "us",
+    form: "tilegrid",
+    title: "State Sales Tax Rate (2024)",
+    aliases: [
+      "sales tax rate",
+      "state sales tax",
+      "sales tax",
+      "how much sales tax each state charges",
+      "consumption tax rate",
+      "state sales tax rate",
+      "purchase tax rate",
+    ],
+    description:
+      "A tile cartogram: each state is an equal-size square shaded by its statewide general rate on retail purchases in 2024, in percent. California is highest at 7.25; Colorado has the lowest non-zero rate at 2.90; Alaska, Delaware, Montana, New Hampshire and Oregon levy none at the state level. Where a state imposes a mandatory statewide local add-on (Utah, Virginia, California) the combined statutory floor is shown; local option rates on top are not. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Every square is one state and the shading is a percentage set by a legislature; five squares sit at exactly zero.",
+      "California is highest at 7.25 and Colorado is the lowest non-zero at 2.90; Alaska, Delaware, Montana, New Hampshire and Oregon charge nothing.",
+    ],
+    data: US_SALES_TAX,
+    interpolator: chromatic.interpolatePuRd,
+    scaleType: "linear",
+    fmt: (n) => n.toFixed(2),
+  },
+  {
+    id: "us-obesity",
+    scope: "us",
+    form: "tilegrid",
+    title: "Adult Obesity Rate by State",
+    aliases: [
+      "obesity rate",
+      "adult obesity",
+      "share of adults who are obese",
+      "obesity prevalence",
+      "percent of adults obese",
+      "body mass index over 30",
+      "adult obesity prevalence",
+    ],
+    description:
+      "A tile cartogram of the approximate share of adults with a body mass index of 30 or more, from CDC Behavioral Risk Factor Surveillance System estimates for 2022. West Virginia, Louisiana, Oklahoma and Alabama are around 40 percent; the District of Columbia, Colorado and Hawaii are lowest at about 24 to 26. The survey is self-reported, so the absolute level is understated even though the ranking is stable. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A self-reported public-health percentage that has climbed almost everywhere over the past thirty years.",
+      "West Virginia, Louisiana, Oklahoma and Alabama are around 40 percent; Colorado, Hawaii and the District of Columbia are lowest, near 25.",
+    ],
+    data: US_OBESITY,
+    interpolator: chromatic.interpolateOrRd,
+    scaleType: "linear",
+    fmt: oneDec,
+  },
+  {
+    id: "us-nuclear-plants",
+    scope: "us",
+    form: "points",
+    title: "Operating Nuclear Power Plants",
+    aliases: [
+      "nuclear power plants",
+      "nuclear reactors",
+      "where the nuclear plants are",
+      "atomic power stations",
+      "nuclear power stations",
+      "nuclear plants",
+      "locations of nuclear power plants",
+    ],
+    description:
+      "One marker per licensed and operating commercial station. Most sites host two or three reactors, so these 52 markers stand for more than ninety units; the adjacent Salem/Hope Creek and Nine Mile Point/FitzPatrick pairs are drawn as one marker each. Retired stations — Indian Point, Palisades, Three Mile Island, Duane Arnold, San Onofre and others — are not shown. The distribution is heavily eastern: only three sites lie west of the Rockies, in Arizona, California and Washington. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Each dot is one industrial site, and every one of them sits beside a river, a lake or the sea for the same practical reason.",
+      "There are more than fifty and they crowd the eastern half of the country; only three sit west of the Rockies, in Arizona, California and Washington.",
+    ],
+    places: US_NUCLEAR_SITES,
+    pointColor: "#b91c1c",
+    pointRadius: 5,
+  },
+  {
+    id: "us-national-parks",
+    scope: "us",
+    form: "points",
+    title: "Locations of the National Parks",
+    aliases: [
+      "national parks",
+      "where the national parks are",
+      "national park locations",
+      "us national parks",
+      "list of national parks",
+      "national park sites",
+    ],
+    description:
+      "All 63 units of the National Park System that carry the full designation, plotted at their approximate centres. Two — American Samoa and the Virgin Islands — fall outside the projection and are dropped, leaving 61 markers. California has nine, Alaska eight and Utah five; a broad swathe from the southern Plains through the Midwest to the Atlantic has almost none. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Sixty-odd protected places, each designated by an act of Congress; two of them fall outside this projection entirely.",
+      "California has nine, Alaska eight and Utah five, while a wide band from Texas up through the Midwest and across to the Atlantic is nearly empty.",
+    ],
+    places: US_NATIONAL_PARKS,
+    pointColor: "#15803d",
+    pointRadius: 5,
+  },
+  {
+    id: "us-air-routes",
+    scope: "us",
+    form: "flow",
+    title: "Busiest Domestic Air Routes",
+    aliases: [
+      "busiest flight routes",
+      "busiest air routes",
+      "most travelled flight paths",
+      "top airline routes",
+      "busiest domestic flights",
+      "most popular flight routes",
+      "heaviest passenger routes",
+    ],
+    description:
+      "The heaviest domestic origin-and-destination markets, drawn as arcs between the two airfields (routes to Hawaii and Alaska are left out, because an arc into a projection inset would be meaningless) with width scaled to approximate annual round-trip passengers in millions. Los Angeles–New York is the single heaviest link, and dense fans radiate from Los Angeles and from Atlanta. The ranking is the point of the map; the individual volumes are rounded estimates. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The lines are not rivers, roads or cables — each one joins a pair of places, and it is drawn thicker when more people make that particular trip.",
+      "The single heaviest link joins Los Angeles and New York; the two densest fans radiate from Los Angeles and from Atlanta.",
+    ],
+    flows: US_AIR_ROUTES,
+    flowColor: "#1d4ed8",
+    maxWidth: 9,
+    fmt: oneDec,
+  },
+  {
+    id: "us-income-lifespan",
+    scope: "us",
+    form: "bivariate",
+    title: "Household Income and Life Expectancy Together",
+    aliases: [
+      "income and life expectancy",
+      "wealth and lifespan",
+      "money and life expectancy",
+      "income versus life expectancy",
+      "earnings and longevity",
+      "income and longevity",
+      "household income and lifespan",
+    ],
+    description:
+      "A bivariate choropleth: each state is placed into one of three bands on each of two variables and coloured from the resulting three-by-three matrix. The horizontal axis is median household income (2022 American Community Survey) and the vertical axis is life expectancy at birth (CDC/NCHS 2020 estimates). Mississippi, West Virginia, Arkansas and Alabama sit low on both; Massachusetts, Minnesota, New Hampshire and Colorado sit high on both. Hawaii is the standout: mid-range on one axis, top of the country on the other. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The nine-square key gives it away that two separate quantities are being combined here, not one.",
+      "The two things combined are the pair an accountant and a doctor would each claim as their own; Mississippi and West Virginia are at the bottom of both, Massachusetts and Minnesota near the top of both.",
+    ],
+    dataX: US_MEDIAN_INCOME,
+    dataY: US_LIFE_EXPECTANCY,
+  },
+  {
+    id: "us-federal-land",
+    scope: "us",
+    title: "Share of Each State Owned by the Federal Government",
+    aliases: [
+      "federal land ownership",
+      "percent of land owned by the federal government",
+      "federal land share",
+      "government owned land",
+      "public land share",
+      "federally owned land",
+      "share of land owned by washington",
+    ],
+    description:
+      "Approximate share of each state's total area held by the five major federal land agencies, from Congressional Research Service compilations. Nevada is over 80 percent and Utah, Idaho and Alaska over 60; Connecticut, Iowa and Rhode Island are under half a percent. The split follows the history of how the public domain was disposed of, not the modern economy. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A question of who holds the title deed, not of what grows there, who lives there, or how high it rises.",
+      "Nevada is over 80 percent, Utah, Idaho and Alaska over 60; Connecticut, Iowa and Rhode Island are under half of one percent.",
+    ],
+    data: US_FEDERAL_LAND,
+    interpolator: chromatic.interpolateBuPu,
+    scaleType: "sqrt",
+    fmt: mixedDec,
+  },
+  {
+    id: "us-alcohol",
+    scope: "us",
+    title: "Alcohol Consumed per Person",
+    aliases: [
+      "alcohol consumption per capita",
+      "drinking per person",
+      "how much alcohol people drink",
+      "per capita alcohol consumption",
+      "alcohol consumption",
+      "booze consumption",
+      "drinking rates by state",
+    ],
+    description:
+      "Approximate gallons of pure ethanol consumed per resident aged 14 and over, from NIAAA surveillance estimates. New Hampshire is far ahead of everywhere else and Delaware and the District of Columbia are also inflated, because all three sell heavily to people who live across the state line. Utah is the clear lowest, at under a third of New Hampshire's figure. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A per-person quantity where two very small states come out on top mainly because their neighbours cross the border to buy.",
+      "New Hampshire is far above everyone else; Utah is the clear lowest, at under a third of New Hampshire's figure.",
+    ],
+    data: US_ALCOHOL,
+    interpolator: chromatic.interpolateRdPu,
+    scaleType: "linear",
+    fmt: (n) => n.toFixed(1),
+  },
+  {
+    id: "world-heritage-sites",
+    scope: "world",
+    form: "symbol",
+    title: "UNESCO World Heritage Sites per Country",
+    aliases: [
+      "world heritage sites",
+      "unesco sites",
+      "unesco world heritage sites",
+      "number of world heritage sites",
+      "heritage sites per country",
+      "unesco listings",
+      "world heritage listings",
+    ],
+    description:
+      "Area-scaled circles for the 33 countries with ten or more inscriptions after the 2024 session of the committee. Italy (60) and China (59) lead, then Germany, France and Spain; India is the largest outside Europe and East Asia. Only one country in Africa reaches ten. Countries below the threshold carry no circle. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "A count of designations handed out by a United Nations body; circles are drawn only for countries with ten or more of them.",
+      "Italy and China lead with about sixty each, then Germany, France and Spain — and the whole of Africa contributes a single circle, in the far south.",
+    ],
+    data: WORLD_HERITAGE,
+    symbolColor: "#a16207",
+    maxRadius: 21,
+    fmt: (n) => `${Math.round(n)}`,
+  },
+  {
+    id: "world-co2-emissions",
+    scope: "world",
+    form: "symbol",
+    title: "Carbon Dioxide Emissions by Country",
+    aliases: [
+      "co2 emissions",
+      "carbon emissions",
+      "carbon dioxide emissions",
+      "greenhouse gas emissions",
+      "annual carbon output",
+      "emissions per country",
+      "national carbon dioxide emissions",
+    ],
+    description:
+      "Approximate territorial emissions from fossil fuels and industry, in millions of tonnes per year around 2022-2023, drawn as area-scaled circles. China is more than twice the next largest; the United States is second, India third and Russia fourth. Figures are rounded estimates and countries below roughly five million tonnes are omitted because their symbols would be invisible. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "Circle area is proportional to an annual national output that climate negotiators spend their careers arguing over.",
+      "One country's circle is more than twice the next largest; the United States is second, India third and Russia fourth.",
+    ],
+    data: WORLD_CO2,
+    symbolColor: "#374151",
+    maxRadius: 30,
+    fmt: intComma,
+  },
+  {
+    id: "world-driving-side",
+    scope: "world",
+    form: "categorical",
+    title: "Which Side of the Road People Drive On",
+    aliases: [
+      "driving side",
+      "left hand traffic",
+      "which side of the road",
+      "side of the road people drive on",
+      "right hand traffic",
+      "left or right hand driving",
+      "traffic side",
+      "countries that drive on the left",
+    ],
+    description:
+      "Two classes covering every country in the boundary file. Thirty-seven keep to one side and the rest to the other; the smaller group is largely a legacy of British colonial road rules, plus Japan, Thailand, Indonesia and Suriname. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "Two classes, and the smaller one is mostly a legacy of a single empire's road rules — plus a few countries that never belonged to it.",
+      "The smaller class holds Japan, India, Australia, southern Africa and the British Isles; continental Europe, the Americas and China are all in the other.",
+    ],
+    data: WORLD_DRIVING_SIDE,
+    categories: [
+      { key: "left", label: "Keep left", color: "#3b6ea5" },
+      { key: "right", label: "Keep right", color: "#e8c39e" },
+    ],
+  },
+  {
+    id: "world-mains-voltage",
+    scope: "world",
+    form: "categorical",
+    title: "Household Mains Voltage",
+    aliases: [
+      "mains voltage",
+      "electrical voltage",
+      "household voltage",
+      "plug voltage",
+      "domestic electricity voltage",
+      "wall socket voltage",
+      "mains electricity standard",
+      "electricity voltage by country",
+    ],
+    description:
+      "Two nominal standards for domestic supply: roughly 100-127 V in North and Central America, the Caribbean, northern South America, Japan and Taiwan, and roughly 220-240 V nearly everywhere else. Brazil is deliberately left unshaded because it uses both, region by region. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "Two engineering standards about a factor of two apart, and which one you are in decides whether a travel adapter also needs to be a converter.",
+      "North America, most of Central America, the Caribbean, Japan and Taiwan share the lower standard; Brazil is left blank because it uses both.",
+    ],
+    data: WORLD_VOLTAGE,
+    allowUncovered: ["Brazil"],
+    categories: [
+      { key: "low", label: "About 100-127 V", color: "#d95f02" },
+      { key: "high", label: "About 220-240 V", color: "#1b9e77" },
+    ],
+  },
+  {
+    id: "world-monarchies",
+    scope: "world",
+    form: "categorical",
+    title: "Countries With a Monarch as Head of State",
+    aliases: [
+      "monarchies",
+      "monarchy",
+      "countries with a king or queen",
+      "which countries have a monarch",
+      "kingdoms",
+      "monarchies of the world",
+      "constitutional monarchies",
+      "royal heads of state",
+    ],
+    description:
+      "Thirty-one countries in the boundary file have a hereditary head of state, counting the Commonwealth realms that share one. The group spans northern Europe, the Gulf, South-East Asia, Morocco, Lesotho, eSwatini and the realms in the Americas and the Pacific. Micro-states below the resolution of the 110m file (Liechtenstein, Monaco, Andorra, Tonga and others) are not represented. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "A yes-or-no about how a country's ceremonial top job is filled — by inheritance rather than by any kind of vote.",
+      "Thirty-one countries are in the smaller class, among them Japan, Thailand, Morocco, Sweden, Canada and Australia.",
+    ],
+    data: WORLD_MONARCHY,
+    categories: [
+      { key: "monarchy", label: "Hereditary head of state", color: "#8c510a" },
+      { key: "republic", label: "Elected head of state", color: "#c7eae5" },
+    ],
+  },
+  {
+    id: "world-megacities",
+    scope: "world",
+    form: "points",
+    title: "Cities With More Than Ten Million People",
+    aliases: [
+      "megacities",
+      "largest cities in the world",
+      "biggest cities",
+      "cities over ten million",
+      "world megacities",
+      "largest urban areas",
+      "biggest urban agglomerations",
+    ],
+    description:
+      "The 33 urban agglomerations that the UN's World Urbanization Prospects counted above ten million residents, each drawn as a single marker. Asia holds more than half of them; sub-Saharan Africa has two, and North America three. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "Thirty-three markers, each one a single settlement rather than a whole country, all sitting above the same round threshold.",
+      "Asia holds more than half of them; the African ones are Cairo, Lagos and Kinshasa, and there are only three in North America.",
+    ],
+    places: WORLD_MEGACITIES,
+    pointColor: "#be123c",
+    pointRadius: 5,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -961,6 +2252,36 @@ function legendSvg(spec, scale, min, max, x0, y, barW, barH) {
     <text x="${x0 + barW / 2}" y="${tickY}" font-family="${FONT}" font-size="15" fill="${TICK_COLOR}" text-anchor="middle">${esc(spec.fmt(mid))}</text>
     <text x="${x0 + barW}" y="${tickY}" font-family="${FONT}" font-size="15" fill="${TICK_COLOR}" text-anchor="end">${esc(spec.fmt(max))}</text>`;
 }
+
+// --- Canvas geometry ------------------------------------------------------
+// The US atlas file is pre-projected into a 975 x 610 planar frame; the world
+// file is projected here. Both projections are built once at module scope so
+// that point, symbol and flow overlays land on exactly the same pixel grid as
+// the polygons underneath them.
+
+const US_W = 975;
+const US_H = 744;
+const US_MAP_Y = 74;
+const WORLD_W = 980;
+const WORLD_H = 620;
+/** Extra canvas height for the forms that need a redactable label strip. */
+const LABEL_LEGEND_EXTRA = 46;
+
+// Documented by us-atlas for states-albers-10m.json.
+const usProjection = geoAlbersUsa().scale(1300).translate([487.5, 305]);
+const usPath = geoPath();
+const worldCollection = { type: "FeatureCollection", features: worldCountries };
+const worldProjection = geoNaturalEarth1().fitExtent(
+  [[12, 70], [WORLD_W - 12, 540]],
+  worldCollection,
+);
+const worldPath = geoPath(worldProjection);
+const worldDrawable = worldCountries.filter(
+  (f) => f.properties.name !== "Antarctica",
+);
+
+const BASE_LAND = "#e4eaf0";
+const BASE_BORDER = "#ffffff";
 
 function renderUs(spec) {
   const W = 975;
@@ -1018,6 +2339,618 @@ function renderWorld(spec) {
 }
 
 // ---------------------------------------------------------------------------
+// Shared pieces for the non-choropleth forms
+// ---------------------------------------------------------------------------
+
+/** Scope-specific canvas, base map and projection helpers. */
+function scopeKit(scope) {
+  if (scope === "us") {
+    return {
+      W: US_W,
+      H: US_H,
+      titleY: 46,
+      titleSize: 30,
+      titleBandHeight: 68,
+      mapDy: US_MAP_Y,
+      features: usStates,
+      path: usPath,
+      project: (lat, lon) => usProjection([lon, lat]),
+      strokeWidth: 0.75,
+      legendY: 698,
+    };
+  }
+  return {
+    W: WORLD_W,
+    H: WORLD_H,
+    titleY: 40,
+    titleSize: 28,
+    titleBandHeight: 58,
+    mapDy: 0,
+    features: worldDrawable,
+    path: worldPath,
+    project: (lat, lon) => worldProjection([lon, lat]),
+    strokeWidth: 0.4,
+    legendY: 566,
+  };
+}
+
+function basePathsSvg(kit, fill = BASE_LAND) {
+  return kit.features
+    .map(
+      (f) =>
+        `<path d="${kit.path(f)}" fill="${fill}" stroke="${BASE_BORDER}" stroke-width="${kit.strokeWidth}" />`,
+    )
+    .join("");
+}
+
+function frameSvg(kit, H, body) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${kit.W}" height="${H}" viewBox="0 0 ${kit.W} ${H}">
+    <rect width="${kit.W}" height="${H}" fill="${BG}" />
+    <text x="${kit.W / 2}" y="${kit.titleY}" font-family="${FONT}" font-size="${kit.titleSize}" font-weight="bold" fill="${TITLE_COLOR}" text-anchor="middle">${esc(kit.title)}</text>
+    ${body}
+  </svg>`;
+}
+
+function titleRegion(kit) {
+  return { kind: "title", x: 0, y: 0, width: kit.W, height: kit.titleBandHeight };
+}
+
+/** Deterministic PRNG so regenerating the maps never churns the PNGs. */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function hashSeed(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** Flatten a (Multi)Polygon into a list of planar rings. */
+function ringsOf(geometry) {
+  if (!geometry) return [];
+  if (geometry.type === "Polygon") return geometry.coordinates;
+  if (geometry.type === "MultiPolygon") return geometry.coordinates.flat();
+  return [];
+}
+
+/** Even-odd ray cast across every ring, which handles holes and islands. */
+function pointInRings(x, y, rings) {
+  let inside = false;
+  for (const ring of rings) {
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0];
+      const yi = ring[i][1];
+      const xj = ring[j][0];
+      const yj = ring[j][1];
+      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+        inside = !inside;
+      }
+    }
+  }
+  return inside;
+}
+
+function parseColor(color) {
+  if (color.startsWith("#")) {
+    const hex = color.length === 4
+      ? color
+          .slice(1)
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : color.slice(1);
+    return [
+      parseInt(hex.slice(0, 2), 16),
+      parseInt(hex.slice(2, 4), 16),
+      parseInt(hex.slice(4, 6), 16),
+    ];
+  }
+  const m = color.match(/(\d+(?:\.\d+)?)/g);
+  return m ? m.slice(0, 3).map(Number) : [0, 0, 0];
+}
+
+function readableTextColor(fill) {
+  const [r, g, b] = parseColor(fill);
+  return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? "#1e293b" : "#ffffff";
+}
+
+// --- Legends --------------------------------------------------------------
+
+/**
+ * Discrete swatch legend. Swatches stay visible (they tell the player this is
+ * a categorical map with N classes); the WORDS sit in their own band well
+ * below, which is returned as a second redaction region so the redactor can
+ * cover them without touching the swatches.
+ */
+function categoryLegend(kit, spec, swatchY) {
+  const cats = spec.categories;
+  const cellW = Math.min(230, (kit.W - 40) / cats.length);
+  const totalW = cellW * cats.length;
+  const x0 = (kit.W - totalW) / 2;
+  const swatchW = Math.min(96, cellW - 24);
+  const swatchH = 18;
+  const labelBaseline = swatchY + swatchH + 50;
+  const parts = [];
+  cats.forEach((c, i) => {
+    const cx = x0 + cellW * i + cellW / 2;
+    parts.push(
+      `<rect x="${(cx - swatchW / 2).toFixed(1)}" y="${swatchY}" width="${swatchW.toFixed(1)}" height="${swatchH}" fill="${c.color}" stroke="#94a3b8" stroke-width="1" rx="3" />`,
+    );
+    parts.push(
+      `<text x="${cx.toFixed(1)}" y="${labelBaseline}" font-family="${FONT}" font-size="14" fill="${TICK_COLOR}" text-anchor="middle">${esc(c.label)}</text>`,
+    );
+  });
+  return {
+    svg: parts.join(""),
+    labelRegion: {
+      kind: "legend",
+      x: 0,
+      y: labelBaseline - 15,
+      width: kit.W,
+      height: 20,
+    },
+  };
+}
+
+/** Nested-free, side-by-side proportional circles with bare numeric labels. */
+function symbolLegend(kit, spec, radiusFor, values, baselineY) {
+  const radii = values.map(radiusFor);
+  const gap = 30;
+  const totalW = radii.reduce((s, r) => s + 2 * r, 0) + gap * (radii.length - 1);
+  let x = (kit.W - totalW) / 2;
+  const parts = [];
+  values.forEach((v, i) => {
+    const r = radii[i];
+    const cx = x + r;
+    parts.push(
+      `<circle cx="${cx.toFixed(1)}" cy="${(baselineY - r).toFixed(1)}" r="${r.toFixed(1)}" fill="${spec.symbolColor}" fill-opacity="0.55" stroke="${spec.symbolColor}" stroke-width="1.2" />`,
+    );
+    parts.push(
+      `<text x="${cx.toFixed(1)}" y="${baselineY + 22}" font-family="${FONT}" font-size="15" fill="${TICK_COLOR}" text-anchor="middle">${esc(spec.fmt(v))}</text>`,
+    );
+    x += 2 * r + gap;
+  });
+  return parts.join("");
+}
+
+function dotLegend(kit, spec, y) {
+  const label = spec.fmt(spec.dotUnit);
+  const cx = kit.W / 2 - 42;
+  return `<circle cx="${cx}" cy="${y}" r="2.4" fill="${spec.dotColor}" />
+    <text x="${cx + 16}" y="${y + 6}" font-family="${FONT}" font-size="17" fill="${TICK_COLOR}" text-anchor="start">= ${esc(label)}</text>`;
+}
+
+function flowLegend(kit, spec, widthFor, values, y) {
+  const parts = [];
+  const seg = 74;
+  const gap = 34;
+  const totalW = values.length * seg + (values.length - 1) * gap;
+  let x = (kit.W - totalW) / 2;
+  for (const v of values) {
+    parts.push(
+      `<line x1="${x.toFixed(1)}" y1="${y}" x2="${(x + seg).toFixed(1)}" y2="${y}" stroke="${spec.flowColor}" stroke-opacity="0.7" stroke-width="${widthFor(v).toFixed(2)}" stroke-linecap="round" />`,
+    );
+    parts.push(
+      `<text x="${(x + seg / 2).toFixed(1)}" y="${y + 26}" font-family="${FONT}" font-size="15" fill="${TICK_COLOR}" text-anchor="middle">${esc(spec.fmt(v))}</text>`,
+    );
+    x += seg + gap;
+  }
+  return parts.join("");
+}
+
+function pointLegend(kit, spec, count, y) {
+  const cx = kit.W / 2 - 30;
+  const r = spec.pointRadius ?? 5;
+  return `<circle cx="${cx}" cy="${y}" r="${r}" fill="${spec.pointColor}" stroke="#ffffff" stroke-width="1.6" />
+    <text x="${cx + r + 14}" y="${y + 6}" font-family="${FONT}" font-size="17" fill="${TICK_COLOR}" text-anchor="start">x ${count}</text>`;
+}
+
+// Classic three-by-three bivariate matrix (Stevens' GnBu scheme).
+const BIVARIATE_MATRIX = [
+  ["#e8e8e8", "#b8d6be", "#73ae80"],
+  ["#b5c0da", "#90b2b3", "#5a9178"],
+  ["#6c83b5", "#567994", "#2a5a5b"],
+];
+
+function bivariateLegend(kit, x0, y0) {
+  const cell = 26;
+  const parts = [];
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 3; col++) {
+      // row 0 drawn at the bottom so "up" means a higher second variable.
+      const y = y0 + (2 - row) * cell;
+      parts.push(
+        `<rect x="${x0 + col * cell}" y="${y}" width="${cell}" height="${cell}" fill="${BIVARIATE_MATRIX[row][col]}" stroke="#ffffff" stroke-width="1" />`,
+      );
+    }
+  }
+  const gridW = 3 * cell;
+  const gridH = 3 * cell;
+  parts.push(
+    `<line x1="${x0}" y1="${y0 + gridH + 12}" x2="${x0 + gridW}" y2="${y0 + gridH + 12}" stroke="${TICK_COLOR}" stroke-width="1.6" marker-end="url(#bivArrow)" />`,
+  );
+  parts.push(
+    `<line x1="${x0 - 12}" y1="${y0 + gridH}" x2="${x0 - 12}" y2="${y0}" stroke="${TICK_COLOR}" stroke-width="1.6" marker-end="url(#bivArrow)" />`,
+  );
+  const defs = `<defs><marker id="bivArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="${TICK_COLOR}" /></marker></defs>`;
+  return defs + parts.join("");
+}
+
+// --- Form renderers -------------------------------------------------------
+
+/**
+ * Proportional (graduated) symbols. `spec.data` puts one circle at each
+ * feature's centroid; `spec.places` puts one circle at each listed coordinate.
+ */
+function renderSymbol(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const rMax = spec.maxRadius ?? 30;
+
+  let items;
+  if (spec.places) {
+    items = spec.places
+      .map((p) => {
+        const xy = kit.project(p.lat, p.lon);
+        return xy ? { x: xy[0], y: xy[1], value: p.value } : null;
+      })
+      .filter(Boolean);
+  } else {
+    items = kit.features
+      .map((f) => {
+        const v = spec.data[f.properties.name];
+        if (v == null) return null;
+        const nudge = US_SYMBOL_NUDGE[f.properties.name];
+        const c = kit.path.centroid(f);
+        if (!Number.isFinite(c[0])) return null;
+        return {
+          x: c[0] + (nudge ? nudge[0] : 0),
+          y: c[1] + (nudge ? nudge[1] : 0),
+          value: v,
+        };
+      })
+      .filter(Boolean);
+  }
+
+  const vmax = Math.max(...items.map((i) => i.value));
+  const radiusFor = (v) => rMax * Math.sqrt(Math.max(v, 0) / vmax);
+
+  const circles = items
+    .slice()
+    .sort((a, b) => b.value - a.value)
+    .map(
+      (i) =>
+        `<circle cx="${i.x.toFixed(1)}" cy="${i.y.toFixed(1)}" r="${radiusFor(i.value).toFixed(2)}" fill="${spec.symbolColor}" fill-opacity="0.5" stroke="${spec.symbolColor}" stroke-width="1.2" />`,
+    )
+    .join("");
+
+  const legendValues = [vmax, vmax * 0.35, vmax * 0.1].map((v) =>
+    vmax >= 40 ? Math.round(v) : Math.round(v * 10) / 10,
+  );
+  const H = kit.H + 40;
+  const baselineY = kit.legendY + 46;
+  const body = `<g transform="translate(0, ${kit.mapDy})">${basePathsSvg(kit)}${circles}</g>
+    ${symbolLegend(kit, spec, radiusFor, legendValues, baselineY)}`;
+
+  return {
+    svg: frameSvg(kit, H, body),
+    W: kit.W,
+    H,
+    regions: [titleRegion(kit)],
+  };
+}
+
+/** Dot density: N seeded dots rejection-sampled inside each polygon. */
+function renderDot(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const dots = [];
+
+  for (const f of kit.features) {
+    const v = spec.data[f.properties.name];
+    if (v == null) continue;
+    const n = Math.round(v / spec.dotUnit);
+    if (n <= 0) continue;
+    const rings = ringsOf(f.geometry);
+    if (!rings.length) continue;
+    const [[x0, y0], [x1, y1]] = kit.path.bounds(f);
+    const rand = mulberry32(hashSeed(`${spec.id}:${f.properties.name}`));
+    let placed = 0;
+    let tries = 0;
+    const maxTries = n * 600 + 3000;
+    while (placed < n && tries < maxTries) {
+      tries++;
+      const x = x0 + rand() * (x1 - x0);
+      const y = y0 + rand() * (y1 - y0);
+      if (pointInRings(x, y, rings)) {
+        dots.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+        placed++;
+      }
+    }
+  }
+
+  const dotSvg = dots
+    .map((d) => {
+      const [x, y] = d.split(",");
+      return `<circle cx="${x}" cy="${y}" r="1.7" />`;
+    })
+    .join("");
+
+  const body = `<g transform="translate(0, ${kit.mapDy})">
+      ${basePathsSvg(kit, "#f1f5f9")}
+      <g fill="${spec.dotColor}" fill-opacity="0.75">${dotSvg}</g>
+      <g fill="none" stroke="#94a3b8" stroke-width="0.7">${kit.features.map((f) => `<path d="${kit.path(f)}" />`).join("")}</g>
+    </g>
+    ${dotLegend(kit, spec, kit.legendY + 8)}`;
+
+  return {
+    svg: frameSvg(kit, kit.H, body),
+    W: kit.W,
+    H: kit.H,
+    regions: [titleRegion(kit)],
+  };
+}
+
+/** Qualitative / binary map: fill by class, discrete swatch legend. */
+function renderCategorical(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const H = kit.H + LABEL_LEGEND_EXTRA;
+  const colorOf = Object.fromEntries(spec.categories.map((c) => [c.key, c.color]));
+
+  const paths = kit.features
+    .map((f) => {
+      const key = spec.data[f.properties.name];
+      const fill = key == null ? NO_DATA : (colorOf[key] ?? NO_DATA);
+      return `<path d="${kit.path(f)}" fill="${fill}" stroke="${BORDER}" stroke-width="${kit.strokeWidth}" />`;
+    })
+    .join("");
+
+  const legend = categoryLegend(kit, spec, kit.legendY - 8);
+  const body = `<g transform="translate(0, ${kit.mapDy})">${paths}</g>${legend.svg}`;
+
+  return {
+    svg: frameSvg(kit, H, body),
+    W: kit.W,
+    H,
+    regions: [titleRegion(kit), legend.labelRegion],
+  };
+}
+
+/** Scattered located points, no polygon shading at all. */
+function renderPoints(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const r = spec.pointRadius ?? 5;
+  const pts = spec.places
+    .map((p) => kit.project(p.lat, p.lon))
+    .filter((xy) => xy && Number.isFinite(xy[0]));
+
+  const markers = pts
+    .map(
+      (xy) =>
+        `<circle cx="${xy[0].toFixed(1)}" cy="${xy[1].toFixed(1)}" r="${r}" fill="${spec.pointColor}" fill-opacity="0.9" stroke="#ffffff" stroke-width="1.6" />`,
+    )
+    .join("");
+
+  const body = `<g transform="translate(0, ${kit.mapDy})">${basePathsSvg(kit, "#eef2f7")}${markers}</g>
+    ${pointLegend(kit, spec, pts.length, kit.legendY + 12)}`;
+
+  return {
+    svg: frameSvg(kit, kit.H, body),
+    W: kit.W,
+    H: kit.H,
+    regions: [titleRegion(kit)],
+  };
+}
+
+/** Origin-destination arcs, width-scaled. */
+function renderFlow(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const vmax = Math.max(...spec.flows.map((f) => f.value));
+  const wMax = spec.maxWidth ?? 9;
+  const widthFor = (v) => Math.max(0.8, wMax * Math.sqrt(v / vmax));
+
+  const arcs = [];
+  const nodes = new Map();
+  for (const flow of spec.flows) {
+    const a = kit.project(flow.from[0], flow.from[1]);
+    const b = kit.project(flow.to[0], flow.to[1]);
+    if (!a || !b) continue;
+    nodes.set(`${a[0].toFixed(1)},${a[1].toFixed(1)}`, a);
+    nodes.set(`${b[0].toFixed(1)},${b[1].toFixed(1)}`, b);
+    // Bow the arc perpendicular to the chord so parallel routes stay legible.
+    const mx = (a[0] + b[0]) / 2;
+    const my = (a[1] + b[1]) / 2;
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const len = Math.hypot(dx, dy) || 1;
+    const cx = mx - dy * 0.13;
+    const cy = my + dx * 0.13;
+    arcs.push(
+      `<path d="M ${a[0].toFixed(1)} ${a[1].toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(1)} ${b[0].toFixed(1)} ${b[1].toFixed(1)}" fill="none" stroke="${spec.flowColor}" stroke-opacity="0.55" stroke-width="${widthFor(flow.value).toFixed(2)}" stroke-linecap="round" />`,
+    );
+  }
+  const nodeSvg = [...nodes.values()]
+    .map(
+      (p) =>
+        `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.2" fill="#0f172a" />`,
+    )
+    .join("");
+
+  const legendValues = [vmax, vmax * 0.6, vmax * 0.33].map(
+    (v) => Math.round(v * 10) / 10,
+  );
+  const body = `<g transform="translate(0, ${kit.mapDy})">${basePathsSvg(kit, "#eef2f7")}${arcs.join("")}${nodeSvg}</g>
+    ${flowLegend(kit, spec, widthFor, legendValues, kit.legendY + 6)}`;
+
+  return {
+    svg: frameSvg(kit, kit.H, body),
+    W: kit.W,
+    H: kit.H,
+    regions: [titleRegion(kit)],
+  };
+}
+
+function tercileBreaks(values) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const at = (q) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))];
+  return [at(1 / 3), at(2 / 3)];
+}
+
+function classOf(v, breaks) {
+  return v <= breaks[0] ? 0 : v <= breaks[1] ? 1 : 2;
+}
+
+/** Bivariate choropleth over two variables with a three-by-three key. */
+function renderBivariate(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const names = kit.features
+    .map((f) => f.properties.name)
+    .filter((n) => spec.dataX[n] != null && spec.dataY[n] != null);
+  const bx = tercileBreaks(names.map((n) => spec.dataX[n]));
+  const by = tercileBreaks(names.map((n) => spec.dataY[n]));
+
+  const paths = kit.features
+    .map((f) => {
+      const n = f.properties.name;
+      const x = spec.dataX[n];
+      const y = spec.dataY[n];
+      const fill =
+        x == null || y == null
+          ? NO_DATA
+          : BIVARIATE_MATRIX[classOf(y, by)][classOf(x, bx)];
+      return `<path d="${kit.path(f)}" fill="${fill}" stroke="${BORDER}" stroke-width="${kit.strokeWidth}" />`;
+    })
+    .join("");
+
+  const H = kit.H + 60;
+  const body = `<g transform="translate(0, ${kit.mapDy})">${paths}</g>
+    ${bivariateLegend(kit, kit.W / 2 - 39, kit.legendY + 2)}`;
+
+  return {
+    svg: frameSvg(kit, H, body),
+    W: kit.W,
+    H,
+    regions: [titleRegion(kit)],
+  };
+}
+
+// --- Tile-grid cartogram (US only) ----------------------------------------
+
+const TILE_SIZE = 62;
+const TILE_PITCH = 70;
+const TILE_COLS = 12;
+const TILE_ROWS = 8;
+const TILE_X0 = (US_W - (TILE_COLS * TILE_PITCH - (TILE_PITCH - TILE_SIZE))) / 2;
+const TILE_Y0 = 108;
+
+function renderTileGrid(spec) {
+  const kit = scopeKit("us");
+  kit.title = spec.title;
+  const categorical = Boolean(spec.categories);
+  const H = categorical ? kit.H + LABEL_LEGEND_EXTRA : kit.H;
+
+  let fillFor;
+  let scale;
+  let min;
+  let max;
+  if (categorical) {
+    const colorOf = Object.fromEntries(spec.categories.map((c) => [c.key, c.color]));
+    fillFor = (v) => (v == null ? NO_DATA : (colorOf[v] ?? NO_DATA));
+  } else {
+    ({ scale, min, max } = buildScale(spec));
+    fillFor = (v) => (v == null ? NO_DATA : scale(v));
+  }
+
+  const tiles = [];
+  for (const f of usStates) {
+    const name = f.properties.name;
+    const abbr = US_ABBR[name];
+    const cell = US_TILE_GRID[abbr];
+    if (!cell) continue;
+    const [row, col] = cell;
+    const x = TILE_X0 + col * TILE_PITCH;
+    const y = TILE_Y0 + row * TILE_PITCH;
+    const fill = fillFor(spec.data[name]);
+    tiles.push(
+      `<rect x="${x.toFixed(1)}" y="${y}" width="${TILE_SIZE}" height="${TILE_SIZE}" rx="6" fill="${fill}" stroke="#ffffff" stroke-width="2" />` +
+        `<text x="${(x + TILE_SIZE / 2).toFixed(1)}" y="${y + TILE_SIZE / 2 + 7}" font-family="${FONT}" font-size="20" font-weight="bold" fill="${readableTextColor(fill)}" text-anchor="middle">${abbr}</text>`,
+    );
+  }
+
+  let legendSvgStr;
+  const regions = [titleRegion(kit)];
+  if (categorical) {
+    const legend = categoryLegend(kit, spec, kit.legendY - 8);
+    legendSvgStr = legend.svg;
+    regions.push(legend.labelRegion);
+  } else {
+    legendSvgStr = legendSvg(spec, scale, min, max, (kit.W - 440) / 2, kit.legendY - 8, 440, 18);
+  }
+
+  return {
+    svg: frameSvg(kit, H, `<g>${tiles.join("")}</g>${legendSvgStr}`),
+    W: kit.W,
+    H,
+    regions,
+  };
+}
+
+// Small pixel nudges for centroids that fall in open water or collide with a
+// neighbour on the graduated-symbol maps.
+const US_SYMBOL_NUDGE = {
+  Michigan: [18, 26],
+  "District of Columbia": [12, 14],
+  Maryland: [-12, -8],
+  Hawaii: [0, -6],
+  Louisiana: [-6, -10],
+  Florida: [14, -18],
+  Virginia: [12, 0],
+};
+
+// --- Dispatcher -----------------------------------------------------------
+
+function renderSpec(spec) {
+  const form = spec.form ?? "choropleth";
+  switch (form) {
+    case "choropleth": {
+      const r = spec.scope === "us" ? renderUs(spec) : renderWorld(spec);
+      return { ...r, regions: [{ kind: "title", ...r.titleBand }] };
+    }
+    case "symbol":
+    case "point-symbol":
+      return renderSymbol(spec);
+    case "dot":
+      return renderDot(spec);
+    case "categorical":
+      return renderCategorical(spec);
+    case "points":
+      return renderPoints(spec);
+    case "flow":
+      return renderFlow(spec);
+    case "bivariate":
+      return renderBivariate(spec);
+    case "tilegrid":
+      return renderTileGrid(spec);
+    default:
+      throw new Error(`unknown map form: ${form}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Leak check (mirrors src/lib/guessMatch.ts hintLeaksAnswer, so authoring
 // catches a leaking hint here instead of at runtime).
 // ---------------------------------------------------------------------------
@@ -1055,14 +2988,34 @@ function hintLeaks(hint, title, aliases) {
 async function main() {
   mkdirSync(OUT_IMG_DIR, { recursive: true });
 
-  // Warn about dataset keys that don't match any atlas feature name.
+  // Verify dataset keys against the atlas. An unmatched key is a silent
+  // rendering hole, so it throws rather than warns; for the categorical and
+  // tile-grid forms every feature must also be COVERED, because an unshaded
+  // state in a class map reads as a fourth, meaningless class.
   const usNames = new Set(usStates.map((f) => f.properties.name));
-  const worldNames = new Set(worldCountries.map((f) => f.properties.name));
+  const worldNames = new Set(
+    worldCountries
+      .map((f) => f.properties.name)
+      .filter((n) => n !== "Antarctica"),
+  );
+  const ids = new Set();
   for (const spec of MAPS) {
+    if (ids.has(spec.id)) throw new Error(`duplicate map id: ${spec.id}`);
+    ids.add(spec.id);
+    if (!spec.data) continue;
     const names = spec.scope === "us" ? usNames : worldNames;
     const unmatched = Object.keys(spec.data).filter((k) => !names.has(k));
     if (unmatched.length) {
-      console.warn(`  [${spec.id}] unmatched dataset keys: ${unmatched.join(", ")}`);
+      throw new Error(`[${spec.id}] unmatched dataset keys: ${unmatched.join(", ")}`);
+    }
+    const form = spec.form ?? "choropleth";
+    if (form === "categorical" || (form === "tilegrid" && spec.categories)) {
+      const uncovered = [...names].filter((n) => spec.data[n] == null);
+      const allowed = new Set(spec.allowUncovered ?? []);
+      const bad = uncovered.filter((n) => !allowed.has(n));
+      if (bad.length) {
+        console.warn(`  [${spec.id}] features with no class: ${bad.join(", ")}`);
+      }
     }
   }
 
@@ -1076,8 +3029,14 @@ async function main() {
       }
     }
 
-    const r = spec.scope === "us" ? renderUs(spec) : renderWorld(spec);
-    const png = await sharp(Buffer.from(r.svg)).png().toBuffer();
+    const r = renderSpec(spec);
+    // Palette quantisation: these are flat-colour maps with few distinct
+    // tones, so an indexed PNG is visually identical and roughly a third the
+    // size. The whole set is base64-embedded into the server bundle, so the
+    // saving matters.
+    const png = await sharp(Buffer.from(r.svg))
+      .png({ palette: true, quality: 92, effort: 8 })
+      .toBuffer();
     const outPath = join(OUT_IMG_DIR, `${spec.id}.png`);
     writeFileSync(outPath, png);
     embedded[`static:${spec.id}`] = png.toString("base64");
@@ -1099,7 +3058,7 @@ async function main() {
         licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
         sourcePageUrl: REPO_URL,
       },
-      preauthoredRedactionRegions: [{ kind: "title", ...r.titleBand }],
+      preauthoredRedactionRegions: r.regions,
       preauthoredHints: spec.hints,
     });
   }
