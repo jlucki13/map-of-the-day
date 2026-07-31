@@ -438,10 +438,6 @@
 .game-grid > .area-board {
   grid-area: board;
   min-width: 0;
-  /* Capped so that when this area spans the full row (the "board board" row
-     below lg) it reads as a card left-aligned under the map, not a list
-     stretched the width of the desk with all its rows crammed to one side. */
-  max-width: 28rem;
 }
 
 @media (min-width: 1024px) {
@@ -450,9 +446,21 @@
     row-gap: 2rem;
     align-items: start;
     grid-template-columns: minmax(0, 1fr) 21rem;
+    /* The rail runs a good deal taller than the map, so the board goes into
+       the gap that leaves under the map rather than onto a row of its own
+       below both — which stranded it past the fold with the whole rail's
+       width of nothing beside it. Sharing the map's column also lines their
+       edges up, so the two read as one stack. */
     grid-template-areas:
       "map rail"
-      "board board";
+      "board rail";
+    align-content: start;
+  }
+
+  /* The rail spans both rows; without this it stretches to their combined
+     height and its sticky offset has nothing to bite on. */
+  .game-grid > .area-rail {
+    align-self: start;
   }
 }
 

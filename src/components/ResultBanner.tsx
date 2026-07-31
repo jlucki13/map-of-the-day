@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import type { PuzzleReveal } from "@/types";
 import GuessPips from "./GuessPips";
@@ -19,6 +19,14 @@ export interface ResultBannerProps {
    * the viewer's own row on the leaderboard may only now exist.
    */
   onNicknameSaved?: () => void;
+  /**
+   * Rendered under the scoring card, in the same narrow column. The caption on
+   * the left runs long and this column runs short, so anything the finished
+   * page still wants to show belongs here rather than stacked below the whole
+   * banner, where it would sit past the attribution line with the width of the
+   * caption empty beside it.
+   */
+  aside?: ReactNode;
 }
 
 /**
@@ -52,6 +60,7 @@ export default function ResultBanner({
   guessHistory,
   maxGuesses,
   onNicknameSaved,
+  aside,
 }: ResultBannerProps) {
   const [copied, setCopied] = useState(false);
   // Locally track a name saved via the inline prompt so we can swap it out for
@@ -145,45 +154,49 @@ export default function ResultBanner({
       {/* The scoring column keeps the rail's panel treatment, so the finished
           page still reads as an instrument standing beside the sheet, and so
           nothing here is set over the globe. */}
-      <div className="h-fit space-y-6 rounded-panel border border-hairline bg-surface p-5 shadow-plate lg:p-6">
-        <div>
-          <p className="rail-marker">Your round</p>
-          <div className="mt-3">
-            <GuessPips guessHistory={guessHistory} maxGuesses={maxGuesses} />
+      <div className="h-fit space-y-6">
+        <div className="space-y-6 rounded-panel border border-hairline bg-surface p-5 shadow-plate lg:p-6">
+          <div>
+            <p className="rail-marker">Your round</p>
+            <div className="mt-3">
+              <GuessPips guessHistory={guessHistory} maxGuesses={maxGuesses} />
+            </div>
+            <p className="mt-3 text-sm text-ink-muted">
+              {won
+                ? `Solved on guess ${guessHistory.length} of ${maxGuesses}.`
+                : `All ${maxGuesses} guesses spent.`}
+            </p>
           </div>
-          <p className="mt-3 text-sm text-ink-muted">
-            {won
-              ? `Solved on guess ${guessHistory.length} of ${maxGuesses}.`
-              : `All ${maxGuesses} guesses spent.`}
-          </p>
-        </div>
 
-        {won && scoreAwarded && !hasNickname && (
-          <div className="border-t border-hairline pt-5">
-            <NicknamePrompt
-              points={scoreAwarded.points}
-              onSaved={(name) => {
-                setSavedNickname(name);
-                onNicknameSaved?.();
-              }}
-            />
-          </div>
-        )}
-
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-hairline pt-5">
-          <button
-            type="button"
-            onClick={copyShareGrid}
-            className={secondaryAction}
-          >
-            {copied ? "Copied" : "Copy result"}
-          </button>
-          {hasNickname && (
-            <Link href="/leaderboard" className={inlineLink}>
-              View leaderboard
-            </Link>
+          {won && scoreAwarded && !hasNickname && (
+            <div className="border-t border-hairline pt-5">
+              <NicknamePrompt
+                points={scoreAwarded.points}
+                onSaved={(name) => {
+                  setSavedNickname(name);
+                  onNicknameSaved?.();
+                }}
+              />
+            </div>
           )}
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-hairline pt-5">
+            <button
+              type="button"
+              onClick={copyShareGrid}
+              className={secondaryAction}
+            >
+              {copied ? "Copied" : "Copy result"}
+            </button>
+            {hasNickname && (
+              <Link href="/leaderboard" className={inlineLink}>
+                View leaderboard
+              </Link>
+            )}
+          </div>
         </div>
+
+        {aside}
       </div>
     </section>
   );

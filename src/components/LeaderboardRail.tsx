@@ -80,7 +80,8 @@ export default function LeaderboardRail({
         const res = await fetch(`/api/leaderboard?limit=${TOP_N}`, {
           cache: "no-store",
         });
-        if (!res.ok) throw new Error(`leaderboard fetch failed (${res.status})`);
+        if (!res.ok)
+          throw new Error(`leaderboard fetch failed (${res.status})`);
         const data = (await res.json()) as PublicLeaderboardView;
         if (!cancelled) setView(data);
       } catch {
@@ -97,7 +98,11 @@ export default function LeaderboardRail({
 
   const entries = view?.entries ?? [];
   const you = view?.you ?? null;
-  const youInList = you !== null && entries.some((e) => e.rank === you.rank);
+  // Trust the server's flag rather than matching you.rank against a row's
+  // rank: ranks tie, and a viewer with points but no nickname is deliberately
+  // absent from `entries` while still holding a rank that some *other* named
+  // player also occupies — rank-matching badges that stranger as "You".
+  const youInList = entries.some((e) => e.isViewer);
 
   return (
     <div
@@ -128,19 +133,14 @@ export default function LeaderboardRail({
 
         {!loading && !error && entries.length === 0 && !you && (
           <p className="text-sm leading-relaxed text-ink-subtle">
-            Nobody has claimed a place yet. Win a round to take the first
-            spot.
+            Nobody has claimed a place yet. Win a round to take the first spot.
           </p>
         )}
 
         {!loading && !error && (entries.length > 0 || you) && (
           <ol className="divide-y divide-hairline/70">
             {entries.map((e) => (
-              <StandingRow
-                key={e.rank}
-                entry={e}
-                isYou={you !== null && e.rank === you.rank}
-              />
+              <StandingRow key={e.rank} entry={e} isYou={e.isViewer === true} />
             ))}
             {you && !youInList && <StandingRow entry={you} isYou />}
           </ol>

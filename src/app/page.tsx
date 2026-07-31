@@ -75,9 +75,7 @@ export default function Page() {
       setView(data);
       setGuessError(null);
     } catch {
-      setLoadError(
-        "Couldn't load today's map. Refresh the page to try again.",
-      );
+      setLoadError("Couldn't load today's map. Refresh the page to try again.");
     } finally {
       setLoading(false);
     }
@@ -148,9 +146,15 @@ export default function Page() {
       <GlobeBackground />
 
       <main className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[76rem] flex-col px-4 pb-12 pt-5 sm:px-8 2xl:max-w-[88rem]">
-        <Nav active="game" onOpenInstructions={() => setInstructionsOpen(true)} />
+        <Nav
+          active="game"
+          onOpenInstructions={() => setInstructionsOpen(true)}
+        />
 
-        <InstructionsModal open={instructionsOpen} onClose={closeInstructions} />
+        <InstructionsModal
+          open={instructionsOpen}
+          onClose={closeInstructions}
+        />
 
         <div className="mt-4 border-t border-hairline pt-7 sm:pt-8">
           {loading && (
@@ -253,9 +257,9 @@ export default function Page() {
           {/* Finished: the rail has nothing left to control, so it goes, the
               map is uncovered at full width and the round gets a caption. A
               third column here would fight the caption for the reader's eye,
-              so the board isn't promoted to one — it follows the result as
-              the next thing worth a look, capped to the same card width it
-              gets everywhere else rather than stretching the full plate. */}
+              so the board isn't promoted to one — it rides in the caption's
+              own narrow column, under the scoring card, where the page has
+              room going spare. */}
           {!loading && view && session && finished && (
             <div className="space-y-9">
               <div className="mx-auto w-full max-w-4xl">
@@ -273,11 +277,7 @@ export default function Page() {
                 guessHistory={session.guessHistory}
                 maxGuesses={MAX_GUESSES}
                 onNicknameSaved={bumpBoard}
-              />
-
-              <LeaderboardRail
-                className="max-w-[28rem]"
-                refreshSignal={boardRefreshKey}
+                aside={<LeaderboardRail refreshSignal={boardRefreshKey} />}
               />
             </div>
           )}
