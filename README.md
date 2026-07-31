@@ -1,9 +1,11 @@
 # Map of the Day
 
 A Wordle-style daily game: once per configurable interval (default 24h) the
-site publishes one **thematic data map** — a choropleth shading states or
-countries by some statistic — with its **title redacted**, and everyone
-guesses **what the map is depicting** (the variable being visualized, e.g.
+site publishes one **thematic data map** — a choropleth, a graduated-symbol
+map, a dot-density map, a categorical class map, a tile cartogram, a point
+map, a flow map or a bivariate map of states or countries — with its **title
+redacted**, and everyone guesses **what the map is depicting** (the variable
+being visualized, e.g.
 "population by state" or "highest elevation"). The color scale stays visible
 as a clue; the words that name the topic don't. 5 guesses; a hint unlocks
 after the 3rd and 4th wrong guess; the answer, description, and source
@@ -56,11 +58,16 @@ Tip: set `PUZZLE_INTERVAL_SECONDS=300` in `.env` to watch rotation happen.
   (Fable 5) final QA on exactly what a player will see. Live sub-agents use
   structured outputs (`output_config.format`), Fable calls set the
   server-side fallback-to-Opus-4.8 beta and handle `refusal` stop reasons.
-- **Sources** (`src/sources/`): a self-generated **thematic dataset** (8
-  choropleths rendered by `scripts/generate-maps.mjs` from public-domain
-  boundaries — US Census TIGER via `us-atlas`, Natural Earth via
-  `world-atlas` — shaded by real public statistics; CC0, self-hosted under
-  `public/generated-maps/`) used in mock mode and as automatic fallback, plus
+- **Sources** (`src/sources/`): a self-generated **thematic dataset** (45
+  maps rendered by `scripts/generate-maps.mjs` from public-domain boundaries —
+  US Census TIGER via `us-atlas`, Natural Earth via `world-atlas` — driven by
+  real public statistics; CC0, self-hosted under `public/generated-maps/`).
+  Nine cartographic forms are supported: sequential choropleth, graduated
+  symbols (at centroids or at true coordinates), seeded dot density,
+  categorical/binary class maps, tile-grid cartograms, point maps, flow maps
+  and bivariate choropleths. Class maps carry a second preauthored redaction
+  region over the legend's words so the swatches survive but the labels do
+  not. Used in mock mode and as automatic fallback, plus
   the Wikimedia Commons live API retargeted to thematic-map categories (raster
   maps with complete license metadata, honest User-Agent per Wikimedia
   policy). Regenerate the dataset with `npm run generate:maps`. Dedupe against
