@@ -2,6 +2,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-population",
+    "form": "choropleth",
     "title": "Population by State (2020 Census)",
     "aliases": [
       "population",
@@ -37,6 +38,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-land-area",
+    "form": "choropleth",
     "title": "Land Area by State (square miles)",
     "aliases": [
       "land area",
@@ -73,6 +75,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-statehood-order",
+    "form": "choropleth",
     "title": "Order of Admission to the Union",
     "aliases": [
       "order of statehood",
@@ -109,6 +112,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-electoral-votes",
+    "form": "choropleth",
     "title": "Electoral Votes per State (2024)",
     "aliases": [
       "electoral votes",
@@ -144,6 +148,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-counties",
+    "form": "choropleth",
     "title": "Number of Counties per State",
     "aliases": [
       "number of counties",
@@ -179,6 +184,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-elevation",
+    "form": "choropleth",
     "title": "Highest Elevation Point by State (feet)",
     "aliases": [
       "highest elevation",
@@ -216,6 +222,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-population",
+    "form": "choropleth",
     "title": "Population by Country (~2020)",
     "aliases": [
       "population",
@@ -251,6 +258,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-land-area",
+    "form": "choropleth",
     "title": "Land Area by Country (thousand km²)",
     "aliases": [
       "land area",
@@ -288,6 +296,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-median-income",
+    "form": "choropleth",
     "title": "Median Household Income by State (2022)",
     "aliases": [
       "median household income",
@@ -324,6 +333,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-snowfall",
+    "form": "choropleth",
     "title": "Average Annual Snowfall by State (inches)",
     "aliases": [
       "annual snowfall",
@@ -360,6 +370,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-forest-cover",
+    "form": "choropleth",
     "title": "Percent of Land Covered by Forest",
     "aliases": [
       "forest cover",
@@ -396,6 +407,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-january-low",
+    "form": "choropleth",
     "title": "Average January Low Temperature (°F)",
     "aliases": [
       "average january low temperature",
@@ -432,6 +444,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-minimum-wage",
+    "form": "choropleth",
     "title": "State Minimum Wage in 2024 (per hour)",
     "aliases": [
       "minimum wage",
@@ -468,6 +481,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-commute-time",
+    "form": "choropleth",
     "title": "Average Commute Time to Work (minutes)",
     "aliases": [
       "average commute time",
@@ -504,6 +518,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-life-expectancy",
+    "form": "choropleth",
     "title": "Life Expectancy at Birth by State (years)",
     "aliases": [
       "life expectancy",
@@ -540,6 +555,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-wind-share",
+    "form": "choropleth",
     "title": "Share of Electricity from Wind (%)",
     "aliases": [
       "share of electricity from wind",
@@ -576,6 +592,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-corn-production",
+    "form": "choropleth",
     "title": "Corn Production (million bushels, 2023)",
     "aliases": [
       "corn production",
@@ -612,6 +629,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-gdp-per-capita",
+    "form": "choropleth",
     "title": "GDP per Capita by Country (~2022)",
     "aliases": [
       "gdp per capita",
@@ -648,6 +666,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-urban-share",
+    "form": "choropleth",
     "title": "Urban Share of Population (%)",
     "aliases": [
       "urban population share",
@@ -684,6 +703,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-fertility-rate",
+    "form": "choropleth",
     "title": "Births per Woman by Country (~2021)",
     "aliases": [
       "fertility rate",
@@ -721,6 +741,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-pro-sports-teams",
+    "form": "symbol",
     "title": "Major League Sports Franchises per State",
     "aliases": [
       "major league sports teams",
@@ -759,6 +780,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-busiest-airports",
+    "form": "point-symbol",
     "title": "Busiest U.S. Airports by Passengers (2023)",
     "aliases": [
       "busiest airports",
@@ -797,6 +819,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-tornadoes",
+    "form": "symbol",
     "title": "Average Tornadoes per Year by State",
     "aliases": [
       "tornadoes per year",
@@ -835,6 +858,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-farms",
+    "form": "dot",
     "title": "Number of Farms by State",
     "aliases": [
       "number of farms",
@@ -873,6 +897,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-hogs",
+    "form": "dot",
     "title": "Hogs and Pigs on Farms by State",
     "aliases": [
       "hog inventory",
@@ -912,6 +937,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-oil-production",
+    "form": "dot",
     "title": "Crude Oil Production by State (2023)",
     "aliases": [
       "crude oil production",
@@ -950,6 +976,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-cannabis-laws",
+    "form": "categorical",
     "title": "State Cannabis Laws (2024)",
     "aliases": [
       "cannabis legalization",
@@ -996,6 +1023,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-electricity-source",
+    "form": "categorical",
     "title": "Largest Source of Electricity by State (2023)",
     "aliases": [
       "main electricity source",
@@ -1041,6 +1069,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-liquor-control",
+    "form": "categorical",
     "title": "State-Controlled Liquor Sales",
     "aliases": [
       "alcoholic beverage control states",
@@ -1087,6 +1116,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-death-penalty",
+    "form": "categorical",
     "title": "States That Still Authorise Capital Punishment",
     "aliases": [
       "death penalty",
@@ -1132,6 +1162,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-right-to-work",
+    "form": "tilegrid",
     "title": "Right-to-Work States",
     "aliases": [
       "right to work laws",
@@ -1177,6 +1208,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-sales-tax",
+    "form": "tilegrid",
     "title": "State Sales Tax Rate (2024)",
     "aliases": [
       "sales tax rate",
@@ -1215,6 +1247,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-obesity",
+    "form": "tilegrid",
     "title": "Adult Obesity Rate by State",
     "aliases": [
       "obesity rate",
@@ -1253,6 +1286,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-nuclear-plants",
+    "form": "points",
     "title": "Operating Nuclear Power Plants",
     "aliases": [
       "nuclear power plants",
@@ -1291,6 +1325,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-national-parks",
+    "form": "points",
     "title": "Locations of the National Parks",
     "aliases": [
       "national parks",
@@ -1328,6 +1363,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-air-routes",
+    "form": "flow",
     "title": "Busiest Domestic Air Routes",
     "aliases": [
       "busiest flight routes",
@@ -1366,6 +1402,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-income-lifespan",
+    "form": "bivariate",
     "title": "Household Income and Life Expectancy Together",
     "aliases": [
       "income and life expectancy",
@@ -1404,6 +1441,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-federal-land",
+    "form": "choropleth",
     "title": "Share of Each State Owned by the Federal Government",
     "aliases": [
       "federal land ownership",
@@ -1442,6 +1480,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-alcohol",
+    "form": "choropleth",
     "title": "Alcohol Consumed per Person",
     "aliases": [
       "alcohol consumption per capita",
@@ -1480,6 +1519,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-heritage-sites",
+    "form": "symbol",
     "title": "UNESCO World Heritage Sites per Country",
     "aliases": [
       "world heritage sites",
@@ -1518,6 +1558,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-co2-emissions",
+    "form": "symbol",
     "title": "Carbon Dioxide Emissions by Country",
     "aliases": [
       "co2 emissions",
@@ -1556,6 +1597,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-driving-side",
+    "form": "categorical",
     "title": "Which Side of the Road People Drive On",
     "aliases": [
       "driving side",
@@ -1602,6 +1644,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-mains-voltage",
+    "form": "categorical",
     "title": "Household Mains Voltage",
     "aliases": [
       "mains voltage",
@@ -1648,6 +1691,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-monarchies",
+    "form": "categorical",
     "title": "Countries With a Monarch as Head of State",
     "aliases": [
       "monarchies",
@@ -1694,6 +1738,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-megacities",
+    "form": "points",
     "title": "Cities With More Than Ten Million People",
     "aliases": [
       "megacities",
@@ -1732,6 +1777,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-population-change",
+    "form": "diverging",
     "title": "Population Change, 2010 to 2020",
     "aliases": [
       "population change",
@@ -1769,6 +1815,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-net-migration",
+    "form": "diverging",
     "title": "Net Domestic Migration",
     "aliases": [
       "net migration",
@@ -1806,6 +1853,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-population-growth",
+    "form": "diverging",
     "title": "Annual Population Growth Rate",
     "aliases": [
       "population growth rate",
@@ -1842,6 +1890,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-uninsured",
+    "form": "classed",
     "title": "Share of People Without Health Insurance",
     "aliases": [
       "uninsured rate",
@@ -1879,6 +1928,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-homeownership",
+    "form": "classed",
     "title": "Homeownership Rate",
     "aliases": [
       "homeownership rate",
@@ -1916,6 +1966,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-median-age",
+    "form": "classed",
     "title": "Median Age",
     "aliases": [
       "median age",
@@ -1952,6 +2003,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-gdp",
+    "form": "cartogram",
     "title": "State Economy Size",
     "aliases": [
       "state gdp",
@@ -1989,6 +2041,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-veterans",
+    "form": "cartogram",
     "title": "Number of Military Veterans",
     "aliases": [
       "veterans",
@@ -2026,6 +2079,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-military-spending",
+    "form": "cartogram",
     "title": "Military Spending",
     "aliases": [
       "military spending",
@@ -2063,6 +2117,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-k12-enrollment",
+    "form": "dorling",
     "title": "Public School Enrollment",
     "aliases": [
       "public school enrollment",
@@ -2100,6 +2155,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-college-enrollment",
+    "form": "dorling",
     "title": "Higher Education Enrollment",
     "aliases": [
       "college enrollment",
@@ -2137,6 +2193,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-internet-users",
+    "form": "dorling",
     "title": "Number of Internet Users",
     "aliases": [
       "internet users",
@@ -2173,6 +2230,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-electricity-price",
+    "form": "spike",
     "title": "Residential Electricity Price",
     "aliases": [
       "electricity price",
@@ -2210,6 +2268,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-gas-price",
+    "form": "spike",
     "title": "Average Gasoline Price",
     "aliases": [
       "gas prices",
@@ -2248,6 +2307,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-lightning",
+    "form": "spike",
     "title": "Lightning Strike Density",
     "aliases": [
       "lightning",
@@ -2285,6 +2345,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:world-tourists",
+    "form": "spike",
     "title": "International Tourist Arrivals",
     "aliases": [
       "tourist arrivals",
@@ -2322,6 +2383,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-age-structure",
+    "form": "composition",
     "title": "Age Structure of the Population",
     "aliases": [
       "age structure",
@@ -2367,6 +2429,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-education",
+    "form": "composition",
     "title": "Educational Attainment of Adults",
     "aliases": [
       "educational attainment",
@@ -2412,6 +2475,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-rainfall",
+    "form": "surface",
     "title": "Average Annual Precipitation",
     "aliases": [
       "rainfall",
@@ -2450,6 +2514,7 @@
   {
     "sourceId": "static-dataset",
     "externalId": "static:us-sunshine",
+    "form": "surface",
     "title": "Average Annual Sunshine Hours",
     "aliases": [
       "sunshine",

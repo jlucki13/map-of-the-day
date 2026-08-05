@@ -4278,6 +4278,9 @@ async function main() {
     entries.push({
       sourceId: "static-dataset",
       externalId: `static:${spec.id}`,
+      // Carried through purely for the private answer-key page, which uses it
+      // to group and filter the set. Nothing in the game reads it.
+      form: spec.form ?? "choropleth",
       title: spec.title,
       aliases: spec.aliases,
       description: spec.description,

@@ -37,6 +37,12 @@ export interface CandidateMap {
     licenseUrl?: string;
     sourcePageUrl: string;
   };
+  /**
+   * static-dataset only: which cartographic form the generator drew this with
+   * (choropleth, spike, surface, ...). Recorded for the private answer-key
+   * page; the game itself never branches on it.
+   */
+  form?: string;
   /** static-dataset only */
   preauthoredRedactionRegions?: RedactionRegion[];
   /** static-dataset only */

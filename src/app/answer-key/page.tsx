@@ -18,11 +18,21 @@ export const metadata: Metadata = {
 
 interface StaticMapRecord {
   externalId: string;
+  form?: string;
   title: string;
   aliases: string[];
   description: string;
   imageUrl: string;
+  width?: number;
+  height?: number;
   preauthoredHints: string[];
+  preauthoredRedactionRegions?: {
+    kind: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }[];
 }
 
 function toEntries(): AnswerKeyEntry[] {
@@ -32,11 +42,15 @@ function toEntries(): AnswerKeyEntry[] {
       return {
         id,
         scope: id.startsWith("world-") ? ("world" as const) : ("us" as const),
+        form: m.form ?? "choropleth",
         title: m.title,
         aliases: m.aliases,
         hints: m.preauthoredHints ?? [],
         description: m.description,
         imageUrl: m.imageUrl,
+        width: m.width ?? 0,
+        height: m.height ?? 0,
+        regions: m.preauthoredRedactionRegions ?? [],
       };
     })
     .sort((a, b) => a.title.localeCompare(b.title));
