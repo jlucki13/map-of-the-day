@@ -1728,5 +1728,761 @@
       "Thirty-three markers, each one a single settlement rather than a whole country, all sitting above the same round threshold.",
       "Asia holds more than half of them; the African ones are Cairo, Lagos and Kinshasa, and there are only three in North America."
     ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-population-change",
+    "title": "Population Change, 2010 to 2020",
+    "aliases": [
+      "population change",
+      "population growth",
+      "how much each state grew",
+      "change in population",
+      "state growth rate",
+      "population gain or loss"
+    ],
+    "description": "Percent change in resident population between the 2010 and 2020 Censuses. Utah, Idaho and Texas grew fastest; only West Virginia, Mississippi and Illinois finished the decade smaller than they started it. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-population-change.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Three states sit on the far side of the midpoint from everyone else — whatever is measured here, they lost it over ten years.",
+      "The three that fell are West Virginia, Mississippi and Illinois; Utah rose most."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-net-migration",
+    "title": "Net Domestic Migration",
+    "aliases": [
+      "net migration",
+      "domestic migration",
+      "people moving between states",
+      "where americans are moving",
+      "interstate migration",
+      "net movers"
+    ],
+    "description": "Net movement of people between states per 1,000 residents around 2022-23: arrivals from elsewhere in the country minus departures to it, ignoring births, deaths and immigration from abroad. South Carolina, Idaho and Delaware gained most; New York, California and Illinois lost most. Values are rounded estimates rather than exact published counts. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-net-migration.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Nobody is born or dies in this measure and nobody arrives from abroad — it only counts a choice already-resident people made.",
+      "New York is deepest on one side, South Carolina deepest on the other."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-population-growth",
+    "title": "Annual Population Growth Rate",
+    "aliases": [
+      "population growth rate",
+      "how fast the population is growing",
+      "annual population change",
+      "population growth",
+      "rate of population increase"
+    ],
+    "description": "Approximate annual rate of change in national population around 2022, in percent. Niger, DR Congo and several Sahel states exceed three percent a year; Japan, Italy, Bulgaria and the Baltics are shrinking. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-population-growth.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A band across the middle of Africa sits at one extreme and much of Europe plus Japan at the other, with the midpoint meaning no change at all.",
+      "Niger is the highest in the world; Bulgaria, Latvia and Japan are among the lowest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-uninsured",
+    "title": "Share of People Without Health Insurance",
+    "aliases": [
+      "uninsured rate",
+      "people without health insurance",
+      "health insurance coverage",
+      "share uninsured",
+      "no health cover",
+      "lack of health insurance"
+    ],
+    "description": "Percent of residents under 65 with no health coverage of any kind, around 2022, sorted into five equal-count classes. Texas is highest at about 18 percent; Massachusetts is lowest at under 3. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-uninsured.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Five classes, each holding the same number of states — and the two extremes differ by roughly a factor of six.",
+      "Texas sits alone in the top class; Massachusetts is the lowest in the country."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-homeownership",
+    "title": "Homeownership Rate",
+    "aliases": [
+      "homeownership rate",
+      "share of homes that are owned",
+      "owner occupied housing",
+      "how many people own their home",
+      "home ownership",
+      "share of households owning"
+    ],
+    "description": "Percent of occupied housing units lived in by their owner rather than rented, around 2023, in five equal-count classes. West Virginia and Maine are highest; the District of Columbia and New York are lowest. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-homeownership.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The measure is about tenure, not price or size — every household counts as one of exactly two kinds.",
+      "West Virginia and Maine top the list; the District of Columbia is far below every state."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-median-age",
+    "title": "Median Age",
+    "aliases": [
+      "median age",
+      "average age",
+      "how old the population is",
+      "age of the population",
+      "median age of the population"
+    ],
+    "description": "The age that splits each country's population in half, around 2023, in six equal-count classes. Niger is about 15, Japan about 49. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-median-age.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "Half of each country is above the shaded number and half below it.",
+      "Japan and Italy are in the top class; Niger and Mali are in the bottom one."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-gdp",
+    "title": "State Economy Size",
+    "aliases": [
+      "state gdp",
+      "size of the economy",
+      "economic output",
+      "gross domestic product",
+      "economy size",
+      "total economic output"
+    ],
+    "description": "Gross domestic product by state around 2023, in billions of dollars, drawn so each state's area is proportional to its output. California alone is close to four trillion dollars; Vermont and Wyoming are under sixty billion. Figures are rounded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-gdp.png",
+    "width": 975,
+    "height": 774,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Each state keeps its own outline and place but shrinks toward its middle — the gap to the faint shape behind it is the quantity.",
+      "California is by far the largest, then Texas and New York; Vermont and Wyoming are the smallest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-veterans",
+    "title": "Number of Military Veterans",
+    "aliases": [
+      "veterans",
+      "military veterans",
+      "number of veterans",
+      "veteran population",
+      "people who served in the military",
+      "former service members"
+    ],
+    "description": "Approximate number of living military veterans by state around 2022, in thousands, drawn with each state's area proportional to the count. California, Texas and Florida each hold roughly 1.4 million. Values are rounded estimates. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-veterans.png",
+    "width": 975,
+    "height": 774,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The count is of people who once held a particular job, not of anyone currently doing it.",
+      "California, Texas and Florida are nearly tied at the top; Virginia is unusually large for its population."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-military-spending",
+    "title": "Military Spending",
+    "aliases": [
+      "military spending",
+      "defence spending",
+      "defense budget",
+      "arms spending",
+      "how much countries spend on their military",
+      "military expenditure"
+    ],
+    "description": "Approximate military expenditure around 2023 in billions of US dollars, drawn with each country's area proportional to the total. The United States is larger than the next several combined. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-military-spending.png",
+    "width": 980,
+    "height": 650,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "One country's shape barely shrinks at all while everyone else collapses toward a dot.",
+      "The United States is roughly three times China and eight times Russia here."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-k12-enrollment",
+    "title": "Public School Enrollment",
+    "aliases": [
+      "public school enrollment",
+      "school enrollment",
+      "number of school children",
+      "students in public schools",
+      "k-12 enrollment",
+      "schoolchildren"
+    ],
+    "description": "Approximate number of pupils in public elementary and secondary schools by state around 2022, in thousands, drawn as area-scaled circles nudged apart so small states stay visible. California and Texas each exceed five million. Values are rounded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-k12-enrollment.png",
+    "width": 975,
+    "height": 784,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted here is under about eighteen and attending somewhere public.",
+      "California and Texas dwarf the rest; Vermont and Wyoming are the smallest circles."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-college-enrollment",
+    "title": "Higher Education Enrollment",
+    "aliases": [
+      "college enrollment",
+      "university enrollment",
+      "higher education enrollment",
+      "number of college students",
+      "students in college",
+      "undergraduate and graduate enrollment"
+    ],
+    "description": "Approximate enrollment at degree-granting colleges and universities by state around 2022, in thousands. California is well over two million; Wyoming and Vermont are under fifty thousand. Values are rounded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-college-enrollment.png",
+    "width": 975,
+    "height": 784,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted here has already finished school and chosen to keep going.",
+      "The District of Columbia is far larger here than its population would suggest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-internet-users",
+    "title": "Number of Internet Users",
+    "aliases": [
+      "internet users",
+      "people online",
+      "number of people using the internet",
+      "internet population",
+      "how many people are online"
+    ],
+    "description": "Approximate number of people online by country around 2023, in millions, drawn as area-scaled circles. China and India together account for close to two billion. Countries without a figure are unshaded. Values are rounded estimates. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-internet-users.png",
+    "width": 980,
+    "height": 660,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "This is a raw head-count, not a percentage, so the biggest countries lead almost automatically.",
+      "China is the largest circle, then India, then the United States."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-electricity-price",
+    "title": "Residential Electricity Price",
+    "aliases": [
+      "electricity price",
+      "cost of electricity",
+      "power prices",
+      "price per kilowatt hour",
+      "electricity cost",
+      "how much electricity costs"
+    ],
+    "description": "Average price households pay for electricity around 2023, in cents per kilowatt-hour. Hawaii is roughly four times the cheapest states; Connecticut, Massachusetts and Rhode Island are the highest on the mainland. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-electricity-price.png",
+    "width": 975,
+    "height": 898,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "One island state towers over everything, and a cluster in the far Northeast comes next.",
+      "Hawaii is about 42 and Idaho, Utah and Washington are around 11."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-gas-price",
+    "title": "Average Gasoline Price",
+    "aliases": [
+      "gas prices",
+      "gasoline price",
+      "petrol price",
+      "price of gas",
+      "fuel price",
+      "cost of gasoline",
+      "price at the pump"
+    ],
+    "description": "Approximate average retail price of a gallon of regular around 2024. The West Coast and Hawaii run well above the Gulf states, largely because of taxes and refinery isolation. Prices move constantly, so treat these as a snapshot rather than a current quote. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-gas-price.png",
+    "width": 975,
+    "height": 888,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The whole Pacific edge stands tall and the Gulf coast sits flat, and the gap is mostly tax and distance from a refinery.",
+      "California and Hawaii are near the top; Mississippi, Oklahoma and Texas near the bottom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-lightning",
+    "title": "Lightning Strike Density",
+    "aliases": [
+      "lightning",
+      "lightning strikes",
+      "thunderstorm frequency",
+      "lightning density",
+      "how often lightning strikes",
+      "lightning flashes"
+    ],
+    "description": "Approximate cloud-to-ground flashes per square kilometre per year. Florida and the Gulf coast lead by a wide margin; the Pacific Northwest and Alaska almost never see it. Values are estimates rounded from strike-density climatology. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-lightning.png",
+    "width": 975,
+    "height": 888,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Warm wet air and afternoon heat drive this, so it collapses to nothing along the cool Pacific coast.",
+      "Florida is the highest by far, then Louisiana and Mississippi; Oregon, Washington and Alaska are near zero."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-tourists",
+    "title": "International Tourist Arrivals",
+    "aliases": [
+      "tourist arrivals",
+      "international tourists",
+      "number of visitors",
+      "tourism",
+      "foreign visitors",
+      "how many tourists visit"
+    ],
+    "description": "Approximate international arrivals around 2023, in millions. France and Spain lead; the Mediterranean rim as a whole takes an outsized share. Countries without a figure are unshaded and values are rounded estimates. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-tourists.png",
+    "width": 980,
+    "height": 754,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted crossed a border and then went home again.",
+      "France is first and Spain second; Mexico and Turkey both outrank the United Kingdom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-age-structure",
+    "title": "Age Structure of the Population",
+    "aliases": [
+      "age structure",
+      "age distribution",
+      "age breakdown",
+      "how old the population is",
+      "share of children and seniors",
+      "population by age group",
+      "age composition"
+    ],
+    "description": "Share of residents in three bands — under 18, 18 to 64, and 65 and over — around 2022. Utah has the largest young share in the country; Maine, Florida and Vermont the largest old one. Each pie is rounded to sum to 100. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-age-structure.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 747,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Three slices, and every single resident falls into exactly one of them.",
+      "Utah's first slice is the largest anywhere; Maine's and Florida's last slice is the largest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-education",
+    "title": "Educational Attainment of Adults",
+    "aliases": [
+      "educational attainment",
+      "education levels",
+      "how educated the population is",
+      "college degrees",
+      "share with a degree",
+      "education breakdown",
+      "schooling levels"
+    ],
+    "description": "Share of adults 25 and over at three levels — high school or less, some college or an associate degree, and a bachelor's degree or more — around 2022. The District of Columbia and Massachusetts have the largest share at the top level; West Virginia and Mississippi the smallest. Each pie is rounded to sum to 100. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-education.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 747,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted is at least 25, and the three slices are ordered rungs of the same ladder.",
+      "The District of Columbia's top slice is more than double West Virginia's."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-rainfall",
+    "title": "Average Annual Precipitation",
+    "aliases": [
+      "rainfall",
+      "precipitation",
+      "annual rainfall",
+      "how much rain falls",
+      "average precipitation",
+      "yearly rainfall",
+      "how wet it is"
+    ],
+    "description": "Mean yearly total in inches, interpolated across the lower 48 from 64 station observations, then banded into zones. The Gulf coast exceeds 60 inches; the desert Southwest is under 10. Alaska and Hawaii are unshaded because the surface is built in projected space, where their insets sit beside California. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-rainfall.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A sharp edge runs roughly down the hundredth meridian, with everything to its west far below everything to its east.",
+      "Mobile and New Orleans anchor the highest zone; Las Vegas and Phoenix the lowest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-sunshine",
+    "title": "Average Annual Sunshine Hours",
+    "aliases": [
+      "sunshine",
+      "sunshine hours",
+      "how sunny it is",
+      "hours of sun",
+      "annual sunshine",
+      "sunniest places",
+      "amount of sun"
+    ],
+    "description": "Mean yearly total in hours, interpolated across the lower 48 from 64 station observations and banded into zones. Phoenix and Las Vegas exceed 3,800 hours; Buffalo, Pittsburgh and Burlington fall near 2,000. Alaska and Hawaii are unshaded for the same projection reason as the precipitation map. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-sunshine.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The desert Southwest is the brightest zone and the eastern Great Lakes the dullest, with roughly a two-to-one spread between them.",
+      "Phoenix and Las Vegas are highest; Buffalo and Pittsburgh are lowest."
+    ]
   }
 ]

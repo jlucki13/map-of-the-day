@@ -6,8 +6,10 @@
  * domain) driven by real public statistics, into self-hosted PNGs under
  * public/generated-maps/, and emits src/data/static-maps.json.
  *
- * Nine cartographic forms are supported, selected by `form` on each spec:
+ * Sixteen cartographic forms are supported, selected by `form` on each spec:
  *   choropleth    sequential colour ramp over polygons (the default)
+ *   diverging     two ramps meeting at a midpoint, with a tick where they turn
+ *   classed       quantile bins and a stepped legend instead of a smooth ramp
  *   symbol        circles at feature centroids, area-scaled by value
  *   point-symbol  the same, but at explicit lat/lon coordinates
  *   dot           dot density, N seeded dots rejection-sampled per polygon
@@ -16,6 +18,12 @@
  *   points        located markers with no polygon shading at all
  *   flow          width-scaled arcs between origin-destination pairs
  *   bivariate     three-by-three colour matrix over two variables
+ *   cartogram     each shape shrunk toward its centroid so area = value
+ *   dorling       area-scaled circles relaxed apart until none overlap
+ *   spike         a vertical needle per place, height linear in value
+ *   composition   a pie per state on the tile grid, showing a three-way split
+ *   surface       inverse-distance interpolation from point observations,
+ *                 banded into zones and clipped to the land it describes
  *
  * Why generate our own: the "guess the topic" game needs thematic data maps,
  * and freely-licensed ones can't be fetched/verified from the build sandbox
@@ -44,7 +52,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { geoPath, geoNaturalEarth1, geoAlbersUsa } from "d3-geo";
-import { scaleSequential, scaleSequentialSqrt } from "d3-scale";
+import { scaleSequential, scaleSequentialSqrt, scaleDiverging } from "d3-scale";
 import * as chromatic from "d3-scale-chromatic";
 import { feature } from "topojson-client";
 import sharp from "sharp";
@@ -1142,6 +1150,409 @@ const WORLD_VOLTAGE = expandMembership(
 // Brazil runs both bands, so it is deliberately excluded from the map.
 delete WORLD_VOLTAGE.Brazil;
 
+
+// ---------------------------------------------------------------------------
+// Datasets for the second wave of forms (diverging, classed, cartogram,
+// Dorling, spike, composition and interpolated surface). Figures that are
+// estimates rather than published exact values say so in the description of
+// the map that uses them.
+// ---------------------------------------------------------------------------
+
+/** Percent change in resident population, 2010 -> 2020 Census. */
+const US_POP_CHANGE = {
+  Alabama: 5.1, Alaska: 3.3, Arizona: 11.9, Arkansas: 3.3, California: 6.1,
+  Colorado: 14.8, Connecticut: 0.9, Delaware: 10.2,
+  "District of Columbia": 14.6, Florida: 14.6, Georgia: 10.6, Hawaii: 7.0,
+  Idaho: 17.3, Illinois: -0.1, Indiana: 4.7, Iowa: 4.7, Kansas: 3.0,
+  Kentucky: 3.8, Louisiana: 2.7, Maine: 2.6, Maryland: 7.0,
+  Massachusetts: 7.4, Michigan: 2.0, Minnesota: 7.6, Mississippi: -0.2,
+  Missouri: 2.8, Montana: 9.6, Nebraska: 7.4, Nevada: 15.0,
+  "New Hampshire": 4.6, "New Jersey": 5.7, "New Mexico": 2.8, "New York": 4.2,
+  "North Carolina": 9.5, "North Dakota": 15.8, Ohio: 2.3, Oklahoma: 5.5,
+  Oregon: 10.6, Pennsylvania: 2.4, "Rhode Island": 4.3,
+  "South Carolina": 10.7, "South Dakota": 8.9, Tennessee: 8.9, Texas: 15.9,
+  Utah: 18.4, Vermont: 2.8, Virginia: 7.9, Washington: 14.6,
+  "West Virginia": -3.2, Wisconsin: 3.6, Wyoming: 2.3,
+};
+
+/** Net domestic migration per 1,000 residents, ~2022-23. Rounded estimates. */
+const US_NET_MIGRATION = {
+  Alabama: 5, Alaska: -5, Arizona: 4, Arkansas: 4, California: -8, Colorado: 0,
+  Connecticut: 1, Delaware: 8, "District of Columbia": -6, Florida: 7,
+  Georgia: 3, Hawaii: -7, Idaho: 9, Illinois: -7, Indiana: 2, Iowa: 0,
+  Kansas: -1, Kentucky: 2, Louisiana: -7, Maine: 5, Maryland: -3,
+  Massachusetts: -5, Michigan: 0, Minnesota: -2, Mississippi: -1, Missouri: 1,
+  Montana: 6, Nebraska: -1, Nevada: 3, "New Hampshire": 5, "New Jersey": -5,
+  "New Mexico": 0, "New York": -11, "North Carolina": 8, "North Dakota": -2,
+  Ohio: 0, Oklahoma: 3, Oregon: -3, Pennsylvania: 0, "Rhode Island": 0,
+  "South Carolina": 12, "South Dakota": 4, Tennessee: 7, Texas: 5, Utah: 1,
+  Vermont: 3, Virginia: -1, Washington: -1, "West Virginia": 2, Wisconsin: 0,
+  Wyoming: 2,
+};
+
+/** Annual population growth rate, percent, ~2022. */
+const WORLD_POP_GROWTH = {
+  Niger: 3.7, Angola: 3.1, "Dem. Rep. Congo": 3.2, Chad: 3.1, Mali: 3.0,
+  Somalia: 3.1, Uganda: 2.9, Tanzania: 2.9, Burundi: 2.7, Mozambique: 2.9,
+  Zambia: 2.8, Sudan: 2.6, "S. Sudan": 2.5, Nigeria: 2.4, Ethiopia: 2.5,
+  Senegal: 2.5, Guinea: 2.3, "Burkina Faso": 2.5, Madagascar: 2.4, Kenya: 2.0,
+  Ghana: 1.9, Afghanistan: 2.7, Yemen: 2.1, Iraq: 2.3, Egypt: 1.6,
+  Pakistan: 2.0, Philippines: 1.5, Israel: 1.6, "Saudi Arabia": 1.5,
+  Bolivia: 1.3, Guatemala: 1.4, Honduras: 1.5, Paraguay: 1.2, Peru: 1.1,
+  Mexico: 0.8, India: 0.8, Indonesia: 0.7, Bangladesh: 1.0, Malaysia: 1.1,
+  Turkey: 0.6, Argentina: 0.6, Colombia: 0.5, Brazil: 0.4, Vietnam: 0.7,
+  "United States of America": 0.4, Australia: 1.0, Canada: 1.8,
+  "United Kingdom": 0.4, France: 0.3, Netherlands: 0.6, Sweden: 0.4,
+  Norway: 0.6, Denmark: 0.5, Belgium: 0.4, Switzerland: 0.7, Austria: 0.5,
+  Ireland: 1.1, Spain: 0.3, Chile: 0.4, "New Zealand": 0.6, Thailand: 0.1,
+  China: -0.1, Germany: 0.1, Portugal: -0.1, Poland: -0.3, Romania: -0.4,
+  Greece: -0.4, Italy: -0.3, Croatia: -0.5, Hungary: -0.2, Bulgaria: -1.0,
+  Serbia: -0.6, Japan: -0.5, "South Korea": -0.2, Cuba: -0.5, Latvia: -1.0,
+  Lithuania: -0.4, Estonia: 0.2, Finland: 0.1, Czechia: 0.3, Slovakia: 0.0,
+};
+
+/** Percent of people under 65 without health insurance, ~2022. */
+const US_UNINSURED = {
+  Alabama: 10.0, Alaska: 11.4, Arizona: 11.6, Arkansas: 9.9, California: 7.4,
+  Colorado: 7.9, Connecticut: 6.0, Delaware: 6.6, "District of Columbia": 3.6,
+  Florida: 13.9, Georgia: 13.6, Hawaii: 4.5, Idaho: 9.7, Illinois: 7.7,
+  Indiana: 8.1, Iowa: 5.4, Kansas: 9.6, Kentucky: 6.8, Louisiana: 8.9,
+  Maine: 6.6, Maryland: 6.7, Massachusetts: 2.9, Michigan: 5.6,
+  Minnesota: 5.2, Mississippi: 12.9, Missouri: 9.6, Montana: 9.0,
+  Nebraska: 7.5, Nevada: 12.0, "New Hampshire": 6.1, "New Jersey": 8.0,
+  "New Mexico": 9.5, "New York": 5.9, "North Carolina": 11.3,
+  "North Dakota": 7.8, Ohio: 7.0, Oklahoma: 14.3, Oregon: 6.9,
+  Pennsylvania: 6.3, "Rhode Island": 4.6, "South Carolina": 11.0,
+  "South Dakota": 10.4, Tennessee: 10.7, Texas: 18.0, Utah: 9.6, Vermont: 4.3,
+  Virginia: 7.9, Washington: 6.5, "West Virginia": 7.2, Wisconsin: 5.9,
+  Wyoming: 12.3,
+};
+
+/** Homeownership rate, percent of occupied housing units, ~2023. */
+const US_HOMEOWNERSHIP = {
+  Alabama: 72.5, Alaska: 66.0, Arizona: 68.8, Arkansas: 67.0,
+  California: 55.9, Colorado: 66.5, Connecticut: 66.3, Delaware: 74.8,
+  "District of Columbia": 42.0, Florida: 68.0, Georgia: 66.4, Hawaii: 61.0,
+  Idaho: 72.3, Illinois: 66.6, Indiana: 71.5, Iowa: 71.9, Kansas: 68.1,
+  Kentucky: 70.0, Louisiana: 66.9, Maine: 76.5, Maryland: 68.0,
+  Massachusetts: 62.5, Michigan: 74.0, Minnesota: 74.6, Mississippi: 70.4,
+  Missouri: 69.4, Montana: 70.5, Nebraska: 66.7, Nevada: 60.5,
+  "New Hampshire": 73.2, "New Jersey": 65.5, "New Mexico": 69.4,
+  "New York": 54.1, "North Carolina": 67.4, "North Dakota": 63.5, Ohio: 68.2,
+  Oklahoma: 67.6, Oregon: 64.2, Pennsylvania: 71.3, "Rhode Island": 63.0,
+  "South Carolina": 72.6, "South Dakota": 68.9, Tennessee: 68.4, Texas: 63.2,
+  Utah: 71.5, Vermont: 73.0, Virginia: 68.3, Washington: 65.0,
+  "West Virginia": 78.9, Wisconsin: 68.6, Wyoming: 73.1,
+};
+
+/** Median age in years, ~2023. */
+const WORLD_MEDIAN_AGE = {
+  Niger: 15, Mali: 16, Chad: 16, Uganda: 16, Angola: 16, "Dem. Rep. Congo": 17,
+  Somalia: 17, Mozambique: 17, Burundi: 17, Zambia: 17, Tanzania: 18,
+  Nigeria: 18, "Burkina Faso": 18, Afghanistan: 18, Senegal: 19, Ethiopia: 19,
+  Sudan: 19, Madagascar: 20, Kenya: 20, Ghana: 21, Yemen: 20, Iraq: 21,
+  Pakistan: 21, Guatemala: 23, Honduras: 24, Egypt: 24, Philippines: 25,
+  Bolivia: 25, Israel: 30, "Saudi Arabia": 32, India: 28, Bangladesh: 28,
+  "South Africa": 28, Mexico: 30, Peru: 31, Malaysia: 31, Indonesia: 30,
+  Colombia: 32, Turkey: 33, Vietnam: 33, Argentina: 33, Brazil: 34,
+  "United States of America": 39, Australia: 38, "New Zealand": 38,
+  Ireland: 39, Chile: 36, China: 39, Thailand: 40, Norway: 40, Iceland: 37,
+  "United Kingdom": 40, France: 42, Sweden: 41, Denmark: 42, Netherlands: 42,
+  Belgium: 42, Switzerland: 43, Canada: 41, Poland: 42, Russia: 40,
+  Austria: 44, Czechia: 43, Hungary: 43, Croatia: 44, Finland: 43,
+  Slovenia: 45, Bulgaria: 45, Greece: 46, Germany: 46, Portugal: 46,
+  Spain: 45, Italy: 48, Japan: 49, "South Korea": 45,
+};
+
+/** State gross domestic product, billions of dollars, ~2023. Rounded. */
+const US_GDP = {
+  Alabama: 300, Alaska: 68, Arizona: 505, Arkansas: 175, California: 3900,
+  Colorado: 515, Connecticut: 350, Delaware: 92, "District of Columbia": 165,
+  Florida: 1580, Georgia: 830, Hawaii: 105, Idaho: 120, Illinois: 1090,
+  Indiana: 490, Iowa: 250, Kansas: 225, Kentucky: 275, Louisiana: 305,
+  Maine: 85, Maryland: 500, Massachusetts: 730, Michigan: 640,
+  Minnesota: 470, Mississippi: 145, Missouri: 435, Montana: 68,
+  Nebraska: 175, Nevada: 235, "New Hampshire": 110, "New Jersey": 800,
+  "New Mexico": 135, "New York": 2160, "North Carolina": 800,
+  "North Dakota": 75, Ohio: 890, Oklahoma: 255, Oregon: 300,
+  Pennsylvania: 1000, "Rhode Island": 74, "South Carolina": 335,
+  "South Dakota": 70, Tennessee: 530, Texas: 2560, Utah: 260, Vermont: 41,
+  Virginia: 700, Washington: 790, "West Virginia": 100, Wisconsin: 440,
+  Wyoming: 50,
+};
+
+/** Veteran population, thousands, ~2022. Rounded estimates. */
+const US_VETERANS = {
+  Alabama: 350, Alaska: 65, Arizona: 460, Arkansas: 200, California: 1450,
+  Colorado: 380, Connecticut: 155, Delaware: 65, "District of Columbia": 25,
+  Florida: 1440, Georgia: 640, Hawaii: 100, Idaho: 120, Illinois: 570,
+  Indiana: 380, Iowa: 190, Kansas: 190, Kentucky: 280, Louisiana: 260,
+  Maine: 110, Maryland: 370, Massachusetts: 300, Michigan: 530,
+  Minnesota: 300, Mississippi: 180, Missouri: 400, Montana: 90,
+  Nebraska: 120, Nevada: 210, "New Hampshire": 95, "New Jersey": 320,
+  "New Mexico": 145, "New York": 700, "North Carolina": 660,
+  "North Dakota": 50, Ohio: 690, Oklahoma: 280, Oregon: 280,
+  Pennsylvania: 720, "Rhode Island": 60, "South Carolina": 380,
+  "South Dakota": 63, Tennessee: 450, Texas: 1450, Utah: 130, Vermont: 40,
+  Virginia: 690, Washington: 520, "West Virginia": 130, Wisconsin: 340,
+  Wyoming: 45,
+};
+
+/** Public K-12 school enrollment, thousands, ~2022. Rounded. */
+const US_K12 = {
+  Alabama: 730, Alaska: 130, Arizona: 1120, Arkansas: 480, California: 5850,
+  Colorado: 880, Connecticut: 510, Delaware: 140, "District of Columbia": 90,
+  Florida: 2840, Georgia: 1740, Hawaii: 175, Idaho: 315, Illinois: 1830,
+  Indiana: 1010, Iowa: 510, Kansas: 480, Kentucky: 640, Louisiana: 690,
+  Maine: 175, Maryland: 880, Massachusetts: 910, Michigan: 1400,
+  Minnesota: 875, Mississippi: 440, Missouri: 870, Montana: 150,
+  Nebraska: 325, Nevada: 490, "New Hampshire": 165, "New Jersey": 1370,
+  "New Mexico": 315, "New York": 2570, "North Carolina": 1520,
+  "North Dakota": 120, Ohio: 1660, Oklahoma: 700, Oregon: 550,
+  Pennsylvania: 1720, "Rhode Island": 140, "South Carolina": 780,
+  "South Dakota": 145, Tennessee: 1000, Texas: 5450, Utah: 680, Vermont: 82,
+  Virginia: 1250, Washington: 1090, "West Virginia": 250, Wisconsin: 820,
+  Wyoming: 94,
+};
+
+/** Degree-granting higher-education enrollment, thousands, ~2022. Rounded. */
+const US_COLLEGE = {
+  Alabama: 300, Alaska: 26, Arizona: 570, Arkansas: 155, California: 2450,
+  Colorado: 320, Connecticut: 190, Delaware: 58, "District of Columbia": 90,
+  Florida: 1080, Georgia: 590, Hawaii: 55, Idaho: 105, Illinois: 700,
+  Indiana: 400, Iowa: 220, Kansas: 190, Kentucky: 250, Louisiana: 235,
+  Maine: 62, Maryland: 320, Massachusetts: 480, Michigan: 520,
+  Minnesota: 340, Mississippi: 160, Missouri: 370, Montana: 50,
+  Nebraska: 130, Nevada: 125, "New Hampshire": 130, "New Jersey": 400,
+  "New Mexico": 115, "New York": 1150, "North Carolina": 570,
+  "North Dakota": 50, Ohio: 640, Oklahoma: 200, Oregon: 210,
+  Pennsylvania: 690, "Rhode Island": 80, "South Carolina": 260,
+  "South Dakota": 55, Tennessee: 340, Texas: 1620, Utah: 290, Vermont: 40,
+  Virginia: 550, Washington: 360, "West Virginia": 105, Wisconsin: 320,
+  Wyoming: 30,
+};
+
+/** Internet users, millions, ~2023. Rounded estimates. */
+const WORLD_INTERNET_USERS = {
+  China: 1080, India: 880, "United States of America": 315, Indonesia: 215,
+  Brazil: 180, Russia: 130, Nigeria: 105, Japan: 105, Mexico: 100,
+  Bangladesh: 77, Pakistan: 87, Germany: 78, Philippines: 86, Vietnam: 78,
+  Turkey: 71, "United Kingdom": 66, France: 60, Egypt: 55, Iran: 78,
+  Thailand: 61, Italy: 51, "South Korea": 50, Spain: 44, Ethiopia: 30,
+  Canada: 36, Poland: 32, Argentina: 39, Colombia: 39, "South Africa": 43,
+  Ukraine: 30, Malaysia: 32, Australia: 25, "Saudi Arabia": 35, Morocco: 32,
+  Peru: 27, Algeria: 32, Kenya: 25, Netherlands: 16, Iraq: 32, Sudan: 14,
+  Tanzania: 20, Uganda: 12, Ghana: 21, Myanmar: 24, Nepal: 15,
+  "Sri Lanka": 15, Chile: 17, Ecuador: 14, Guatemala: 9, Venezuela: 15,
+  Kazakhstan: 17, Uzbekistan: 27, Belgium: 10, Sweden: 10, Portugal: 8,
+  Greece: 8, Czechia: 9, Romania: 16, Hungary: 8, Israel: 8,
+};
+
+/** Military expenditure, billions of US dollars, ~2023. Rounded. */
+const WORLD_MILITARY = {
+  "United States of America": 916, China: 296, Russia: 109, India: 84,
+  "Saudi Arabia": 76, "United Kingdom": 75, Germany: 67, Ukraine: 65,
+  France: 61, Japan: 50, "South Korea": 48, Italy: 36, Australia: 32,
+  Poland: 32, Israel: 27, Canada: 27, Spain: 24, Brazil: 23, Algeria: 18,
+  Netherlands: 17, Turkey: 16, Colombia: 10, Indonesia: 9,
+  Norway: 9, Sweden: 9, Belgium: 7, Mexico: 9, Pakistan: 8, Denmark: 8,
+  Iran: 10, Qatar: 16, Kuwait: 12, Oman: 6, Greece: 8, Switzerland: 6,
+  Thailand: 6, Vietnam: 6, Argentina: 4, "South Africa": 3, Egypt: 3,
+  Chile: 5, Philippines: 4, Finland: 7, Portugal: 4, Austria: 4, Romania: 6,
+  Czechia: 4, Hungary: 3, Morocco: 5, Nigeria: 3, Malaysia: 4,
+  "New Zealand": 3, Ireland: 1,
+};
+
+/** Average residential electricity price, cents per kilowatt-hour, ~2023. */
+const US_ELEC_PRICE = {
+  Alabama: 15.0, Alaska: 24.5, Arizona: 14.2, Arkansas: 12.5, California: 27.5,
+  Colorado: 14.5, Connecticut: 29.5, Delaware: 16.0,
+  "District of Columbia": 17.5, Florida: 15.5, Georgia: 14.0, Hawaii: 42.0,
+  Idaho: 11.0, Illinois: 15.5, Indiana: 14.5, Iowa: 13.0, Kansas: 14.0,
+  Kentucky: 12.5, Louisiana: 12.0, Maine: 25.0, Maryland: 17.5,
+  Massachusetts: 29.0, Michigan: 18.5, Minnesota: 14.5, Mississippi: 13.5,
+  Missouri: 12.5, Montana: 12.0, Nebraska: 11.5, Nevada: 16.5,
+  "New Hampshire": 26.0, "New Jersey": 18.5, "New Mexico": 14.0,
+  "New York": 23.0, "North Carolina": 13.5, "North Dakota": 11.0, Ohio: 15.0,
+  Oklahoma: 12.0, Oregon: 12.5, Pennsylvania: 17.5, "Rhode Island": 28.0,
+  "South Carolina": 14.5, "South Dakota": 12.5, Tennessee: 12.5, Texas: 15.0,
+  Utah: 11.0, Vermont: 21.0, Virginia: 14.0, Washington: 11.0,
+  "West Virginia": 14.5, Wisconsin: 16.5, Wyoming: 11.5,
+};
+
+/** Cloud-to-ground lightning flashes per square kilometre per year. Estimates. */
+const US_LIGHTNING = {
+  Alabama: 10.5, Alaska: 0.1, Arizona: 4.5, Arkansas: 8.5, California: 0.6,
+  Colorado: 4.0, Connecticut: 1.6, Delaware: 3.0, "District of Columbia": 3.0,
+  Florida: 15.0, Georgia: 10.0, Hawaii: 0.4, Idaho: 1.6, Illinois: 5.5,
+  Indiana: 5.0, Iowa: 5.0, Kansas: 6.5, Kentucky: 6.0, Louisiana: 13.0,
+  Maine: 1.0, Maryland: 3.5, Massachusetts: 1.5, Michigan: 3.0,
+  Minnesota: 3.5, Mississippi: 12.0, Missouri: 6.5, Montana: 1.6,
+  Nebraska: 5.0, Nevada: 1.0, "New Hampshire": 1.2, "New Jersey": 3.0,
+  "New Mexico": 5.5, "New York": 2.0, "North Carolina": 6.5,
+  "North Dakota": 3.0, Ohio: 4.0, Oklahoma: 8.5, Oregon: 0.5,
+  Pennsylvania: 3.0, "Rhode Island": 1.5, "South Carolina": 8.0,
+  "South Dakota": 3.5, Tennessee: 6.5, Texas: 8.0, Utah: 2.0, Vermont: 1.2,
+  Virginia: 4.0, Washington: 0.4, "West Virginia": 3.5, Wisconsin: 3.5,
+  Wyoming: 3.0,
+};
+
+/** International tourist arrivals, millions, ~2023. Rounded estimates. */
+const WORLD_TOURISTS = {
+  France: 100, Spain: 85, "United States of America": 66, Italy: 57,
+  Turkey: 55, Mexico: 42, "United Kingdom": 37, Germany: 35, Greece: 33,
+  Austria: 30, Portugal: 27, Japan: 25, Canada: 18, Poland: 17,
+  Netherlands: 20, Thailand: 28, "Saudi Arabia": 27, China: 35,
+  "United Arab Emirates": 25, Malaysia: 20, Croatia: 18, Hungary: 16,
+  Czechia: 13, Switzerland: 12, Morocco: 14, Vietnam: 13, India: 9,
+  Indonesia: 12, Denmark: 12, Sweden: 8, Belgium: 9, Ireland: 11,
+  "South Korea": 11, Egypt: 15, Australia: 7, Brazil: 6, Argentina: 6,
+  "South Africa": 8, Philippines: 5, Norway: 6, Israel: 3, Bulgaria: 12,
+  Romania: 2, "New Zealand": 3, Chile: 4, Peru: 2, Colombia: 6,
+  "Dominican Rep.": 10, Tunisia: 9, Jordan: 6, Cuba: 2,
+};
+
+/** Average retail price of regular gasoline, dollars per gallon, ~2024. */
+const US_GAS_PRICE = {
+  Alabama: 2.95, Alaska: 3.75, Arizona: 3.45, Arkansas: 2.95, California: 4.75,
+  Colorado: 3.15, Connecticut: 3.35, Delaware: 3.15,
+  "District of Columbia": 3.55, Florida: 3.15, Georgia: 3.00, Hawaii: 4.65,
+  Idaho: 3.55, Illinois: 3.45, Indiana: 3.25, Iowa: 3.05, Kansas: 2.95,
+  Kentucky: 3.00, Louisiana: 2.90, Maine: 3.25, Maryland: 3.35,
+  Massachusetts: 3.25, Michigan: 3.25, Minnesota: 3.05, Mississippi: 2.85,
+  Missouri: 2.95, Montana: 3.35, Nebraska: 3.05, Nevada: 4.05,
+  "New Hampshire": 3.20, "New Jersey": 3.25, "New Mexico": 3.05,
+  "New York": 3.40, "North Carolina": 3.05, "North Dakota": 3.15, Ohio: 3.15,
+  Oklahoma: 2.85, Oregon: 3.95, Pennsylvania: 3.50, "Rhode Island": 3.25,
+  "South Carolina": 2.95, "South Dakota": 3.15, Tennessee: 2.95, Texas: 2.90,
+  Utah: 3.45, Vermont: 3.35, Virginia: 3.10, Washington: 4.25,
+  "West Virginia": 3.20, Wisconsin: 3.05, Wyoming: 3.25,
+};
+
+/** Age structure, percent of residents in each band, ~2022. Rounded to sum 100. */
+const US_AGE_STRUCTURE = {
+  Alabama: [22, 60, 18], Alaska: [24, 63, 13], Arizona: [22, 59, 19],
+  Arkansas: [23, 59, 18], California: [22, 63, 15], Colorado: [21, 63, 16],
+  Connecticut: [20, 61, 19], Delaware: [20, 59, 21],
+  "District of Columbia": [18, 69, 13], Florida: [20, 58, 22],
+  Georgia: [24, 62, 14], Hawaii: [20, 61, 19], Idaho: [25, 58, 17],
+  Illinois: [22, 61, 17], Indiana: [23, 60, 17], Iowa: [23, 59, 18],
+  Kansas: [24, 59, 17], Kentucky: [22, 60, 18], Louisiana: [23, 61, 16],
+  Maine: [18, 58, 24], Maryland: [22, 62, 16], Massachusetts: [20, 62, 18],
+  Michigan: [21, 60, 19], Minnesota: [22, 60, 18], Mississippi: [23, 60, 17],
+  Missouri: [22, 60, 18], Montana: [21, 58, 21], Nebraska: [24, 60, 16],
+  Nevada: [22, 62, 16], "New Hampshire": [18, 61, 21],
+  "New Jersey": [21, 62, 17], "New Mexico": [22, 59, 19],
+  "New York": [20, 62, 18], "North Carolina": [22, 61, 17],
+  "North Dakota": [23, 61, 16], Ohio: [22, 60, 18], Oklahoma: [24, 59, 17],
+  Oregon: [20, 61, 19], Pennsylvania: [20, 60, 20], "Rhode Island": [19, 61, 20],
+  "South Carolina": [21, 60, 19], "South Dakota": [24, 59, 17],
+  Tennessee: [22, 61, 17], Texas: [25, 62, 13], Utah: [29, 60, 11],
+  Vermont: [18, 59, 23], Virginia: [22, 62, 16], Washington: [21, 62, 17],
+  "West Virginia": [19, 59, 22], Wisconsin: [21, 60, 19], Wyoming: [23, 59, 18],
+};
+
+/** Educational attainment of adults 25+, percent, ~2022. Rounded to sum 100. */
+const US_EDUCATION = {
+  Alabama: [42, 32, 26], Alaska: [35, 39, 26], Arizona: [37, 34, 29],
+  Arkansas: [45, 32, 23], California: [36, 30, 34], Colorado: [27, 32, 41],
+  Connecticut: [33, 27, 40], Delaware: [37, 31, 32],
+  "District of Columbia": [22, 20, 58], Florida: [37, 32, 31],
+  Georgia: [37, 31, 32], Hawaii: [34, 33, 33], Idaho: [36, 36, 28],
+  Illinois: [34, 30, 36], Indiana: [40, 33, 27], Iowa: [36, 34, 30],
+  Kansas: [34, 34, 32], Kentucky: [42, 32, 26], Louisiana: [43, 32, 25],
+  Maine: [34, 33, 33], Maryland: [30, 28, 42], Massachusetts: [29, 24, 47],
+  Michigan: [35, 34, 31], Minnesota: [30, 32, 38], Mississippi: [44, 33, 23],
+  Missouri: [37, 32, 31], Montana: [31, 35, 34], Nebraska: [33, 33, 34],
+  Nevada: [40, 34, 26], "New Hampshire": [30, 30, 40],
+  "New Jersey": [32, 26, 42], "New Mexico": [39, 34, 27],
+  "New York": [33, 27, 40], "North Carolina": [35, 32, 33],
+  "North Dakota": [31, 35, 34], Ohio: [37, 32, 31], Oklahoma: [40, 34, 26],
+  Oregon: [31, 34, 35], Pennsylvania: [36, 30, 34], "Rhode Island": [34, 28, 38],
+  "South Carolina": [38, 32, 30], "South Dakota": [33, 34, 33],
+  Tennessee: [39, 32, 29], Texas: [38, 30, 32], Utah: [29, 36, 35],
+  Vermont: [30, 30, 40], Virginia: [31, 29, 40], Washington: [29, 33, 38],
+  "West Virginia": [45, 33, 22], Wisconsin: [34, 34, 32], Wyoming: [34, 38, 28],
+};
+
+// Station observations for the interpolated-surface maps. Only contiguous-48
+// stations: the surface is built in projected pixel space, and the Alaska and
+// Hawaii insets sit next to California in an Albers USA frame, so
+// interpolating across them would paint those insets with mainland weather.
+// Both maps therefore leave the two insets unshaded.
+
+/** Mean annual precipitation, inches. */
+const US_RAINFALL_STATIONS = [
+  { lat: 47.61, lon: -122.33, value: 37 }, { lat: 45.52, lon: -122.68, value: 43 },
+  { lat: 47.66, lon: -117.43, value: 17 }, { lat: 43.62, lon: -116.2, value: 12 },
+  { lat: 39.53, lon: -119.81, value: 7 },  { lat: 37.77, lon: -122.42, value: 23 },
+  { lat: 36.75, lon: -119.77, value: 11 }, { lat: 34.05, lon: -118.24, value: 15 },
+  { lat: 32.72, lon: -117.16, value: 10 }, { lat: 36.17, lon: -115.14, value: 4 },
+  { lat: 33.45, lon: -112.07, value: 8 },  { lat: 32.22, lon: -110.97, value: 12 },
+  { lat: 40.76, lon: -111.89, value: 16 }, { lat: 39.74, lon: -104.99, value: 15 },
+  { lat: 42.87, lon: -106.31, value: 13 }, { lat: 45.78, lon: -108.5, value: 14 },
+  { lat: 46.87, lon: -113.99, value: 14 }, { lat: 35.08, lon: -106.65, value: 9 },
+  { lat: 31.76, lon: -106.49, value: 9 },  { lat: 44.08, lon: -103.23, value: 17 },
+  { lat: 46.81, lon: -100.78, value: 18 }, { lat: 46.88, lon: -96.79, value: 22 },
+  { lat: 43.54, lon: -96.73, value: 26 },  { lat: 41.26, lon: -95.94, value: 30 },
+  { lat: 41.59, lon: -93.62, value: 36 },  { lat: 44.98, lon: -93.27, value: 31 },
+  { lat: 43.04, lon: -87.91, value: 35 },  { lat: 41.88, lon: -87.63, value: 37 },
+  { lat: 42.33, lon: -83.05, value: 34 },  { lat: 41.5, lon: -81.69, value: 39 },
+  { lat: 42.89, lon: -78.88, value: 40 },  { lat: 39.96, lon: -83.0, value: 40 },
+  { lat: 39.77, lon: -86.16, value: 42 },  { lat: 38.63, lon: -90.2, value: 41 },
+  { lat: 39.1, lon: -94.58, value: 39 },   { lat: 37.69, lon: -97.34, value: 33 },
+  { lat: 35.47, lon: -97.52, value: 36 },  { lat: 32.78, lon: -96.8, value: 38 },
+  { lat: 29.42, lon: -98.49, value: 33 },  { lat: 29.76, lon: -95.37, value: 50 },
+  { lat: 29.95, lon: -90.07, value: 62 },  { lat: 30.69, lon: -88.04, value: 66 },
+  { lat: 32.3, lon: -90.18, value: 55 },   { lat: 34.75, lon: -92.29, value: 51 },
+  { lat: 35.15, lon: -90.05, value: 54 },  { lat: 36.16, lon: -86.78, value: 47 },
+  { lat: 38.04, lon: -84.5, value: 46 },   { lat: 38.25, lon: -85.76, value: 45 },
+  { lat: 33.52, lon: -86.81, value: 54 },  { lat: 33.75, lon: -84.39, value: 50 },
+  { lat: 32.78, lon: -79.93, value: 50 },  { lat: 35.23, lon: -80.84, value: 43 },
+  { lat: 35.78, lon: -78.64, value: 46 },  { lat: 37.54, lon: -77.44, value: 44 },
+  { lat: 38.9, lon: -77.04, value: 40 },   { lat: 40.44, lon: -79.99, value: 38 },
+  { lat: 39.95, lon: -75.17, value: 42 },  { lat: 40.71, lon: -74.01, value: 47 },
+  { lat: 42.36, lon: -71.06, value: 44 },  { lat: 43.66, lon: -70.26, value: 47 },
+  { lat: 44.48, lon: -73.21, value: 37 },  { lat: 30.33, lon: -81.66, value: 52 },
+  { lat: 27.95, lon: -82.46, value: 46 },  { lat: 25.76, lon: -80.19, value: 62 },
+];
+
+/** Mean annual sunshine, hours. */
+const US_SUNSHINE_STATIONS = [
+  { lat: 47.61, lon: -122.33, value: 2170 }, { lat: 45.52, lon: -122.68, value: 2340 },
+  { lat: 47.66, lon: -117.43, value: 2660 }, { lat: 43.62, lon: -116.2, value: 2990 },
+  { lat: 39.53, lon: -119.81, value: 3350 }, { lat: 37.77, lon: -122.42, value: 3060 },
+  { lat: 36.75, lon: -119.77, value: 3550 }, { lat: 34.05, lon: -118.24, value: 3250 },
+  { lat: 32.72, lon: -117.16, value: 3050 }, { lat: 36.17, lon: -115.14, value: 3825 },
+  { lat: 33.45, lon: -112.07, value: 3870 }, { lat: 32.22, lon: -110.97, value: 3800 },
+  { lat: 40.76, lon: -111.89, value: 3030 }, { lat: 39.74, lon: -104.99, value: 3110 },
+  { lat: 42.87, lon: -106.31, value: 2930 }, { lat: 45.78, lon: -108.5, value: 2960 },
+  { lat: 46.87, lon: -113.99, value: 2540 }, { lat: 35.08, lon: -106.65, value: 3420 },
+  { lat: 31.76, lon: -106.49, value: 3760 }, { lat: 44.08, lon: -103.23, value: 2900 },
+  { lat: 46.81, lon: -100.78, value: 2730 }, { lat: 46.88, lon: -96.79, value: 2610 },
+  { lat: 43.54, lon: -96.73, value: 2810 }, { lat: 41.26, lon: -95.94, value: 2750 },
+  { lat: 41.59, lon: -93.62, value: 2730 }, { lat: 44.98, lon: -93.27, value: 2700 },
+  { lat: 43.04, lon: -87.91, value: 2450 }, { lat: 41.88, lon: -87.63, value: 2500 },
+  { lat: 42.33, lon: -83.05, value: 2320 }, { lat: 41.5, lon: -81.69, value: 2180 },
+  { lat: 42.89, lon: -78.88, value: 2000 }, { lat: 39.96, lon: -83.0, value: 2280 },
+  { lat: 39.77, lon: -86.16, value: 2500 }, { lat: 38.63, lon: -90.2, value: 2650 },
+  { lat: 39.1, lon: -94.58, value: 2800 },  { lat: 37.69, lon: -97.34, value: 2900 },
+  { lat: 35.47, lon: -97.52, value: 3080 }, { lat: 32.78, lon: -96.8, value: 2850 },
+  { lat: 29.42, lon: -98.49, value: 2700 }, { lat: 29.76, lon: -95.37, value: 2600 },
+  { lat: 29.95, lon: -90.07, value: 2650 }, { lat: 30.69, lon: -88.04, value: 2640 },
+  { lat: 32.3, lon: -90.18, value: 2680 },  { lat: 34.75, lon: -92.29, value: 2770 },
+  { lat: 35.15, lon: -90.05, value: 2800 }, { lat: 36.16, lon: -86.78, value: 2510 },
+  { lat: 38.04, lon: -84.5, value: 2540 },  { lat: 38.25, lon: -85.76, value: 2510 },
+  { lat: 33.52, lon: -86.81, value: 2640 }, { lat: 33.75, lon: -84.39, value: 2740 },
+  { lat: 32.78, lon: -79.93, value: 2820 }, { lat: 35.23, lon: -80.84, value: 2800 },
+  { lat: 35.78, lon: -78.64, value: 2700 }, { lat: 37.54, lon: -77.44, value: 2650 },
+  { lat: 38.9, lon: -77.04, value: 2530 },  { lat: 40.44, lon: -79.99, value: 2020 },
+  { lat: 39.95, lon: -75.17, value: 2550 }, { lat: 40.71, lon: -74.01, value: 2530 },
+  { lat: 42.36, lon: -71.06, value: 2630 }, { lat: 43.66, lon: -70.26, value: 2600 },
+  { lat: 44.48, lon: -73.21, value: 2050 }, { lat: 30.33, lon: -81.66, value: 2800 },
+  { lat: 27.95, lon: -82.46, value: 2900 }, { lat: 25.76, lon: -80.19, value: 2900 },
+];
+
 // ---------------------------------------------------------------------------
 // Formatters (no units — bare magnitudes keep the legend a fair, wordless hint)
 // ---------------------------------------------------------------------------
@@ -2201,6 +2612,367 @@ const MAPS = [
     pointColor: "#be123c",
     pointRadius: 5,
   },
+  // --- Diverging: colour turns at a midpoint -------------------------------
+  {
+    id: "us-population-change",
+    scope: "us",
+    form: "diverging",
+    title: "Population Change, 2010 to 2020",
+    aliases: ["population change", "population growth", "how much each state grew", "change in population", "state growth rate", "population gain or loss"],
+    description:
+      "Percent change in resident population between the 2010 and 2020 Censuses. Utah, Idaho and Texas grew fastest; only West Virginia, Mississippi and Illinois finished the decade smaller than they started it. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Three states sit on the far side of the midpoint from everyone else — whatever is measured here, they lost it over ten years.",
+      "The three that fell are West Virginia, Mississippi and Illinois; Utah rose most.",
+    ],
+    data: US_POP_CHANGE,
+    midpoint: 0,
+    interpolator: chromatic.interpolateBrBG,
+    fmt: (n) => `${n > 0 ? "+" : ""}${n.toFixed(1)}`,
+  },
+  {
+    id: "us-net-migration",
+    scope: "us",
+    form: "diverging",
+    title: "Net Domestic Migration",
+    aliases: ["net migration", "domestic migration", "people moving between states", "where americans are moving", "interstate migration", "net movers"],
+    description:
+      "Net movement of people between states per 1,000 residents around 2022-23: arrivals from elsewhere in the country minus departures to it, ignoring births, deaths and immigration from abroad. South Carolina, Idaho and Delaware gained most; New York, California and Illinois lost most. Values are rounded estimates rather than exact published counts. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Nobody is born or dies in this measure and nobody arrives from abroad — it only counts a choice already-resident people made.",
+      "New York is deepest on one side, South Carolina deepest on the other.",
+    ],
+    data: US_NET_MIGRATION,
+    midpoint: 0,
+    interpolator: chromatic.interpolatePuOr,
+    reverse: true,
+    fmt: (n) => `${n > 0 ? "+" : ""}${Math.round(n)}`,
+  },
+  {
+    id: "world-population-growth",
+    scope: "world",
+    form: "diverging",
+    title: "Annual Population Growth Rate",
+    aliases: ["population growth rate", "how fast the population is growing", "annual population change", "population growth", "rate of population increase"],
+    description:
+      "Approximate annual rate of change in national population around 2022, in percent. Niger, DR Congo and several Sahel states exceed three percent a year; Japan, Italy, Bulgaria and the Baltics are shrinking. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "A band across the middle of Africa sits at one extreme and much of Europe plus Japan at the other, with the midpoint meaning no change at all.",
+      "Niger is the highest in the world; Bulgaria, Latvia and Japan are among the lowest.",
+    ],
+    data: WORLD_POP_GROWTH,
+    midpoint: 0,
+    interpolator: chromatic.interpolateRdYlBu,
+    reverse: true,
+    fmt: (n) => `${n > 0 ? "+" : ""}${n.toFixed(1)}`,
+  },
+
+  // --- Classed: quantile bins with a stepped legend -------------------------
+  {
+    id: "us-uninsured",
+    scope: "us",
+    form: "classed",
+    title: "Share of People Without Health Insurance",
+    aliases: ["uninsured rate", "people without health insurance", "health insurance coverage", "share uninsured", "no health cover", "lack of health insurance"],
+    description:
+      "Percent of residents under 65 with no health coverage of any kind, around 2022, sorted into five equal-count classes. Texas is highest at about 18 percent; Massachusetts is lowest at under 3. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Five classes, each holding the same number of states — and the two extremes differ by roughly a factor of six.",
+      "Texas sits alone in the top class; Massachusetts is the lowest in the country.",
+    ],
+    data: US_UNINSURED,
+    classCount: 5,
+    interpolator: chromatic.interpolateOrRd,
+    fmt: oneDec,
+  },
+  {
+    id: "us-homeownership",
+    scope: "us",
+    form: "classed",
+    title: "Homeownership Rate",
+    aliases: ["homeownership rate", "share of homes that are owned", "owner occupied housing", "how many people own their home", "home ownership", "share of households owning"],
+    description:
+      "Percent of occupied housing units lived in by their owner rather than rented, around 2023, in five equal-count classes. West Virginia and Maine are highest; the District of Columbia and New York are lowest. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The measure is about tenure, not price or size — every household counts as one of exactly two kinds.",
+      "West Virginia and Maine top the list; the District of Columbia is far below every state.",
+    ],
+    data: US_HOMEOWNERSHIP,
+    classCount: 5,
+    interpolator: chromatic.interpolateBuGn,
+    fmt: oneDec,
+  },
+  {
+    id: "world-median-age",
+    scope: "world",
+    form: "classed",
+    title: "Median Age",
+    aliases: ["median age", "average age", "how old the population is", "age of the population", "median age of the population"],
+    description:
+      "The age that splits each country's population in half, around 2023, in six equal-count classes. Niger is about 15, Japan about 49. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "Half of each country is above the shaded number and half below it.",
+      "Japan and Italy are in the top class; Niger and Mali are in the bottom one.",
+    ],
+    data: WORLD_MEDIAN_AGE,
+    classCount: 6,
+    interpolator: chromatic.interpolateViridis,
+    reverse: true,
+    fmt: round0,
+  },
+
+  // --- Cartogram: each shape shrunk toward its own centroid -----------------
+  {
+    id: "us-gdp",
+    scope: "us",
+    form: "cartogram",
+    title: "State Economy Size",
+    aliases: ["state gdp", "size of the economy", "economic output", "gross domestic product", "economy size", "total economic output"],
+    description:
+      "Gross domestic product by state around 2023, in billions of dollars, drawn so each state's area is proportional to its output. California alone is close to four trillion dollars; Vermont and Wyoming are under sixty billion. Figures are rounded. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Each state keeps its own outline and place but shrinks toward its middle — the gap to the faint shape behind it is the quantity.",
+      "California is by far the largest, then Texas and New York; Vermont and Wyoming are the smallest.",
+    ],
+    data: US_GDP,
+    symbolColor: "#1d4ed8",
+    fmt: (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}T` : `${Math.round(n)}B`),
+  },
+  {
+    id: "us-veterans",
+    scope: "us",
+    form: "cartogram",
+    title: "Number of Military Veterans",
+    aliases: ["veterans", "military veterans", "number of veterans", "veteran population", "people who served in the military", "former service members"],
+    description:
+      "Approximate number of living military veterans by state around 2022, in thousands, drawn with each state's area proportional to the count. California, Texas and Florida each hold roughly 1.4 million. Values are rounded estimates. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The count is of people who once held a particular job, not of anyone currently doing it.",
+      "California, Texas and Florida are nearly tied at the top; Virginia is unusually large for its population.",
+    ],
+    data: US_VETERANS,
+    symbolColor: "#0f766e",
+    fmt: (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}M` : `${Math.round(n)}k`),
+  },
+  {
+    id: "world-military-spending",
+    scope: "world",
+    form: "cartogram",
+    title: "Military Spending",
+    aliases: ["military spending", "defence spending", "defense budget", "arms spending", "how much countries spend on their military", "military expenditure"],
+    description:
+      "Approximate military expenditure around 2023 in billions of US dollars, drawn with each country's area proportional to the total. The United States is larger than the next several combined. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "One country's shape barely shrinks at all while everyone else collapses toward a dot.",
+      "The United States is roughly three times China and eight times Russia here.",
+    ],
+    data: WORLD_MILITARY,
+    symbolColor: "#7f1d1d",
+    fmt: (n) => `${Math.round(n)}B`,
+  },
+
+  // --- Dorling: area-scaled circles pushed apart ----------------------------
+  {
+    id: "us-k12-enrollment",
+    scope: "us",
+    form: "dorling",
+    title: "Public School Enrollment",
+    aliases: ["public school enrollment", "school enrollment", "number of school children", "students in public schools", "k-12 enrollment", "schoolchildren"],
+    description:
+      "Approximate number of pupils in public elementary and secondary schools by state around 2022, in thousands, drawn as area-scaled circles nudged apart so small states stay visible. California and Texas each exceed five million. Values are rounded. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Everyone counted here is under about eighteen and attending somewhere public.",
+      "California and Texas dwarf the rest; Vermont and Wyoming are the smallest circles.",
+    ],
+    data: US_K12,
+    symbolColor: "#b45309",
+    maxRadius: 34,
+    fmt: (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}M` : `${Math.round(n)}k`),
+  },
+  {
+    id: "us-college-enrollment",
+    scope: "us",
+    form: "dorling",
+    title: "Higher Education Enrollment",
+    aliases: ["college enrollment", "university enrollment", "higher education enrollment", "number of college students", "students in college", "undergraduate and graduate enrollment"],
+    description:
+      "Approximate enrollment at degree-granting colleges and universities by state around 2022, in thousands. California is well over two million; Wyoming and Vermont are under fifty thousand. Values are rounded. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Everyone counted here has already finished school and chosen to keep going.",
+      "The District of Columbia is far larger here than its population would suggest.",
+    ],
+    data: US_COLLEGE,
+    symbolColor: "#6d28d9",
+    maxRadius: 34,
+    fmt: (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}M` : `${Math.round(n)}k`),
+  },
+  {
+    id: "world-internet-users",
+    scope: "world",
+    form: "dorling",
+    title: "Number of Internet Users",
+    aliases: ["internet users", "people online", "number of people using the internet", "internet population", "how many people are online"],
+    description:
+      "Approximate number of people online by country around 2023, in millions, drawn as area-scaled circles. China and India together account for close to two billion. Countries without a figure are unshaded. Values are rounded estimates. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "This is a raw head-count, not a percentage, so the biggest countries lead almost automatically.",
+      "China is the largest circle, then India, then the United States.",
+    ],
+    data: WORLD_INTERNET_USERS,
+    symbolColor: "#0e7490",
+    maxRadius: 30,
+    fmt: (n) => `${Math.round(n)}M`,
+  },
+
+  // --- Spike: height as a linear channel ------------------------------------
+  {
+    id: "us-electricity-price",
+    scope: "us",
+    form: "spike",
+    title: "Residential Electricity Price",
+    aliases: ["electricity price", "cost of electricity", "power prices", "price per kilowatt hour", "electricity cost", "how much electricity costs"],
+    description:
+      "Average price households pay for electricity around 2023, in cents per kilowatt-hour. Hawaii is roughly four times the cheapest states; Connecticut, Massachusetts and Rhode Island are the highest on the mainland. Boundaries: us-atlas (public domain).",
+    hints: [
+      "One island state towers over everything, and a cluster in the far Northeast comes next.",
+      "Hawaii is about 42 and Idaho, Utah and Washington are around 11.",
+    ],
+    data: US_ELEC_PRICE,
+    symbolColor: "#c2410c",
+    maxSpike: 130,
+    fmt: oneDec,
+  },
+  {
+    id: "us-gas-price",
+    scope: "us",
+    form: "spike",
+    title: "Average Gasoline Price",
+    aliases: ["gas prices", "gasoline price", "petrol price", "price of gas", "fuel price", "cost of gasoline", "price at the pump"],
+    description:
+      "Approximate average retail price of a gallon of regular around 2024. The West Coast and Hawaii run well above the Gulf states, largely because of taxes and refinery isolation. Prices move constantly, so treat these as a snapshot rather than a current quote. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The whole Pacific edge stands tall and the Gulf coast sits flat, and the gap is mostly tax and distance from a refinery.",
+      "California and Hawaii are near the top; Mississippi, Oklahoma and Texas near the bottom.",
+    ],
+    data: US_GAS_PRICE,
+    symbolColor: "#166534",
+    maxSpike: 120,
+    fmt: (n) => n.toFixed(2),
+  },
+  {
+    id: "us-lightning",
+    scope: "us",
+    form: "spike",
+    title: "Lightning Strike Density",
+    aliases: ["lightning", "lightning strikes", "thunderstorm frequency", "lightning density", "how often lightning strikes", "lightning flashes"],
+    description:
+      "Approximate cloud-to-ground flashes per square kilometre per year. Florida and the Gulf coast lead by a wide margin; the Pacific Northwest and Alaska almost never see it. Values are estimates rounded from strike-density climatology. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Warm wet air and afternoon heat drive this, so it collapses to nothing along the cool Pacific coast.",
+      "Florida is the highest by far, then Louisiana and Mississippi; Oregon, Washington and Alaska are near zero.",
+    ],
+    data: US_LIGHTNING,
+    symbolColor: "#a16207",
+    maxSpike: 120,
+    fmt: oneDec,
+  },
+  {
+    id: "world-tourists",
+    scope: "world",
+    form: "spike",
+    title: "International Tourist Arrivals",
+    aliases: ["tourist arrivals", "international tourists", "number of visitors", "tourism", "foreign visitors", "how many tourists visit"],
+    description:
+      "Approximate international arrivals around 2023, in millions. France and Spain lead; the Mediterranean rim as a whole takes an outsized share. Countries without a figure are unshaded and values are rounded estimates. Boundaries: Natural Earth via world-atlas (public domain).",
+    hints: [
+      "Everyone counted crossed a border and then went home again.",
+      "France is first and Spain second; Mexico and Turkey both outrank the United Kingdom.",
+    ],
+    data: WORLD_TOURISTS,
+    symbolColor: "#9d174d",
+    maxSpike: 110,
+    fmt: (n) => `${Math.round(n)}M`,
+  },
+
+  // --- Composition: a pie per state on the tile grid ------------------------
+  {
+    id: "us-age-structure",
+    scope: "us",
+    form: "composition",
+    title: "Age Structure of the Population",
+    aliases: ["age structure", "age distribution", "age breakdown", "how old the population is", "share of children and seniors", "population by age group", "age composition"],
+    description:
+      "Share of residents in three bands — under 18, 18 to 64, and 65 and over — around 2022. Utah has the largest young share in the country; Maine, Florida and Vermont the largest old one. Each pie is rounded to sum to 100. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Three slices, and every single resident falls into exactly one of them.",
+      "Utah's first slice is the largest anywhere; Maine's and Florida's last slice is the largest.",
+    ],
+    data: US_AGE_STRUCTURE,
+    categories: [
+      { key: "young", label: "Under 18", color: "#38bdf8" },
+      { key: "adult", label: "18 to 64", color: "#1e3a8a" },
+      { key: "old", label: "65 and over", color: "#f59e0b" },
+    ],
+    fmt: round0,
+  },
+  {
+    id: "us-education",
+    scope: "us",
+    form: "composition",
+    title: "Educational Attainment of Adults",
+    aliases: ["educational attainment", "education levels", "how educated the population is", "college degrees", "share with a degree", "education breakdown", "schooling levels"],
+    description:
+      "Share of adults 25 and over at three levels — high school or less, some college or an associate degree, and a bachelor's degree or more — around 2022. The District of Columbia and Massachusetts have the largest share at the top level; West Virginia and Mississippi the smallest. Each pie is rounded to sum to 100. Boundaries: us-atlas (public domain).",
+    hints: [
+      "Everyone counted is at least 25, and the three slices are ordered rungs of the same ladder.",
+      "The District of Columbia's top slice is more than double West Virginia's.",
+    ],
+    data: US_EDUCATION,
+    categories: [
+      { key: "hs", label: "High school or less", color: "#fcd34d" },
+      { key: "some", label: "Some college", color: "#0891b2" },
+      { key: "ba", label: "Bachelor's or more", color: "#4c1d95" },
+    ],
+    fmt: round0,
+  },
+
+  // --- Surface: interpolated field from point observations ------------------
+  {
+    id: "us-rainfall",
+    scope: "us",
+    form: "surface",
+    title: "Average Annual Precipitation",
+    aliases: ["rainfall", "precipitation", "annual rainfall", "how much rain falls", "average precipitation", "yearly rainfall", "how wet it is"],
+    description:
+      "Mean yearly total in inches, interpolated across the lower 48 from 64 station observations, then banded into zones. The Gulf coast exceeds 60 inches; the desert Southwest is under 10. Alaska and Hawaii are unshaded because the surface is built in projected space, where their insets sit beside California. Boundaries: us-atlas (public domain).",
+    hints: [
+      "A sharp edge runs roughly down the hundredth meridian, with everything to its west far below everything to its east.",
+      "Mobile and New Orleans anchor the highest zone; Las Vegas and Phoenix the lowest.",
+    ],
+    data: null,
+    stations: US_RAINFALL_STATIONS,
+    interpolator: chromatic.interpolateYlGnBu,
+    bandCount: 9,
+    fmt: round0,
+  },
+  {
+    id: "us-sunshine",
+    scope: "us",
+    form: "surface",
+    title: "Average Annual Sunshine Hours",
+    aliases: ["sunshine", "sunshine hours", "how sunny it is", "hours of sun", "annual sunshine", "sunniest places", "amount of sun"],
+    description:
+      "Mean yearly total in hours, interpolated across the lower 48 from 64 station observations and banded into zones. Phoenix and Las Vegas exceed 3,800 hours; Buffalo, Pittsburgh and Burlington fall near 2,000. Alaska and Hawaii are unshaded for the same projection reason as the precipitation map. Boundaries: us-atlas (public domain).",
+    hints: [
+      "The desert Southwest is the brightest zone and the eastern Great Lakes the dullest, with roughly a two-to-one spread between them.",
+      "Phoenix and Las Vegas are highest; Buffalo and Pittsburgh are lowest.",
+    ],
+    data: null,
+    stations: US_SUNSHINE_STATIONS,
+    interpolator: chromatic.interpolateYlOrRd,
+    bandCount: 9,
+    fmt: round0,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -2921,6 +3693,453 @@ const US_SYMBOL_NUDGE = {
   Virginia: [12, 0],
 };
 
+// ---------------------------------------------------------------------------
+// Second-wave forms
+// ---------------------------------------------------------------------------
+
+/**
+ * Diverging choropleth. The point of the form is the midpoint: colour says
+ * which side of zero (or of an average) a place falls on, and the legend puts
+ * a tick there so the reader can see where the turn happens.
+ *
+ * The two halves are scaled INDEPENDENTLY — domain [min, mid, max] rather than
+ * a symmetric span. A symmetric domain is the more honest encoding, because
+ * equal distances from the midpoint then get equal colour weight, but these
+ * datasets are lopsided: population change runs from -3 to +18, so under
+ * symmetry the entire losing side compresses into the faintest tint and the
+ * three states that actually shrank become invisible. That destroys the one
+ * reading the form exists to give. The cost is that a tint on the short side
+ * means a smaller absolute change than the same tint on the long side, which
+ * is why the legend labels both ends.
+ */
+function renderDiverging(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const mid = spec.midpoint ?? 0;
+  const values = Object.values(spec.data);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const scale = scaleDiverging(spec.interpolator).domain([min, mid, max]);
+
+  const paths = kit.features
+    .map((f) => {
+      const v = spec.data[f.properties.name];
+      const fill = v == null ? NO_DATA : scale(v);
+      return `<path d="${kit.path(f)}" fill="${fill}" stroke="${BORDER}" stroke-width="${kit.strokeWidth}" />`;
+    })
+    .join("");
+
+  const barW = 440;
+  const barH = 18;
+  const x0 = (kit.W - barW) / 2;
+  const y = kit.legendY;
+  const stops = [];
+  for (let i = 0; i <= 16; i++) {
+    const t = i / 16;
+    stops.push(
+      `<stop offset="${(t * 100).toFixed(1)}%" stop-color="${scale(min + t * (max - min))}" />`,
+    );
+  }
+  // The tick sits where the midpoint actually falls along the bar, which with
+  // independently-scaled halves is off-centre — and that offset is itself
+  // information: it shows how lopsided the data is.
+  const midX = x0 + barW * ((mid - min) / (max - min));
+  const legend = `
+    <defs><linearGradient id="grad-${spec.id}" x1="0%" y1="0%" x2="100%" y2="0%">${stops.join("")}</linearGradient></defs>
+    <rect x="${x0}" y="${y}" width="${barW}" height="${barH}" fill="url(#grad-${spec.id})" stroke="#cbd5e1" stroke-width="1" rx="3" />
+    <line x1="${midX}" y1="${y - 5}" x2="${midX}" y2="${y + barH + 5}" stroke="${TICK_COLOR}" stroke-width="2" />
+    <text x="${x0}" y="${y + barH + 22}" font-family="${FONT}" font-size="15" fill="${TICK_COLOR}" text-anchor="start">${esc(spec.fmt(min))}</text>
+    <text x="${midX}" y="${y + barH + 22}" font-family="${FONT}" font-size="15" fill="${TICK_COLOR}" text-anchor="middle">${esc(spec.fmt(mid))}</text>
+    <text x="${x0 + barW}" y="${y + barH + 22}" font-family="${FONT}" font-size="15" fill="${TICK_COLOR}" text-anchor="end">${esc(spec.fmt(max))}</text>`;
+
+  const body = `<g transform="translate(0, ${kit.mapDy})">${paths}</g>${legend}`;
+  return {
+    svg: frameSvg(kit, kit.H, body),
+    W: kit.W,
+    H: kit.H,
+    regions: [titleRegion(kit)],
+  };
+}
+
+/**
+ * Classed choropleth: quantile bins rather than a continuous ramp, so every
+ * class holds the same number of places and the legend is a row of steps with
+ * the break values under them. Reads very differently from a smooth ramp — the
+ * eye counts classes instead of judging shade.
+ */
+function renderClassed(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const n = spec.classCount ?? 5;
+  const sorted = Object.values(spec.data).sort((a, b) => a - b);
+  // Quantile breaks: n-1 interior cuts.
+  const breaks = [];
+  for (let i = 1; i < n; i++) {
+    breaks.push(sorted[Math.floor((i * sorted.length) / n)]);
+  }
+  const colors = [];
+  for (let i = 0; i < n; i++) {
+    const t = 0.15 + (0.85 - 0.15) * (i / (n - 1));
+    colors.push(spec.interpolator(spec.reverse ? 1 - t : t));
+  }
+  const classOfValue = (v) => {
+    for (let i = 0; i < breaks.length; i++) if (v < breaks[i]) return i;
+    return n - 1;
+  };
+
+  const paths = kit.features
+    .map((f) => {
+      const v = spec.data[f.properties.name];
+      const fill = v == null ? NO_DATA : colors[classOfValue(v)];
+      return `<path d="${kit.path(f)}" fill="${fill}" stroke="${BORDER}" stroke-width="${kit.strokeWidth}" />`;
+    })
+    .join("");
+
+  const swW = 76;
+  const swH = 18;
+  const totalW = swW * n;
+  const x0 = (kit.W - totalW) / 2;
+  const y = kit.legendY;
+  const parts = [];
+  for (let i = 0; i < n; i++) {
+    parts.push(
+      `<rect x="${x0 + i * swW}" y="${y}" width="${swW}" height="${swH}" fill="${colors[i]}" stroke="#cbd5e1" stroke-width="1" />`,
+    );
+  }
+  // Break values sit on the boundaries between swatches, which is where they
+  // actually apply; labelling swatch centres would imply each class is a
+  // single value.
+  breaks.forEach((b, i) => {
+    parts.push(
+      `<text x="${x0 + (i + 1) * swW}" y="${y + swH + 22}" font-family="${FONT}" font-size="14" fill="${TICK_COLOR}" text-anchor="middle">${esc(spec.fmt(b))}</text>`,
+    );
+  });
+
+  const body = `<g transform="translate(0, ${kit.mapDy})">${paths}</g>${parts.join("")}`;
+  return {
+    svg: frameSvg(kit, kit.H, body),
+    W: kit.W,
+    H: kit.H,
+    regions: [titleRegion(kit)],
+  };
+}
+
+/**
+ * Non-contiguous cartogram: every place keeps its own outline and its position,
+ * but shrinks toward its centroid by the square root of its value, so drawn
+ * AREA is proportional to the number. The faint untouched map underneath is
+ * what makes it readable — the gap between a shape and its own outline is the
+ * quantity.
+ */
+function renderCartogram(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const vmax = Math.max(...Object.values(spec.data));
+
+  const shapes = kit.features
+    .map((f) => {
+      const v = spec.data[f.properties.name];
+      if (v == null || v <= 0) return "";
+      const c = kit.path.centroid(f);
+      if (!Number.isFinite(c[0])) return "";
+      const k = Math.sqrt(v / vmax);
+      return `<g transform="translate(${c[0].toFixed(1)},${c[1].toFixed(1)}) scale(${k.toFixed(4)}) translate(${(-c[0]).toFixed(1)},${(-c[1]).toFixed(1)})"><path d="${kit.path(f)}" fill="${spec.symbolColor}" fill-opacity="0.85" stroke="#ffffff" stroke-width="${(kit.strokeWidth / k).toFixed(2)}" /></g>`;
+    })
+    .join("");
+
+  // Legend: three squares whose areas stand in the same ratio as the values.
+  const legendVals = [vmax, vmax * 0.25, vmax * 0.05];
+  const side = (v) => 46 * Math.sqrt(v / vmax);
+  const gap = 34;
+  const totalW = legendVals.reduce((s, v) => s + side(v), 0) + gap * 2;
+  let lx = (kit.W - totalW) / 2;
+  const baseline = kit.legendY + 34;
+  const legendParts = [];
+  for (const v of legendVals) {
+    const s = side(v);
+    legendParts.push(
+      `<rect x="${lx.toFixed(1)}" y="${(baseline - s).toFixed(1)}" width="${s.toFixed(1)}" height="${s.toFixed(1)}" fill="${spec.symbolColor}" fill-opacity="0.85" stroke="#ffffff" stroke-width="1" />`,
+      `<text x="${(lx + s / 2).toFixed(1)}" y="${baseline + 22}" font-family="${FONT}" font-size="14" fill="${TICK_COLOR}" text-anchor="middle">${esc(spec.fmt(v))}</text>`,
+    );
+    lx += s + gap;
+  }
+
+  const H = kit.H + 30;
+  const body = `<g transform="translate(0, ${kit.mapDy})">${basePathsSvg(kit, "#eef2f6")}${shapes}</g>${legendParts.join("")}`;
+  return { svg: frameSvg(kit, H, body), W: kit.W, H, regions: [titleRegion(kit)] };
+}
+
+/**
+ * Dorling cartogram: one circle per place, area-scaled by value, then nudged
+ * apart until none overlap. Geography survives as arrangement rather than as
+ * shape, which is the whole point — crowded small places stop disappearing.
+ */
+function renderDorling(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const rMax = spec.maxRadius ?? 30;
+  const vmax = Math.max(...Object.values(spec.data));
+
+  const nodes = [];
+  for (const f of kit.features) {
+    const v = spec.data[f.properties.name];
+    if (v == null || v <= 0) continue;
+    const c = kit.path.centroid(f);
+    if (!Number.isFinite(c[0])) continue;
+    nodes.push({ x: c[0], y: c[1], r: rMax * Math.sqrt(v / vmax), value: v });
+  }
+
+  // Deterministic relaxation: fixed iteration count, no randomness, so the
+  // committed PNG is stable across runs.
+  for (let iter = 0; iter < 220; iter++) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i];
+        const b = nodes[j];
+        let dx = b.x - a.x;
+        let dy = b.y - a.y;
+        let d = Math.hypot(dx, dy);
+        const need = a.r + b.r + 1.2;
+        if (d === 0) {
+          dx = (i % 2 ? 1 : -1) * 0.5;
+          dy = 0.5;
+          d = Math.hypot(dx, dy);
+        }
+        if (d < need) {
+          const push = (need - d) / 2 / d;
+          const ux = dx * push;
+          const uy = dy * push;
+          a.x -= ux;
+          a.y -= uy;
+          b.x += ux;
+          b.y += uy;
+        }
+      }
+    }
+  }
+
+  const circles = nodes
+    .slice()
+    .sort((a, b) => b.r - a.r)
+    .map(
+      (n) =>
+        `<circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${n.r.toFixed(2)}" fill="${spec.symbolColor}" fill-opacity="0.78" stroke="#ffffff" stroke-width="1.1" />`,
+    )
+    .join("");
+
+  const radiusFor = (v) => rMax * Math.sqrt(Math.max(v, 0) / vmax);
+  const legendValues = [vmax, vmax * 0.3, vmax * 0.08].map((v) =>
+    vmax >= 40 ? Math.round(v) : Math.round(v * 10) / 10,
+  );
+  const H = kit.H + 40;
+  const body = `<g transform="translate(0, ${kit.mapDy})">${basePathsSvg(kit, "#eef2f6")}${circles}</g>
+    ${symbolLegend(kit, spec, radiusFor, legendValues, kit.legendY + 46)}`;
+  return { svg: frameSvg(kit, H, body), W: kit.W, H, regions: [titleRegion(kit)] };
+}
+
+/**
+ * Spike map: a vertical needle at each centroid, height proportional to value.
+ * Height is a linear channel rather than an area one, so a single dominant
+ * place towers instead of merely widening — which is exactly the reading this
+ * form is for.
+ */
+function renderSpike(spec) {
+  const kit = scopeKit(spec.scope);
+  kit.title = spec.title;
+  const maxH = spec.maxSpike ?? 120;
+  const halfW = spec.spikeWidth ?? 4;
+  const vmax = Math.max(...Object.values(spec.data));
+
+  const spikes = kit.features
+    .map((f) => {
+      const v = spec.data[f.properties.name];
+      if (v == null || v <= 0) return null;
+      const nudge = US_SYMBOL_NUDGE[f.properties.name];
+      const c = kit.path.centroid(f);
+      if (!Number.isFinite(c[0])) return null;
+      const x = c[0] + (nudge ? nudge[0] : 0);
+      const y = c[1] + (nudge ? nudge[1] : 0);
+      return { x, y, h: maxH * (v / vmax) };
+    })
+    .filter(Boolean)
+    // Draw back-to-front so a tall southern spike overlaps the one behind it
+    // the way it would in a landscape, instead of being cut by it.
+    .sort((a, b) => a.y - b.y)
+    .map(
+      (s) =>
+        // A dot at the foot as well as the needle. Without it the tallest
+        // spikes read as belonging to whatever they pass through — Hawaii's
+        // rises out of its inset and straight across New Mexico.
+        `<path d="M ${(s.x - halfW).toFixed(1)} ${s.y.toFixed(1)} L ${s.x.toFixed(1)} ${(s.y - s.h).toFixed(1)} L ${(s.x + halfW).toFixed(1)} ${s.y.toFixed(1)} Z" fill="${spec.symbolColor}" fill-opacity="0.72" stroke="${spec.symbolColor}" stroke-width="0.8" stroke-linejoin="round" />` +
+        `<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="2.6" fill="${spec.symbolColor}" />`,
+    )
+    .join("");
+
+  // The legend needles are drawn at the same scale as the map's, so the
+  // canvas has to grow by a full spike height to hold them: at the shared
+  // legend line they would rise back up through the southern states.
+  const H = kit.H + maxH + 24;
+  const legendVals = [vmax, vmax * 0.5];
+  const gap = 96;
+  let lx = kit.W / 2 - gap / 2;
+  const baseline = H - 34;
+  const legendParts = [];
+  for (const v of legendVals) {
+    const h = maxH * (v / vmax);
+    legendParts.push(
+      `<path d="M ${lx - halfW} ${baseline} L ${lx} ${(baseline - h).toFixed(1)} L ${lx + halfW} ${baseline} Z" fill="${spec.symbolColor}" fill-opacity="0.72" stroke="${spec.symbolColor}" stroke-width="0.8" />`,
+      `<circle cx="${lx}" cy="${baseline}" r="2.6" fill="${spec.symbolColor}" />`,
+      `<text x="${lx}" y="${baseline + 20}" font-family="${FONT}" font-size="14" fill="${TICK_COLOR}" text-anchor="middle">${esc(spec.fmt(v))}</text>`,
+    );
+    lx += gap;
+  }
+
+  const body = `<g transform="translate(0, ${kit.mapDy})">${basePathsSvg(kit)}${spikes}</g>${legendParts.join("")}`;
+  return { svg: frameSvg(kit, H, body), W: kit.W, H, regions: [titleRegion(kit)] };
+}
+
+/**
+ * Composition map: a pie per state showing how a whole splits three ways.
+ * Laid out on the tile grid rather than at centroids, because fifty-one pies
+ * at true positions collide into porridge across the Northeast, and a pie you
+ * cannot read encodes nothing. Class names live in the legend, so this form
+ * emits the second (label-strip) redaction region.
+ */
+function renderComposition(spec) {
+  const kit = scopeKit("us");
+  kit.title = spec.title;
+  const R = spec.pieRadius ?? 24;
+  const parts = [];
+
+  for (const f of usStates) {
+    const name = f.properties.name;
+    const shares = spec.data[name];
+    const cell = US_TILE_GRID[US_ABBR[name]];
+    if (!shares || !cell) continue;
+    const [row, col] = cell;
+    const cx = TILE_X0 + col * TILE_PITCH + TILE_SIZE / 2;
+    const cy = TILE_Y0 + row * TILE_PITCH + TILE_SIZE / 2;
+    const total = shares.reduce((a, b) => a + b, 0);
+
+    let angle = -Math.PI / 2; // start at twelve o'clock
+    shares.forEach((share, i) => {
+      const sweep = (share / total) * Math.PI * 2;
+      const end = angle + sweep;
+      const x1 = cx + R * Math.cos(angle);
+      const y1 = cy + R * Math.sin(angle);
+      const x2 = cx + R * Math.cos(end);
+      const y2 = cy + R * Math.sin(end);
+      const large = sweep > Math.PI ? 1 : 0;
+      parts.push(
+        `<path d="M ${cx.toFixed(1)} ${cy.toFixed(1)} L ${x1.toFixed(1)} ${y1.toFixed(1)} A ${R} ${R} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${spec.categories[i].color}" stroke="#ffffff" stroke-width="1" />`,
+      );
+      angle = end;
+    });
+
+    parts.push(
+      `<text x="${cx.toFixed(1)}" y="${(cy + R + 14).toFixed(1)}" font-family="${FONT}" font-size="12" font-weight="bold" fill="${TICK_COLOR}" text-anchor="middle">${US_ABBR[name]}</text>`,
+    );
+  }
+
+  const legend = categoryLegend(kit, spec, kit.legendY - 4);
+  const H = kit.H + LABEL_LEGEND_EXTRA;
+  return {
+    svg: frameSvg(kit, H, `<g>${parts.join("")}</g>${legend.svg}`),
+    W: kit.W,
+    H,
+    regions: [titleRegion(kit), legend.labelRegion],
+  };
+}
+
+/**
+ * Interpolated surface: inverse-distance weighting from point observations
+ * onto a grid, quantised into bands so the result reads as contour zones
+ * rather than a smudge, and clipped to the land it describes.
+ *
+ * Interpolation runs in PROJECTED pixel space, which is why the caller must
+ * pass contiguous-48 stations only: in an Albers USA frame the Alaska and
+ * Hawaii insets sit beside California, so a pixel-space weighting would paint
+ * them with mainland weather. Those two are left as plain base land.
+ */
+function renderSurface(spec) {
+  const kit = scopeKit("us");
+  kit.title = spec.title;
+  const CELL = spec.cellSize ?? 9;
+  const BANDS = spec.bandCount ?? 9;
+
+  const pts = spec.stations
+    .map((s) => {
+      const xy = kit.project(s.lat, s.lon);
+      return xy ? { x: xy[0], y: xy[1], v: s.value } : null;
+    })
+    .filter(Boolean);
+
+  const values = pts.map((p) => p.v);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const interp = spec.reverse
+    ? (t) => spec.interpolator(1 - t)
+    : spec.interpolator;
+  const bandColor = (b) => interp(0.08 + 0.86 * (b / (BANDS - 1)));
+
+  const mainland = usStates.filter(
+    (f) => f.properties.name !== "Alaska" && f.properties.name !== "Hawaii",
+  );
+  const clipD = mainland.map((f) => kit.path(f)).join(" ");
+
+  // One rect per grid cell, coloured by its band. Adjacent cells sharing a
+  // band merge visually into a zone, which is the contour reading without the
+  // cost of tracing real isolines.
+  const cells = [];
+  const gridW = 975;
+  const gridH = 620;
+  for (let y = 0; y < gridH; y += CELL) {
+    for (let x = 0; x < gridW; x += CELL) {
+      const px = x + CELL / 2;
+      const py = y + CELL / 2;
+      let num = 0;
+      let den = 0;
+      let exact = null;
+      for (const p of pts) {
+        const d2 = (p.x - px) ** 2 + (p.y - py) ** 2;
+        if (d2 < 1) {
+          exact = p.v;
+          break;
+        }
+        const w = 1 / (d2 * d2 === 0 ? 1 : d2 * Math.sqrt(d2));
+        num += w * p.v;
+        den += w;
+      }
+      const v = exact ?? num / den;
+      const t = (v - min) / (max - min || 1);
+      const band = Math.max(0, Math.min(BANDS - 1, Math.floor(t * BANDS)));
+      cells.push(
+        `<rect x="${x}" y="${y}" width="${CELL}" height="${CELL}" fill="${bandColor(band)}" />`,
+      );
+    }
+  }
+
+  const bandScale = (v) => {
+    const t = (v - min) / (max - min || 1);
+    return bandColor(Math.max(0, Math.min(BANDS - 1, Math.floor(t * BANDS))));
+  };
+  const legend = legendSvg(spec, bandScale, min, max, (kit.W - 440) / 2, kit.legendY, 440, 18);
+
+  const body = `<defs><clipPath id="land-${spec.id}"><path d="${clipD}" /></clipPath></defs>
+    <g transform="translate(0, ${kit.mapDy})">
+      ${basePathsSvg(kit, "#eef2f6")}
+      <g clip-path="url(#land-${spec.id})">${cells.join("")}</g>
+      ${mainland.map((f) => `<path d="${kit.path(f)}" fill="none" stroke="#ffffff" stroke-width="0.7" />`).join("")}
+    </g>${legend}`;
+
+  return {
+    svg: frameSvg(kit, kit.H, body),
+    W: kit.W,
+    H: kit.H,
+    regions: [titleRegion(kit)],
+  };
+}
+
 // --- Dispatcher -----------------------------------------------------------
 
 function renderSpec(spec) {
@@ -2945,6 +4164,20 @@ function renderSpec(spec) {
       return renderBivariate(spec);
     case "tilegrid":
       return renderTileGrid(spec);
+    case "diverging":
+      return renderDiverging(spec);
+    case "classed":
+      return renderClassed(spec);
+    case "cartogram":
+      return renderCartogram(spec);
+    case "dorling":
+      return renderDorling(spec);
+    case "spike":
+      return renderSpike(spec);
+    case "composition":
+      return renderComposition(spec);
+    case "surface":
+      return renderSurface(spec);
     default:
       throw new Error(`unknown map form: ${form}`);
   }
@@ -3009,7 +4242,7 @@ async function main() {
       throw new Error(`[${spec.id}] unmatched dataset keys: ${unmatched.join(", ")}`);
     }
     const form = spec.form ?? "choropleth";
-    if (form === "categorical" || (form === "tilegrid" && spec.categories)) {
+    if (form === "categorical" || form === "composition" || (form === "tilegrid" && spec.categories)) {
       const uncovered = [...names].filter((n) => spec.data[n] == null);
       const allowed = new Set(spec.allowUncovered ?? []);
       const bad = uncovered.filter((n) => !allowed.has(n));
