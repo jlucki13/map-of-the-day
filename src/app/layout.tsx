@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { config } from "@/lib/config";
 import "./globals.css";
 
 // Matches --canvas, so mobile browser chrome continues the ocean.
@@ -14,9 +15,15 @@ const socialDescription =
   "Title and legend hidden — guess what it's measuring. Five tries, once a day.";
 
 export const metadata: Metadata = {
+  // Absolute base for the OG/Twitter image URLs Next emits from
+  // opengraph-image.tsx/twitter-image.tsx — without this, Next falls back to
+  // localhost outside Vercel's own VERCEL_URL, which 404s for an external
+  // crawler. See config.siteUrl for the fallback order.
+  metadataBase: config.siteUrl ? new URL(config.siteUrl) : undefined,
   title: "Map of the Day",
-  description:
-    "Guess the place from a map with its title and legend hidden. A new map every day.",
+  // Matches socialDescription: the previous copy ("guess the place") predates
+  // the game's pivot to topic-guessing and was actively wrong.
+  description: socialDescription,
   openGraph: {
     title: "Map of the Day",
     description: socialDescription,

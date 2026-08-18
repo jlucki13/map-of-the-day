@@ -48,6 +48,21 @@ export const config = {
 
   /** True when running on Vercel (used to loudly warn about dev fallbacks). */
   isVercel: !!process.env.VERCEL,
+
+  /**
+   * Absolute origin used as metadataBase for OG/Twitter image URLs, so social
+   * crawlers (which don't share a browser's notion of "relative") get a real
+   * URL rather than a localhost one. Preference order: an explicit custom
+   * domain (SITE_URL, set once and forget — survives switching from the
+   * default *.vercel.app to a real domain), then Vercel's own per-deployment
+   * VERCEL_URL, then undefined so Next's own localhost default applies in
+   * plain local dev.
+   */
+  siteUrl: process.env.SITE_URL
+    ? process.env.SITE_URL
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : undefined,
 } as const;
 
 /**
