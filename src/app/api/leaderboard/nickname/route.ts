@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { setNickname } from "@/lib/leaderboard";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { getOrCreateSessionId } from "@/lib/session";
 
 export const runtime = "nodejs";
@@ -36,6 +37,18 @@ export async function POST(request: Request) {
   }
 
   const sessionId = await getOrCreateSessionId();
+
+  const rateLimit = await checkRateLimit("nickname", sessionId);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "rate_limited" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+      },
+    );
+  }
+
   const record = await setNickname(sessionId, cleaned);
 
   return NextResponse.json({ nickname: record.nickname });

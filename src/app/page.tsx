@@ -103,6 +103,12 @@ export default function Page() {
         );
         return;
       }
+      if (res.status === 429) {
+        // Rate-limited — the guess was NOT consumed, but unlike 503 this
+        // isn't an invitation to immediately retry.
+        setGuessError("Slow down a little — take a short break and try again.");
+        return;
+      }
       if (res.status === 409) {
         // Puzzle rotated underneath us — refetch the new one.
         await fetchPuzzle();

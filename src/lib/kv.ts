@@ -43,6 +43,14 @@ export interface KvStore {
   ): Promise<{ member: string; score: number }[]>;
   /** 0-indexed rank by score descending, or null if the member isn't present. */
   zRevRank(key: string, member: string): Promise<number | null>;
+  /**
+   * Fixed-window rate-limit primitive: atomically increments `key` and, ONLY
+   * on the increment that creates the key (i.e. the count that comes back is
+   * 1), arms a `ttlSeconds` expiry on it. Later increments within the window
+   * do not touch the expiry, so the window is anchored to the first hit, not
+   * pushed back by every subsequent one. Returns the post-increment count.
+   */
+  incrWithExpiry(key: string, ttlSeconds: number): Promise<number>;
 }
 
 // ---------------------------------------------------------------------------
@@ -68,6 +76,8 @@ class UpstashKvStore implements KvStore {
       opts?: Record<string, unknown>,
     ): Promise<unknown>;
     zrevrank(key: string, member: string): Promise<number | null>;
+    incr(key: string): Promise<number>;
+    expire(key: string, ttlSeconds: number): Promise<unknown>;
   };
 
   constructor(client: UpstashKvStore["client"]) {
@@ -150,6 +160,20 @@ class UpstashKvStore implements KvStore {
   async zRevRank(key: string, member: string): Promise<number | null> {
     const rank = await this.client.zrevrank(key, member);
     return rank ?? null;
+  }
+
+  async incrWithExpiry(key: string, ttlSeconds: number): Promise<number> {
+    const count = await this.client.incr(key);
+    if (count === 1) {
+      // First hit in this window — arm the expiry. Not wrapped in the same
+      // atomic op as the INCR (Upstash's REST client has no MULTI here), so
+      // there's a narrow window where a crash between the two calls leaves a
+      // key that never expires. Rate-limit state, not game state: the worst
+      // outcome is one session staying capped a bit longer than intended,
+      // which is the safe direction to fail in.
+      await this.client.expire(key, ttlSeconds);
+    }
+    return count;
   }
 }
 
@@ -331,6 +355,25 @@ class MemoryKvStore implements KvStore {
     if (!set || !set.has(member)) return null;
     const idx = this.zsortedDesc(key).findIndex((e) => e.member === member);
     return idx < 0 ? null : idx;
+  }
+
+  async incrWithExpiry(key: string, ttlSeconds: number): Promise<number> {
+    // Mirrors UpstashKvStore.incrWithExpiry: expiry is armed only on the
+    // increment that creates the entry, so later hits in the window don't
+    // push the reset time back. `read`/`write` already handle lazy expiry
+    // (see MemEntry) so an expired counter is indistinguishable from a
+    // missing one here.
+    const existing = this.read(key);
+    if (existing === null) {
+      this.write(key, "1", ttlSeconds);
+      return 1;
+    }
+    const next = (Number.parseInt(existing, 10) || 0) + 1;
+    // Update the value in place WITHOUT touching expiresAt — a fresh
+    // `write()` call would reset the TTL clock on every increment.
+    const entry = this.store.get(key)!;
+    entry.value = String(next);
+    return next;
   }
 }
 

@@ -7,6 +7,7 @@ import { appendGuess } from "@/lib/gameState";
 import { matchGuessLocally } from "@/lib/guessMatch";
 import { getViewerStanding, recordGameFinished } from "@/lib/leaderboard";
 import { toPublicSessionView } from "@/lib/publicViews";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { scoreForWin } from "@/lib/scoring";
 import { getOrCreateSessionId, loadSession, saveSession } from "@/lib/session";
 import type { GuessOutcome } from "@/types";
@@ -29,7 +30,11 @@ const bodySchema = z.object({
  * Guess-consumption asymmetry (deliberate, important): a judge FAILURE
  * (timeout/5xx/refusal => thrown error) returns 503 and does NOT consume a
  * guess — the client retries the same submission. A judge success returning
- * "incorrect" DOES consume a guess.
+ * "incorrect" DOES consume a guess. Being rate-limited (429) is a third,
+ * distinct outcome: it must not reuse either status/semantics above — like a
+ * judge failure it does NOT consume a guess (the client did nothing wrong
+ * that a retry-after-waiting shouldn't fix), but unlike one it isn't a retry
+ * invitation, it's a "stop and wait" signal.
  *
  * Anti-leak: the response body is produced EXCLUSIVELY by toPublicSessionView.
  */
@@ -41,6 +46,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
+  // Rate-limit check happens BEFORE the puzzle fetch and well before any
+  // judge call, keyed on the session cookie (minted here if the caller has
+  // none yet, same as every other identity-bearing call in this route). A
+  // rejected request short-circuits immediately — no guess is consumed, no
+  // puzzle/judge work happens.
+  const sessionId = await getOrCreateSessionId();
+  const rateLimit = await checkRateLimit("guess", sessionId);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "rate_limited" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+      },
+    );
+  }
+
   const puzzle = await getCurrentPuzzle();
   if (!puzzle) {
     return NextResponse.json({ error: "no_active_puzzle" }, { status: 409 });
@@ -50,7 +72,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "stale_puzzle" }, { status: 409 });
   }
 
-  const sessionId = await getOrCreateSessionId();
   const { state } = await loadSession(puzzle.id, sessionId);
 
   // Finished (or somehow over-full) sessions: no-op, return current view.

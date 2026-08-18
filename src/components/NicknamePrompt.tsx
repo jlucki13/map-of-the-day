@@ -33,6 +33,10 @@ export default function NicknamePrompt({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nickname: trimmed }),
       });
+      if (res.status === 429) {
+        setError("Slow down a little — take a short break and try again.");
+        return;
+      }
       if (!res.ok) {
         setError("Couldn't save that name. Try another.");
         return;
