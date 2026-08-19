@@ -59,18 +59,14 @@ export default function InstructionsModal({
 
         <div className="mt-4 space-y-4 text-sm leading-relaxed text-ink-muted">
           <p>
-            Each round shows a thematic data map, a choropleth that shades states
-            or countries by some statistic, with its title hidden. Your job is to
-            work out{" "}
+            A map shows up with its title hidden — figure out{" "}
             <span className="font-semibold text-ink">
-              what the map is measuring
+              what it&apos;s measuring
             </span>
-            . The colour scale stays visible as a clue; the words that name the
-            topic don&apos;t.
-          </p>
-          <p>
-            You get <span className="font-semibold text-ink">5 guesses</span>. A
-            hint unlocks after your 3rd wrong guess, and a second after your 4th.
+            . The colour scale stays visible; the words that would give it
+            away don&apos;t. You get{" "}
+            <span className="font-semibold text-ink">5 guesses</span>, with
+            hints unlocking after your 3rd and 4th.
           </p>
           <div>
             <p className="font-semibold text-ink">Scoring</p>
