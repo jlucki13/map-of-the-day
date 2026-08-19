@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { config } from "@/lib/config";
 import "./globals.css";
 
@@ -46,6 +47,10 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-canvas font-sans text-ink antialiased">
         {children}
+        {/* No-ops locally / anywhere outside a real Vercel deployment — it
+            only actually sends data once the project's Analytics tab is
+            turned on in the dashboard. */}
+        <Analytics />
       </body>
     </html>
   );
