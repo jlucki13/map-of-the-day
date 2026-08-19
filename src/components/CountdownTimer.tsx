@@ -24,6 +24,21 @@ function remainingFields(ms: number) {
  * fields rather than one run-together string, so the eye can land on "hours"
  * without parsing colons.
  */
+/**
+ * Once expired, keep nudging the parent to refetch every 5s rather than
+ * firing once and going silent. A single shot isn't enough: the server can
+ * legitimately still be serving the outgoing puzzle for a moment after its
+ * own clock says it's expired (the lazy-regeneration path deliberately
+ * returns the stale puzzle immediately and finishes the real regeneration in
+ * the background — see ensureFreshPuzzle.ts). A caller whose first refetch
+ * lands in that gap would otherwise get a `nextRotationAt` identical to what
+ * it already had, this component would never re-subscribe, and the player
+ * would be stuck on a dead "New map ready" screen until they manually
+ * reload. This case is not rare: it's exactly what the first visitor after
+ * each night's fixed reveal time hits.
+ */
+const RETRY_INTERVAL_MS = 5000;
+
 export default function CountdownTimer({
   nextRotationAt,
   onExpire,
@@ -32,19 +47,22 @@ export default function CountdownTimer({
   // (the server and client would otherwise compute different remaining times).
   const [mounted, setMounted] = useState(false);
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
-  const expiredRef = useRef(false);
+  const nextRetryAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
-    expiredRef.current = false;
+    nextRetryAtRef.current = null;
 
     const target = new Date(nextRotationAt).getTime();
 
     const tick = () => {
       const remaining = target - Date.now();
       setRemainingMs(remaining);
-      if (remaining <= 0 && !expiredRef.current) {
-        expiredRef.current = true;
+      if (remaining > 0) return;
+
+      const now = Date.now();
+      if (nextRetryAtRef.current === null || now >= nextRetryAtRef.current) {
+        nextRetryAtRef.current = now + RETRY_INTERVAL_MS;
         onExpire?.();
       }
     };

@@ -8,8 +8,19 @@
  * existing (slightly stale) puzzle immediately and kicks off regeneration in
  * the background, guarded by a short-TTL setNX lock so concurrent requests
  * don't double-generate. Only a true cold start (no puzzle exists at all)
- * blocks on synchronous generation. This makes short test intervals work
- * without depending on Vercel's cron granularity at all.
+ * blocks on synchronous generation. This is also what makes the local
+ * testing override (config.puzzleRotationOverrideSeconds) work without
+ * depending on Vercel's cron granularity at all.
+ *
+ * vercel.json's cron fires at 01:00 UTC daily, chosen so it's always AT OR
+ * AFTER the actual 8 PM America/New_York reveal instant regardless of DST —
+ * that instant is 01:00 UTC during EST and 00:00 UTC during EDT, and a fixed
+ * cron schedule can't itself shift with the clock change twice a year, so
+ * it's pinned to the later of the two. It lands exactly on time during EST
+ * and about an hour late during EDT, which just means the puzzle has
+ * usually already rotated via the lazy path (isStale returns false, cron
+ * no-ops) rather than the cron doing the honors. The lazy path is what's
+ * actually exact.
  */
 
 import { after } from "next/server";
@@ -19,6 +30,7 @@ import {
   generatePuzzle,
 } from "@/lib/generatePuzzle";
 import { getKv } from "@/lib/kv";
+import { isStale } from "@/lib/rotationSchedule";
 import type { Puzzle } from "@/types";
 
 export const GENERATION_LOCK_KEY = "puzzle:generation-lock";
@@ -31,12 +43,6 @@ export interface EnsureFreshPuzzleResult {
   stale: boolean;
   /** True when THIS call started a regeneration (sync or background). */
   regenerationStarted: boolean;
-}
-
-export function isStale(puzzle: Puzzle, now: Date = new Date()): boolean {
-  const expiresAt =
-    new Date(puzzle.intervalStartAt).getTime() + puzzle.intervalSeconds * 1000;
-  return now.getTime() >= expiresAt;
 }
 
 export async function getCurrentPuzzle(): Promise<Puzzle | null> {

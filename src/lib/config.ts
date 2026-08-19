@@ -13,8 +13,22 @@ function intFromEnv(name: string, fallback: number): number {
 export const MAX_GUESSES = 5;
 
 export const config = {
-  /** How long one puzzle stays live. Default 24h; shorten locally for testing. */
-  intervalSeconds: intFromEnv("PUZZLE_INTERVAL_SECONDS", 24 * 60 * 60),
+  /**
+   * Local/testing-only escape hatch. Real rotation is a fixed daily reveal
+   * time (see rotationSchedule.ts — 8 PM America/New_York, not configurable
+   * via env, since "the puzzle changes at a specific clock time every night"
+   * is the actual product requirement, not a tunable). Set this to revert to
+   * a plain "N seconds after generation" interval instead, so a dev server
+   * doesn't have to wait for a real wall-clock boundary to see a new puzzle.
+   * Unset (0 = disabled) in any real deployment. This deliberately has a
+   * different name from the old PUZZLE_INTERVAL_SECONDS var so a value still
+   * sitting in a deployment's env from before this change is silently inert
+   * rather than silently still controlling production rotation.
+   */
+  puzzleRotationOverrideSeconds: intFromEnv(
+    "PUZZLE_ROTATION_OVERRIDE_SECONDS",
+    0,
+  ),
 
   /** setNX lock TTL guarding background regeneration (seconds). */
   generationLockTtlSeconds: intFromEnv("GENERATION_LOCK_TTL_SECONDS", 180),

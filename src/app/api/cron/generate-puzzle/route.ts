@@ -38,7 +38,7 @@ export async function GET(request: Request) {
       puzzleId: result.puzzle.id,
       stale: result.stale,
       regenerationStarted: result.regenerationStarted,
-      intervalStartAt: result.puzzle.intervalStartAt,
+      nextRotationAt: result.puzzle.nextRotationAt,
     });
   } catch (err) {
     console.error("GET /api/cron/generate-puzzle failed:", err);

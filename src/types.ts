@@ -57,8 +57,12 @@ export interface Hint {
 export interface Puzzle {
   id: string;
   createdAt: string;
-  intervalStartAt: string;
-  intervalSeconds: number;
+  /**
+   * Computed once at generation time (rotationSchedule.ts) and stored rather
+   * than re-derived on every read, so staleness checks and the client
+   * countdown can never disagree about when this puzzle expires.
+   */
+  nextRotationAt: string;
   candidate: CandidateMap;
   redactionRegions: RedactionRegion[];
   redactedImageUrl: string;
@@ -152,8 +156,6 @@ export interface PublicLeaderboardView {
 export interface PublicPuzzleView {
   puzzleId: string;
   redactedImageUrl: string;
-  intervalStartAt: string;
-  intervalSeconds: number;
   nextRotationAt: string;
   session: PublicSessionView;
 }

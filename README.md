@@ -1,9 +1,10 @@
 # Map of the Day
 
-A Wordle-style daily game: once per configurable interval (default 24h) the
+A Wordle-style daily game: every night at a fixed 8 PM America/New_York, the
 site publishes one **thematic data map** — a choropleth, a graduated-symbol
 map, a dot-density map, a categorical class map, a tile cartogram, a point
-map, a flow map or a bivariate map of states or countries — with its **title
+map, a flow map, a bivariate map, a cartogram, a spike map, a composition
+map or an interpolated surface, of states or countries — with its **title
 redacted**, and everyone guesses **what the map is depicting** (the variable
 being visualized, e.g.
 "population by state" or "highest elevation"). The color scale stays visible
@@ -34,7 +35,10 @@ stubs, game/session state lives in memory, and images are written to
 `public/dev-blob/`. The full guess flow — hints, win/loss, reveal — works with
 zero provisioned services.
 
-Tip: set `PUZZLE_INTERVAL_SECONDS=300` in `.env` to watch rotation happen.
+The real puzzle rotates at a fixed 8 PM America/New_York every night (DST-aware
+— see `src/lib/rotationSchedule.ts`), not on a timer. Tip: set
+`PUZZLE_ROTATION_OVERRIDE_SECONDS=300` in `.env` to revert to a plain interval
+locally and watch rotation happen without waiting for a real clock boundary.
 
 ## Architecture
 

@@ -22,6 +22,7 @@ import { hintLeaksAnswer } from "@/lib/guessMatch";
 import { getImageStore } from "@/lib/blob";
 import { getKv } from "@/lib/kv";
 import { detectTextBlocks } from "@/lib/ocr";
+import { computeNextRotation } from "@/lib/rotationSchedule";
 import { normalizeOriginal, redactImage } from "@/lib/imageRedact";
 import { getSources } from "@/sources";
 import type { MapSource } from "@/sources/types";
@@ -197,8 +198,7 @@ async function attemptFromSource(
   const puzzle: Puzzle = {
     id,
     createdAt: nowIso,
-    intervalStartAt: nowIso,
-    intervalSeconds: config.intervalSeconds,
+    nextRotationAt: computeNextRotation(new Date(nowIso)).toISOString(),
     candidate,
     redactionRegions: regions,
     redactedImageUrl: redactedUpload.url,

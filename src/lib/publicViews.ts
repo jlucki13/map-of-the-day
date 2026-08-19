@@ -1,4 +1,5 @@
 import { MAX_GUESSES } from "@/lib/config";
+import { etCalendarDateLabel } from "@/lib/rotationSchedule";
 import type {
   GuessSessionState,
   Hint,
@@ -23,7 +24,11 @@ export function buildShareGrid(
   puzzle: Puzzle,
   session: GuessSessionState,
 ): string {
-  const day = puzzle.intervalStartAt.slice(0, 10);
+  // ET calendar date, not a raw UTC slice: generation happens right at/after
+  // the 8 PM ET reveal, which is already past midnight UTC — a UTC slice
+  // would misdate a puzzle generated between 8 PM ET and midnight ET as "the
+  // next day."
+  const day = etCalendarDateLabel(new Date(puzzle.createdAt));
   const score =
     session.status === "won"
       ? `${session.guesses.length}/${MAX_GUESSES}`
@@ -76,15 +81,10 @@ export function toPublicPuzzleView(
   puzzle: Puzzle,
   session: GuessSessionState,
 ): PublicPuzzleView {
-  const nextRotationAt = new Date(
-    new Date(puzzle.intervalStartAt).getTime() + puzzle.intervalSeconds * 1000,
-  ).toISOString();
   return {
     puzzleId: puzzle.id,
     redactedImageUrl: puzzle.redactedImageUrl,
-    intervalStartAt: puzzle.intervalStartAt,
-    intervalSeconds: puzzle.intervalSeconds,
-    nextRotationAt,
+    nextRotationAt: puzzle.nextRotationAt,
     session: toPublicSessionView(puzzle, session),
   };
 }

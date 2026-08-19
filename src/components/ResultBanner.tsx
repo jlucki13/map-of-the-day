@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import type { PuzzleReveal } from "@/types";
+import CountdownTimer from "./CountdownTimer";
 import GuessPips from "./GuessPips";
 import NicknamePrompt from "./NicknamePrompt";
 import { inlineLink, secondaryAction } from "./styles";
@@ -13,6 +14,15 @@ export interface ResultBannerProps {
   scoreAwarded?: { points: number; hasNickname: boolean };
   guessHistory: { outcome: "correct" | "incorrect" }[];
   maxGuesses: number;
+  /**
+   * ISO timestamp of the next puzzle rotation, so a finished round still
+   * tells the player when tomorrow's map shows up — the in-progress rail
+   * carries this same clock, and it shouldn't just vanish the moment a round
+   * ends.
+   */
+  nextRotationAt: string;
+  /** Called when the countdown reaches zero — the parent should refetch. */
+  onRotation?: () => void;
   /**
    * Fired once a nickname is saved, in addition to the banner's own local
    * state update — lets the page refresh anything that reads standings, since
@@ -59,6 +69,8 @@ export default function ResultBanner({
   scoreAwarded,
   guessHistory,
   maxGuesses,
+  nextRotationAt,
+  onRotation,
   onNicknameSaved,
   aside,
 }: ResultBannerProps) {
@@ -193,6 +205,13 @@ export default function ResultBanner({
                 View leaderboard
               </Link>
             )}
+          </div>
+
+          <div className="border-t border-hairline pt-5">
+            <CountdownTimer
+              nextRotationAt={nextRotationAt}
+              onExpire={onRotation}
+            />
           </div>
         </div>
 

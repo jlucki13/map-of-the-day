@@ -282,6 +282,8 @@ export default function Page() {
                 scoreAwarded={session.scoreAwarded}
                 guessHistory={session.guessHistory}
                 maxGuesses={MAX_GUESSES}
+                nextRotationAt={view.nextRotationAt}
+                onRotation={() => void fetchPuzzle()}
                 onNicknameSaved={bumpBoard}
                 aside={<LeaderboardRail refreshSignal={boardRefreshKey} />}
               />
