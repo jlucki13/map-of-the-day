@@ -52,17 +52,33 @@ export const config = {
   /**
    * Absolute origin used as metadataBase for OG/Twitter image URLs, so social
    * crawlers (which don't share a browser's notion of "relative") get a real
-   * URL rather than a localhost one. Preference order: an explicit custom
-   * domain (SITE_URL, set once and forget — survives switching from the
-   * default *.vercel.app to a real domain), then Vercel's own per-deployment
-   * VERCEL_URL, then undefined so Next's own localhost default applies in
-   * plain local dev.
+   * URL rather than a localhost one.
+   *
+   * Preference order:
+   *  1. SITE_URL — an explicit custom domain, set once and forget. Also the
+   *     only option that's stable if a per-deployment protection setting or
+   *     something else makes Vercel's own URLs unreliable for an outside
+   *     crawler to fetch.
+   *  2. VERCEL_PROJECT_PRODUCTION_URL — Vercel's own "stable alias for
+   *     whatever is currently in Production" variable. Deliberately preferred
+   *     over VERCEL_URL: that one is per-DEPLOYMENT (a fresh random hash every
+   *     push, e.g. map-of-the-qlo71hb3b-<team>.vercel.app) rather than
+   *     per-PROJECT, so a socially-shared link built from it goes stale the
+   *     next time anything is deployed — and those hashed URLs are commonly
+   *     still gated by Deployment Protection even once the real production
+   *     alias has been made public, which is exactly what broke this once.
+   *  3. VERCEL_URL — last-resort fallback for contexts where neither of the
+   *     above is set (e.g. a Preview deployment, which has no stable alias by
+   *     definition).
+   *  4. undefined, so Next's own localhost default applies in plain local dev.
    */
   siteUrl: process.env.SITE_URL
     ? process.env.SITE_URL
-    : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : undefined,
+    : process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : undefined,
 } as const;
 
 /**
