@@ -37,6 +37,12 @@ export interface CandidateMap {
     licenseUrl?: string;
     sourcePageUrl: string;
   };
+  /**
+   * static-dataset only: which cartographic form the generator drew this with
+   * (choropleth, spike, surface, ...). Recorded for the private answer-key
+   * page; the game itself never branches on it.
+   */
+  form?: string;
   /** static-dataset only */
   preauthoredRedactionRegions?: RedactionRegion[];
   /** static-dataset only */
@@ -51,8 +57,12 @@ export interface Hint {
 export interface Puzzle {
   id: string;
   createdAt: string;
-  intervalStartAt: string;
-  intervalSeconds: number;
+  /**
+   * Computed once at generation time (rotationSchedule.ts) and stored rather
+   * than re-derived on every read, so staleness checks and the client
+   * countdown can never disagree about when this puzzle expires.
+   */
+  nextRotationAt: string;
   candidate: CandidateMap;
   redactionRegions: RedactionRegion[];
   redactedImageUrl: string;
@@ -104,13 +114,48 @@ export interface PublicSessionView {
   status: GameStatus;
   guessHistory: { outcome: GuessOutcome }[];
   reveal?: PuzzleReveal;
+  /**
+   * Present only on the exact response where a win was just recorded. Points
+   * are server-computed from the winning guess number; hasNickname tells the
+   * client whether to prompt for a leaderboard name.
+   */
+  scoreAwarded?: { points: number; hasNickname: boolean };
+}
+
+// ---- Leaderboard client-facing views ----
+
+/**
+ * One row of the public board. A row is one NICKNAME, not one session: a
+ * player who has played from several browsers holds several server-side ids,
+ * and their scores are summed into a single row here (see src/lib/leaderboard).
+ * Consequently `rank` is a rank among merged rows and is contiguous 1..N.
+ *
+ * Nothing that identifies a session may be added to this shape.
+ */
+export interface PublicLeaderboardEntry {
+  rank: number;
+  nickname: string;
+  totalScore: number;
+  gamesWon: number;
+  /**
+   * True on the caller's own row (both inside `entries` and on `you`).
+   * Optional and purely a rendering convenience — it says "this is you" to the
+   * person who already knows they are themselves, and reveals nothing about
+   * anyone else. Prefer it over comparing `you.rank` to an entry's rank: a
+   * viewer who has points but has not claimed a nickname is absent from
+   * `entries`, yet their provisional `rank` can coincide with a real row's.
+   */
+  isViewer?: boolean;
+}
+
+export interface PublicLeaderboardView {
+  entries: PublicLeaderboardEntry[];
+  you: PublicLeaderboardEntry | null;
 }
 
 export interface PublicPuzzleView {
   puzzleId: string;
   redactedImageUrl: string;
-  intervalStartAt: string;
-  intervalSeconds: number;
   nextRotationAt: string;
   session: PublicSessionView;
 }

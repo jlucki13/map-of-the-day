@@ -20,6 +20,16 @@ const nextConfig = {
       "./tessdata/**/*",
       "./node_modules/tesseract.js-core/**/*",
     ],
+    // opengraph-image/twitter-image read local .ttf files via
+    // fs.readFile(join(process.cwd(), "public/og-fonts", ...)) at request
+    // time. process.cwd() is a dynamic path, so Next's automatic trace
+    // (@vercel/nft, static-analysis based) doesn't pick it up, and files
+    // under public/ aren't otherwise assumed to be read via fs — same failure
+    // shape as tessdata above: works in `next dev`/`next start` (which run as
+    // plain Node with the real repo on disk) and 500s once deployed, because
+    // the serverless function's bundle genuinely doesn't contain the fonts.
+    "/opengraph-image": ["./public/og-fonts/**/*"],
+    "/twitter-image": ["./public/og-fonts/**/*"],
   },
 };
 

@@ -8,7 +8,10 @@ export interface RedactedImage {
   height: number;
 }
 
-const REDACTION_FILL = "#1e293b";
+// Parchment/sand tone (matches the UI's sand-300 token). Reads as a label
+// deliberately covered over on the map rather than a dark hole punched through
+// it, which is how a slate fill looked against the app's sand map mount.
+const REDACTION_FILL = "#c9b58c";
 const REDACTION_CORNER_RADIUS = 6;
 /** Pad each region by this fraction of the ORIGINAL image width, on all sides. */
 const PAD_FRACTION_OF_WIDTH = 0.02;
@@ -78,21 +81,38 @@ export async function redactImage(
     );
   }
 
-  let pipeline = image;
+  let workingBytes = originalBytes;
   if (rects.length > 0) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${rects.join("")}</svg>`;
-    // Composite the overlay onto the ORIGINAL-resolution image first, then
-    // resize — this keeps the region coordinates (which are original-image
-    // pixel-space) valid without needing to rescale them.
-    pipeline = image.composite([{ input: Buffer.from(svg), left: 0, top: 0 }]);
+    // Rasterize the SVG to an exact width x height bitmap before compositing
+    // rather than handing sharp the raw SVG buffer directly — SVG
+    // rasterization density/rounding can produce a bitmap a pixel or two
+    // larger than the declared width/height, and sharp's composite() rejects
+    // an overlay larger than the base image.
+    const overlay = await sharp(Buffer.from(svg))
+      .resize(width, height, { fit: "fill" })
+      .png()
+      .toBuffer();
+    // Composite must be fully materialized to a buffer HERE, before any
+    // resize. Chaining .resize() onto the same pipeline as a pending
+    // .composite() call makes sharp validate the overlay's dimensions
+    // against the post-resize target size rather than the original full
+    // resolution, throwing "Image to composite must have same dimensions or
+    // smaller" for any image larger than MAX_REDACTED_WIDTH — reproduced and
+    // fixed against a real deployment. Encoding to PNG here (not JPEG) keeps
+    // this an intermediate lossless step so the final downscale+encode below
+    // isn't compounding two rounds of JPEG compression artifacts.
+    workingBytes = await image
+      .composite([{ input: overlay, left: 0, top: 0 }])
+      .png()
+      .toBuffer();
   }
 
-  pipeline = pipeline.resize({
-    width: Math.min(width, MAX_REDACTED_WIDTH),
-    withoutEnlargement: true,
-  });
-
-  const { data, info } = await pipeline
+  const { data, info } = await sharp(workingBytes, { failOn: "none" })
+    .resize({
+      width: Math.min(width, MAX_REDACTED_WIDTH),
+      withoutEnlargement: true,
+    })
     .jpeg({ quality: REDACTED_JPEG_QUALITY })
     .toBuffer({ resolveWithObject: true });
 

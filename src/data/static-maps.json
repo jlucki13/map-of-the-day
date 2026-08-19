@@ -1,0 +1,2553 @@
+[
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-population",
+    "form": "choropleth",
+    "title": "Population by State (2020 Census)",
+    "aliases": [
+      "population",
+      "state population",
+      "how many people live in each state",
+      "residents per state"
+    ],
+    "description": "Resident population of each U.S. state from the 2020 United States Census. California, Texas, Florida, and New York are the most populous; Wyoming and Vermont the least. Boundaries: US Census TIGER via us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-population.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "This is a straightforward head-count of people — not land, money, or altitude.",
+      "The four darkest states are California, Texas, Florida, and New York."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-land-area",
+    "form": "choropleth",
+    "title": "Land Area by State (square miles)",
+    "aliases": [
+      "land area",
+      "area",
+      "state size",
+      "how big each state is",
+      "size of each state"
+    ],
+    "description": "Land area of each U.S. state in square miles. Alaska dwarfs every other state, followed by Texas, California, and Montana; Rhode Island and Delaware are the smallest. Boundaries: US Census TIGER via us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-land-area.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "This measures physical size on the ground, not how many people are there.",
+      "One state in the far northwest is more than twice the size of the next largest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-statehood-order",
+    "form": "choropleth",
+    "title": "Order of Admission to the Union",
+    "aliases": [
+      "order of statehood",
+      "statehood order",
+      "when each state joined the union",
+      "order states joined the us",
+      "admission to the union"
+    ],
+    "description": "The order in which each state was admitted to the Union, from Delaware (1st, 1787) to Hawaii (50th, 1959). The original thirteen colonies along the East Coast rank lowest; the West and the last frontier states rank highest. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-statehood-order.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The lowest values cluster along the East Coast and climb as you move west.",
+      "The thirteen original colonies hold the earliest ranks; Alaska and Hawaii the last two."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-electoral-votes",
+    "form": "choropleth",
+    "title": "Electoral Votes per State (2024)",
+    "aliases": [
+      "electoral votes",
+      "electoral college votes",
+      "electoral college",
+      "presidential electors"
+    ],
+    "description": "Number of Electoral College votes per state for the 2024 U.S. presidential election, based on the 2020 apportionment (House seats plus two senators; Washington, D.C. gets three). Ranges from 3 for the smallest states to 54 for California. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-electoral-votes.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The figure tracks a state's clout in choosing a national leader every four years.",
+      "The smallest states all share the minimum of three; California tops out at 54."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-counties",
+    "form": "choropleth",
+    "title": "Number of Counties per State",
+    "aliases": [
+      "number of counties",
+      "counties per state",
+      "how many counties",
+      "count of counties"
+    ],
+    "description": "The number of counties (or county-equivalents — Louisiana's parishes, Alaska's boroughs and census areas, and independent cities) in each state. Texas leads with 254; Delaware has just 3. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-counties.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "It counts a state's internal administrative subdivisions, not people or land.",
+      "One large southern state has 254 of them; Delaware, Hawaii, and Rhode Island have a handful."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-elevation",
+    "form": "choropleth",
+    "title": "Highest Elevation Point by State (feet)",
+    "aliases": [
+      "highest elevation",
+      "highest point",
+      "peak elevation",
+      "highest point in each state",
+      "elevation",
+      "highest summit"
+    ],
+    "description": "The elevation of the highest natural point in each state, in feet above sea level — from Alaska's Denali (20,310 ft) down to Florida's Britton Hill (345 ft). The Rockies and western ranges dominate. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-elevation.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "This is about how far up the land rises, greatest across the mountainous West.",
+      "The single loftiest summit is in Alaska, while flat states like Florida and Delaware barely rise above the sea."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-population",
+    "form": "choropleth",
+    "title": "Population by Country (~2020)",
+    "aliases": [
+      "population",
+      "country population",
+      "how many people live in each country",
+      "national population"
+    ],
+    "description": "Approximate national population around 2020. China and India each exceed 1.3 billion; a long tail of countries have only a few million. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-population.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A simple count of people, nation by nation.",
+      "Two countries in Asia tower over everyone else, each above a billion."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-land-area",
+    "form": "choropleth",
+    "title": "Land Area by Country (thousand km²)",
+    "aliases": [
+      "land area",
+      "country area",
+      "area",
+      "how big each country is",
+      "size of each country",
+      "territory size"
+    ],
+    "description": "Land area by country, in thousands of square kilometres. Russia is by far the largest, followed by Canada, the United States, China, and Brazil. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-land-area.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "This is about sheer territorial size, not how many people live there.",
+      "The largest by a wide margin stretches across northern Eurasia."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-median-income",
+    "form": "choropleth",
+    "title": "Median Household Income by State (2022)",
+    "aliases": [
+      "median household income",
+      "household income",
+      "median income",
+      "typical family earnings",
+      "average household earnings"
+    ],
+    "description": "Median household income by state in 2022 dollars, from the U.S. Census Bureau's American Community Survey. The Washington–Boston corridor plus Maryland, Virginia, and the West Coast sit highest; Mississippi, West Virginia, and Arkansas lowest. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-median-income.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The pattern follows money rather than land, weather, or head counts.",
+      "The suburbs of the capital push Maryland and Virginia near the top, while Mississippi and West Virginia anchor the bottom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-snowfall",
+    "form": "choropleth",
+    "title": "Average Annual Snowfall by State (inches)",
+    "aliases": [
+      "annual snowfall",
+      "average snowfall",
+      "how much it snows each year",
+      "inches of snow per year",
+      "yearly snow total"
+    ],
+    "description": "Approximate statewide average annual snowfall in inches, based on NOAA climate normals. Vermont, Maine, Wyoming, and the mountain West lead; the Gulf Coast and Florida are effectively at zero. Statewide averages smooth over big local extremes such as the Cascades and the Great Lakes belts. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-snowfall.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A winter weather measurement — along the Gulf Coast it barely registers at all.",
+      "High-altitude and northern-tier states dominate; Vermont leads the East and Hawaii and Florida sit at the very bottom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-forest-cover",
+    "form": "choropleth",
+    "title": "Percent of Land Covered by Forest",
+    "aliases": [
+      "forest cover",
+      "percent forested",
+      "tree cover",
+      "share of land that is forest",
+      "woodland cover"
+    ],
+    "description": "Approximate share of each state's land area classified as forest land, per the USDA Forest Service's Forest Inventory and Analysis program. Maine is close to 90 percent; North Dakota and Nebraska are only a few percent. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-forest-cover.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "This is about what physically covers the ground, not who owns it or how high it rises.",
+      "Northern New England and the Southeast run highest, while the Great Plains states are nearly bare."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-january-low",
+    "form": "choropleth",
+    "title": "Average January Low Temperature (°F)",
+    "aliases": [
+      "average january low temperature",
+      "january low temperature",
+      "coldest month overnight low",
+      "winter overnight low",
+      "average winter low"
+    ],
+    "description": "Approximate statewide average daily minimum temperature in January, in degrees Fahrenheit, based on NOAA 1991–2020 climate normals. Hawaii is near 66; North Dakota is near 2 and Alaska is below zero. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-january-low.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A climate figure whose gradient runs almost perfectly with latitude.",
+      "Exactly one state comes out negative — the one reaching into the Arctic — and the tropical outlier in the Pacific is warmer than anywhere else by a wide margin."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-minimum-wage",
+    "form": "choropleth",
+    "title": "State Minimum Wage in 2024 (per hour)",
+    "aliases": [
+      "minimum wage",
+      "state minimum wage",
+      "lowest legal hourly pay",
+      "hourly pay floor",
+      "minimum hourly pay"
+    ],
+    "description": "Effective state minimum wage in 2024, in dollars per hour, from U.S. Department of Labor listings. Twenty states have no higher standard of their own and sit at the federal 7.25; Washington, D.C. tops the list at 17.50. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-minimum-wage.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Set by legislatures, not by nature — and roughly a third of the map sits at one identical value.",
+      "A solid block of southern and plains states shares the federal figure of 7.25, while the Pacific coast, the Northeast, and the capital run far above it."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-commute-time",
+    "form": "choropleth",
+    "title": "Average Commute Time to Work (minutes)",
+    "aliases": [
+      "average commute time",
+      "commute time",
+      "travel time to work",
+      "how long people travel to work",
+      "commuting minutes"
+    ],
+    "description": "Mean travel time to work for workers aged 16 and over, in minutes, from the 2022 American Community Survey. New York and Maryland top 33 minutes; the Dakotas and Wyoming are under 18. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-commute-time.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Measured in minutes, and it reflects daily routine rather than climate or terrain.",
+      "The dense Northeast corridor is highest, the wide-open Dakotas lowest, and the whole spread is only about a quarter of an hour."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-life-expectancy",
+    "form": "choropleth",
+    "title": "Life Expectancy at Birth by State (years)",
+    "aliases": [
+      "life expectancy",
+      "average lifespan",
+      "how long people live",
+      "expected years of life",
+      "average life span"
+    ],
+    "description": "Life expectancy at birth in years, from CDC/NCHS state estimates for 2020. Hawaii leads at about 80.7 years and Mississippi trails at about 71.9 — a spread of under a decade nationwide. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-life-expectancy.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A public-health outcome, and the entire national range spans less than ten units.",
+      "Hawaii, Minnesota, and the Pacific Northwest lead; the Deep South and Appalachia trail by several years."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-wind-share",
+    "form": "choropleth",
+    "title": "Share of Electricity from Wind (%)",
+    "aliases": [
+      "share of electricity from wind",
+      "wind power share",
+      "percent of power from wind",
+      "wind energy share",
+      "wind generation share"
+    ],
+    "description": "Approximate share of each state's utility-scale electricity net generation supplied by wind in 2023, per the U.S. Energy Information Administration. Iowa and South Dakota exceed half; most of the Southeast is at or near zero. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-wind-share.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "An electricity statistic — and across almost the whole Southeast it is essentially nil.",
+      "A tall corridor from the Dakotas down through Iowa, Kansas, and Oklahoma dominates, thanks to relentless open-plains gusts."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-corn-production",
+    "form": "choropleth",
+    "title": "Corn Production (million bushels, 2023)",
+    "aliases": [
+      "corn production",
+      "corn harvest",
+      "bushels of corn",
+      "corn output",
+      "how much corn each state grows"
+    ],
+    "description": "Approximate corn-for-grain production in millions of bushels for 2023, from USDA NASS crop production reports. Iowa and Illinois together account for roughly a third of the national crop; states with no reported corn-for-grain harvest are left unshaded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-corn-production.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "An agricultural output measure, and a tight cluster of Midwest states accounts for most of the national total.",
+      "Iowa and Illinois are far ahead of everyone; the arid Southwest and New England barely register or report nothing at all."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-gdp-per-capita",
+    "form": "choropleth",
+    "title": "GDP per Capita by Country (~2022)",
+    "aliases": [
+      "gdp per capita",
+      "income per person",
+      "gross domestic product per person",
+      "output per person",
+      "gdp per person"
+    ],
+    "description": "Approximate GDP per capita in current U.S. dollars around 2022, based on World Bank figures. Luxembourg, Norway, Ireland, Switzerland, and Qatar sit above 85,000 while several countries in central Africa are under 1,000. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-gdp-per-capita.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "An economic yardstick on which small states like Luxembourg and Qatar outrank far larger economies.",
+      "The scale spans more than a factor of two hundred; central Africa is at the low end and northern Europe plus the Gulf at the high end."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-urban-share",
+    "form": "choropleth",
+    "title": "Urban Share of Population (%)",
+    "aliases": [
+      "urban population share",
+      "percent living in cities",
+      "urbanization rate",
+      "share of people in cities",
+      "urbanisation"
+    ],
+    "description": "Approximate share of the population living in urban areas around 2022, per World Bank data. Kuwait, Qatar, Belgium, and Uruguay are above 95 percent; Papua New Guinea, Burundi, Niger, and Sri Lanka are under 20. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-urban-share.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A demographic split about where inside a country people are settled, not how many of them there are.",
+      "South America, Japan, and the Gulf run above 85 percent, while Sri Lanka, Nepal, Papua New Guinea, and much of East Africa stay below 30."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-fertility-rate",
+    "form": "choropleth",
+    "title": "Births per Woman by Country (~2021)",
+    "aliases": [
+      "fertility rate",
+      "total fertility rate",
+      "births per woman",
+      "birth rate",
+      "average number of children per woman",
+      "children per woman"
+    ],
+    "description": "Total fertility rate — the average number of children a woman would bear over her lifetime at current rates — around 2021, per World Bank data. Niger, Chad, and Somalia are above 6; South Korea is the world's lowest at about 0.8. Grey countries are outside the labelled dataset. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-fertility-rate.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A demographic rate that has fallen below the replacement level across nearly all of Europe and East Asia.",
+      "The Sahel and central Africa sit at the top of the range, above six, while South Korea is the lowest on Earth at well under one."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-pro-sports-teams",
+    "form": "symbol",
+    "title": "Major League Sports Franchises per State",
+    "aliases": [
+      "major league sports teams",
+      "professional sports teams",
+      "number of pro sports teams",
+      "sports franchises",
+      "big four sports teams",
+      "nfl nba mlb nhl teams",
+      "pro teams per state"
+    ],
+    "description": "Circles are area-scaled to the number of franchises in the four established North American leagues — football, basketball, baseball and ice hockey — playing their home games in each state for the 2024-25 seasons. California has 15, Florida 9, and New York and Texas 8 each; 24 states have none. Clubs are counted where their venue actually is, which puts both New York football clubs in New Jersey and the Washington football club in Maryland. Canadian franchises are excluded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-pro-sports-teams.png",
+    "width": 975,
+    "height": 784,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The circles count organisations that play a scheduled season and sell tickets — not people, not acres, not money.",
+      "One state has fifteen, Florida nine, and New York and Texas eight apiece; almost half the states have none at all."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-busiest-airports",
+    "form": "point-symbol",
+    "title": "Busiest U.S. Airports by Passengers (2023)",
+    "aliases": [
+      "busiest airports",
+      "airport passenger traffic",
+      "how many passengers each airport handles",
+      "airport traffic",
+      "biggest airports",
+      "passengers per airport",
+      "busiest airports by passengers"
+    ],
+    "description": "The thirty-one busiest U.S. airfields, drawn at their actual coordinates with circle area proportional to total passengers handled in 2023 (arrivals plus departures, in millions). Atlanta leads at about 104.7 million, ahead of Dallas–Fort Worth, Denver, Los Angeles and Chicago O'Hare. Totals are rounded reported figures. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-busiest-airports.png",
+    "width": 975,
+    "height": 784,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Each circle sits on a single facility rather than covering a whole state, and its size counts human beings passing through.",
+      "The biggest bubble is on Atlanta, then Dallas–Fort Worth and Denver; New York and Washington each carry three separate circles."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-tornadoes",
+    "form": "symbol",
+    "title": "Average Tornadoes per Year by State",
+    "aliases": [
+      "tornadoes per year",
+      "annual tornado count",
+      "tornado frequency",
+      "how many tornadoes each state gets",
+      "tornado activity",
+      "twisters per year",
+      "average number of tornadoes"
+    ],
+    "description": "Approximate average annual count of confirmed events per state from NOAA Storm Prediction Center records for 1991-2020, drawn as area-scaled circles. Texas averages about 155 a year, Kansas about 96 and Oklahoma about 68; Alaska and Rhode Island average well under one. Counts are rounded and are sensitive to reporting density. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-tornadoes.png",
+    "width": 975,
+    "height": 784,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A weather tally, and the biggest circles run up a well-known alley through the middle of the country.",
+      "Texas averages about 155 a year and Kansas about 96, while Alaska and Rhode Island average well under one."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-farms",
+    "form": "dot",
+    "title": "Number of Farms by State",
+    "aliases": [
+      "number of farms",
+      "farms per state",
+      "how many farms",
+      "farm count",
+      "count of farms",
+      "agricultural holdings",
+      "number of farms in each state"
+    ],
+    "description": "A dot-density map: one dot per 2,000 separately operated holdings, scattered at random inside each state. Counts are approximate 2022 USDA Census of Agriculture figures; the national total is about 1.9 million. Texas has by far the most at roughly 231,000, followed by Missouri, Iowa and Oklahoma; Rhode Island and Alaska have about a thousand each. Dots are placed by a seeded random process and carry no sub-state meaning. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-farms.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Each dot stands for a fixed number of separately operated businesses working the land — this counts the businesses, not the acreage.",
+      "Texas has by far the most, around 231,000; the dense band runs from the southern Plains up through Missouri, Iowa and Kentucky."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-hogs",
+    "form": "dot",
+    "title": "Hogs and Pigs on Farms by State",
+    "aliases": [
+      "hog inventory",
+      "pigs per state",
+      "number of pigs",
+      "hog farming",
+      "pig population",
+      "swine inventory",
+      "how many pigs each state has",
+      "hogs"
+    ],
+    "description": "A dot-density map with one dot per 150,000 head, from approximate USDA NASS December 2023 inventory. Iowa alone holds roughly a third of the national total of about 75 million, with Minnesota and North Carolina distant second and third. Dots are scattered at random inside each state by a seeded process and carry no sub-state meaning. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-hogs.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "One dot per fixed head-count of an animal raised mostly indoors and mostly for meat.",
+      "Iowa alone holds about a third of the national total; Minnesota and North Carolina are the only other heavy clusters."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-oil-production",
+    "form": "dot",
+    "title": "Crude Oil Production by State (2023)",
+    "aliases": [
+      "crude oil production",
+      "oil production",
+      "how much oil each state produces",
+      "petroleum output",
+      "barrels of oil produced",
+      "oil output",
+      "oil drilling by state"
+    ],
+    "description": "A dot-density map with one dot per 5 million barrels produced during 2023, from approximate U.S. Energy Information Administration state totals. Texas alone accounts for roughly half the onshore state total; New Mexico and North Dakota follow. Federal offshore production in the Gulf is not assigned to any state and is not shown. Dots are scattered at random within each state by a seeded process. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-oil-production.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Each dot represents a fixed volume pumped out of the ground over one year.",
+      "One state accounts for roughly half the national figure; New Mexico and North Dakota come next, and nearly all of the East is empty."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-cannabis-laws",
+    "form": "categorical",
+    "title": "State Cannabis Laws (2024)",
+    "aliases": [
+      "cannabis legalization",
+      "marijuana laws",
+      "weed legality",
+      "legal marijuana",
+      "cannabis legality by state",
+      "is marijuana legal",
+      "pot laws",
+      "recreational cannabis legality"
+    ],
+    "description": "Three legal statuses under state law as of 2024: adult recreational plus medical use (24 states and the District of Columbia), medical use only (14 states), and neither (12 states). The whole West Coast and most of the Northeast are in the most permissive class; a block through the South and the Plains is in the strictest. The substance remains federally controlled regardless of state law. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-cannabis-laws.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 743,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Three discrete statuses rather than a sliding scale — this is about what a legislature or a ballot measure has permitted.",
+      "The entire West Coast and most of the Northeast share the most permissive class, while a dozen states through the South and Plains sit in the strictest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-electricity-source",
+    "form": "categorical",
+    "title": "Largest Source of Electricity by State (2023)",
+    "aliases": [
+      "main electricity source",
+      "largest source of electricity",
+      "leading power source",
+      "top electricity generation source",
+      "what generates the most power in each state",
+      "dominant energy source for power",
+      "biggest source of electricity generation"
+    ],
+    "description": "The single largest source of in-state utility-scale net generation in 2023, from EIA state electricity profiles. Natural gas leads in 25 states, coal in 10, nuclear in 6, hydro in 5, wind in 3, and burned oil in Hawaii alone. Several states are near-ties — Minnesota's four leading sources were within about three points of each other in 2023, and Colorado, Wisconsin, Maryland and North Carolina were close calls too. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-electricity-source.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 743,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Six discrete classes describing where the current in the wires physically comes from.",
+      "Hawaii is alone in its class, burning imported liquid fuel; Iowa, Kansas and South Dakota share a class the open plains made possible."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-liquor-control",
+    "form": "categorical",
+    "title": "State-Controlled Liquor Sales",
+    "aliases": [
+      "alcoholic beverage control states",
+      "abc states",
+      "state run liquor stores",
+      "control states",
+      "government liquor monopoly",
+      "state liquor monopoly",
+      "who sells spirits",
+      "liquor control states"
+    ],
+    "description": "Seventeen jurisdictions run a state agency that controls the wholesale and, in most cases, the retail distribution of distilled spirits; everywhere else spirits move entirely through private licensees. Utah, Idaho, Oregon and Montana in the West, then Iowa, Michigan, Ohio, Pennsylvania, Virginia and West Virginia, and New Hampshire, Vermont and Maine in the Northeast. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-liquor-control.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 743,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Two classes, decided by statute: in one group a government agency stands between the distillery and the shelf.",
+      "Seventeen states are in the smaller class — Utah, Idaho, Oregon and Montana out west, then a run through Ohio, Pennsylvania and Virginia up into northern New England."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-death-penalty",
+    "form": "categorical",
+    "title": "States That Still Authorise Capital Punishment",
+    "aliases": [
+      "death penalty",
+      "capital punishment",
+      "states with the death penalty",
+      "is the death penalty legal",
+      "execution laws",
+      "death penalty status",
+      "death penalty by state"
+    ],
+    "description": "Twenty-seven state criminal codes still authorise the sentence; twenty-three states and the District of Columbia have abolished it. Several states in the first group, including California, Oregon and Pennsylvania, are under a governor's moratorium and are not carrying out sentences. Status as of 2024. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-death-penalty.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 743,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "A yes-or-no question answered by each state's criminal code rather than by any measurable quantity.",
+      "Twenty-seven states are in the yes class. All of New England, everything north of Pennsylvania on the Atlantic, and most of the Upper Midwest are in the other."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-right-to-work",
+    "form": "tilegrid",
+    "title": "Right-to-Work States",
+    "aliases": [
+      "right to work laws",
+      "right to work",
+      "union security bans",
+      "states with right to work laws",
+      "labor union laws",
+      "agency shop bans",
+      "right to work states"
+    ],
+    "description": "Each state is drawn as an equal-size square in a rough geographic grid. Twenty-six states have a statute barring union-security agreements that would require workers in an organised shop to pay dues or fees; the other 24 and the District of Columbia do not. Michigan's repeal took effect in February 2024. Rendered as a tile cartogram so that Rhode Island and Alaska carry the same visual weight. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-right-to-work.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 743,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Every square is one state at equal size, and the two colours split them by a workplace statute — nothing geographic or economic.",
+      "Twenty-six states are in one class: the whole South, the Plains and the Mountain West, plus Wisconsin and Iowa. Michigan left that group in 2024."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-sales-tax",
+    "form": "tilegrid",
+    "title": "State Sales Tax Rate (2024)",
+    "aliases": [
+      "sales tax rate",
+      "state sales tax",
+      "sales tax",
+      "how much sales tax each state charges",
+      "consumption tax rate",
+      "state sales tax rate",
+      "purchase tax rate"
+    ],
+    "description": "A tile cartogram: each state is an equal-size square shaded by its statewide general rate on retail purchases in 2024, in percent. California is highest at 7.25; Colorado has the lowest non-zero rate at 2.90; Alaska, Delaware, Montana, New Hampshire and Oregon levy none at the state level. Where a state imposes a mandatory statewide local add-on (Utah, Virginia, California) the combined statutory floor is shown; local option rates on top are not. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-sales-tax.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Every square is one state and the shading is a percentage set by a legislature; five squares sit at exactly zero.",
+      "California is highest at 7.25 and Colorado is the lowest non-zero at 2.90; Alaska, Delaware, Montana, New Hampshire and Oregon charge nothing."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-obesity",
+    "form": "tilegrid",
+    "title": "Adult Obesity Rate by State",
+    "aliases": [
+      "obesity rate",
+      "adult obesity",
+      "share of adults who are obese",
+      "obesity prevalence",
+      "percent of adults obese",
+      "body mass index over 30",
+      "adult obesity prevalence"
+    ],
+    "description": "A tile cartogram of the approximate share of adults with a body mass index of 30 or more, from CDC Behavioral Risk Factor Surveillance System estimates for 2022. West Virginia, Louisiana, Oklahoma and Alabama are around 40 percent; the District of Columbia, Colorado and Hawaii are lowest at about 24 to 26. The survey is self-reported, so the absolute level is understated even though the ranking is stable. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-obesity.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A self-reported public-health percentage that has climbed almost everywhere over the past thirty years.",
+      "West Virginia, Louisiana, Oklahoma and Alabama are around 40 percent; Colorado, Hawaii and the District of Columbia are lowest, near 25."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-nuclear-plants",
+    "form": "points",
+    "title": "Operating Nuclear Power Plants",
+    "aliases": [
+      "nuclear power plants",
+      "nuclear reactors",
+      "where the nuclear plants are",
+      "atomic power stations",
+      "nuclear power stations",
+      "nuclear plants",
+      "locations of nuclear power plants"
+    ],
+    "description": "One marker per licensed and operating commercial station. Most sites host two or three reactors, so these 52 markers stand for more than ninety units; the adjacent Salem/Hope Creek and Nine Mile Point/FitzPatrick pairs are drawn as one marker each. Retired stations — Indian Point, Palisades, Three Mile Island, Duane Arnold, San Onofre and others — are not shown. The distribution is heavily eastern: only three sites lie west of the Rockies, in Arizona, California and Washington. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-nuclear-plants.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Each dot is one industrial site, and every one of them sits beside a river, a lake or the sea for the same practical reason.",
+      "There are more than fifty and they crowd the eastern half of the country; only three sit west of the Rockies, in Arizona, California and Washington."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-national-parks",
+    "form": "points",
+    "title": "Locations of the National Parks",
+    "aliases": [
+      "national parks",
+      "where the national parks are",
+      "national park locations",
+      "us national parks",
+      "list of national parks",
+      "national park sites"
+    ],
+    "description": "All 63 units of the National Park System that carry the full designation, plotted at their approximate centres. Two — American Samoa and the Virgin Islands — fall outside the projection and are dropped, leaving 61 markers. California has nine, Alaska eight and Utah five; a broad swathe from the southern Plains through the Midwest to the Atlantic has almost none. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-national-parks.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Sixty-odd protected places, each designated by an act of Congress; two of them fall outside this projection entirely.",
+      "California has nine, Alaska eight and Utah five, while a wide band from Texas up through the Midwest and across to the Atlantic is nearly empty."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-air-routes",
+    "form": "flow",
+    "title": "Busiest Domestic Air Routes",
+    "aliases": [
+      "busiest flight routes",
+      "busiest air routes",
+      "most travelled flight paths",
+      "top airline routes",
+      "busiest domestic flights",
+      "most popular flight routes",
+      "heaviest passenger routes"
+    ],
+    "description": "The heaviest domestic origin-and-destination markets, drawn as arcs between the two airfields (routes to Hawaii and Alaska are left out, because an arc into a projection inset would be meaningless) with width scaled to approximate annual round-trip passengers in millions. Los Angeles–New York is the single heaviest link, and dense fans radiate from Los Angeles and from Atlanta. The ranking is the point of the map; the individual volumes are rounded estimates. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-air-routes.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The lines are not rivers, roads or cables — each one joins a pair of places, and it is drawn thicker when more people make that particular trip.",
+      "The single heaviest link joins Los Angeles and New York; the two densest fans radiate from Los Angeles and from Atlanta."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-income-lifespan",
+    "form": "bivariate",
+    "title": "Household Income and Life Expectancy Together",
+    "aliases": [
+      "income and life expectancy",
+      "wealth and lifespan",
+      "money and life expectancy",
+      "income versus life expectancy",
+      "earnings and longevity",
+      "income and longevity",
+      "household income and lifespan"
+    ],
+    "description": "A bivariate choropleth: each state is placed into one of three bands on each of two variables and coloured from the resulting three-by-three matrix. The horizontal axis is median household income (2022 American Community Survey) and the vertical axis is life expectancy at birth (CDC/NCHS 2020 estimates). Mississippi, West Virginia, Arkansas and Alabama sit low on both; Massachusetts, Minnesota, New Hampshire and Colorado sit high on both. Hawaii is the standout: mid-range on one axis, top of the country on the other. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-income-lifespan.png",
+    "width": 975,
+    "height": 804,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The nine-square key gives it away that two separate quantities are being combined here, not one.",
+      "The two things combined are the pair an accountant and a doctor would each claim as their own; Mississippi and West Virginia are at the bottom of both, Massachusetts and Minnesota near the top of both."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-federal-land",
+    "form": "choropleth",
+    "title": "Share of Each State Owned by the Federal Government",
+    "aliases": [
+      "federal land ownership",
+      "percent of land owned by the federal government",
+      "federal land share",
+      "government owned land",
+      "public land share",
+      "federally owned land",
+      "share of land owned by washington"
+    ],
+    "description": "Approximate share of each state's total area held by the five major federal land agencies, from Congressional Research Service compilations. Nevada is over 80 percent and Utah, Idaho and Alaska over 60; Connecticut, Iowa and Rhode Island are under half a percent. The split follows the history of how the public domain was disposed of, not the modern economy. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-federal-land.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A question of who holds the title deed, not of what grows there, who lives there, or how high it rises.",
+      "Nevada is over 80 percent, Utah, Idaho and Alaska over 60; Connecticut, Iowa and Rhode Island are under half of one percent."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-alcohol",
+    "form": "choropleth",
+    "title": "Alcohol Consumed per Person",
+    "aliases": [
+      "alcohol consumption per capita",
+      "drinking per person",
+      "how much alcohol people drink",
+      "per capita alcohol consumption",
+      "alcohol consumption",
+      "booze consumption",
+      "drinking rates by state"
+    ],
+    "description": "Approximate gallons of pure ethanol consumed per resident aged 14 and over, from NIAAA surveillance estimates. New Hampshire is far ahead of everywhere else and Delaware and the District of Columbia are also inflated, because all three sell heavily to people who live across the state line. Utah is the clear lowest, at under a third of New Hampshire's figure. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-alcohol.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A per-person quantity where two very small states come out on top mainly because their neighbours cross the border to buy.",
+      "New Hampshire is far above everyone else; Utah is the clear lowest, at under a third of New Hampshire's figure."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-heritage-sites",
+    "form": "symbol",
+    "title": "UNESCO World Heritage Sites per Country",
+    "aliases": [
+      "world heritage sites",
+      "unesco sites",
+      "unesco world heritage sites",
+      "number of world heritage sites",
+      "heritage sites per country",
+      "unesco listings",
+      "world heritage listings"
+    ],
+    "description": "Area-scaled circles for the 33 countries with ten or more inscriptions after the 2024 session of the committee. Italy (60) and China (59) lead, then Germany, France and Spain; India is the largest outside Europe and East Asia. Only one country in Africa reaches ten. Countries below the threshold carry no circle. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-heritage-sites.png",
+    "width": 980,
+    "height": 660,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A count of designations handed out by a United Nations body; circles are drawn only for countries with ten or more of them.",
+      "Italy and China lead with about sixty each, then Germany, France and Spain — and the whole of Africa contributes a single circle, in the far south."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-co2-emissions",
+    "form": "symbol",
+    "title": "Carbon Dioxide Emissions by Country",
+    "aliases": [
+      "co2 emissions",
+      "carbon emissions",
+      "carbon dioxide emissions",
+      "greenhouse gas emissions",
+      "annual carbon output",
+      "emissions per country",
+      "national carbon dioxide emissions"
+    ],
+    "description": "Approximate territorial emissions from fossil fuels and industry, in millions of tonnes per year around 2022-2023, drawn as area-scaled circles. China is more than twice the next largest; the United States is second, India third and Russia fourth. Figures are rounded estimates and countries below roughly five million tonnes are omitted because their symbols would be invisible. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-co2-emissions.png",
+    "width": 980,
+    "height": 660,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "Circle area is proportional to an annual national output that climate negotiators spend their careers arguing over.",
+      "One country's circle is more than twice the next largest; the United States is second, India third and Russia fourth."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-driving-side",
+    "form": "categorical",
+    "title": "Which Side of the Road People Drive On",
+    "aliases": [
+      "driving side",
+      "left hand traffic",
+      "which side of the road",
+      "side of the road people drive on",
+      "right hand traffic",
+      "left or right hand driving",
+      "traffic side",
+      "countries that drive on the left"
+    ],
+    "description": "Two classes covering every country in the boundary file. Thirty-seven keep to one side and the rest to the other; the smaller group is largely a legacy of British colonial road rules, plus Japan, Thailand, Indonesia and Suriname. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-driving-side.png",
+    "width": 980,
+    "height": 666,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 611,
+        "width": 980,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Two classes, and the smaller one is mostly a legacy of a single empire's road rules — plus a few countries that never belonged to it.",
+      "The smaller class holds Japan, India, Australia, southern Africa and the British Isles; continental Europe, the Americas and China are all in the other."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-mains-voltage",
+    "form": "categorical",
+    "title": "Household Mains Voltage",
+    "aliases": [
+      "mains voltage",
+      "electrical voltage",
+      "household voltage",
+      "plug voltage",
+      "domestic electricity voltage",
+      "wall socket voltage",
+      "mains electricity standard",
+      "electricity voltage by country"
+    ],
+    "description": "Two nominal standards for domestic supply: roughly 100-127 V in North and Central America, the Caribbean, northern South America, Japan and Taiwan, and roughly 220-240 V nearly everywhere else. Brazil is deliberately left unshaded because it uses both, region by region. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-mains-voltage.png",
+    "width": 980,
+    "height": 666,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 611,
+        "width": 980,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Two engineering standards about a factor of two apart, and which one you are in decides whether a travel adapter also needs to be a converter.",
+      "North America, most of Central America, the Caribbean, Japan and Taiwan share the lower standard; Brazil is left blank because it uses both."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-monarchies",
+    "form": "categorical",
+    "title": "Countries With a Monarch as Head of State",
+    "aliases": [
+      "monarchies",
+      "monarchy",
+      "countries with a king or queen",
+      "which countries have a monarch",
+      "kingdoms",
+      "monarchies of the world",
+      "constitutional monarchies",
+      "royal heads of state"
+    ],
+    "description": "Thirty-one countries in the boundary file have a hereditary head of state, counting the Commonwealth realms that share one. The group spans northern Europe, the Gulf, South-East Asia, Morocco, Lesotho, eSwatini and the realms in the Americas and the Pacific. Micro-states below the resolution of the 110m file (Liechtenstein, Monaco, Andorra, Tonga and others) are not represented. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-monarchies.png",
+    "width": 980,
+    "height": 666,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 611,
+        "width": 980,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "A yes-or-no about how a country's ceremonial top job is filled — by inheritance rather than by any kind of vote.",
+      "Thirty-one countries are in the smaller class, among them Japan, Thailand, Morocco, Sweden, Canada and Australia."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-megacities",
+    "form": "points",
+    "title": "Cities With More Than Ten Million People",
+    "aliases": [
+      "megacities",
+      "largest cities in the world",
+      "biggest cities",
+      "cities over ten million",
+      "world megacities",
+      "largest urban areas",
+      "biggest urban agglomerations"
+    ],
+    "description": "The 33 urban agglomerations that the UN's World Urbanization Prospects counted above ten million residents, each drawn as a single marker. Asia holds more than half of them; sub-Saharan Africa has two, and North America three. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-megacities.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "Thirty-three markers, each one a single settlement rather than a whole country, all sitting above the same round threshold.",
+      "Asia holds more than half of them; the African ones are Cairo, Lagos and Kinshasa, and there are only three in North America."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-population-change",
+    "form": "diverging",
+    "title": "Population Change, 2010 to 2020",
+    "aliases": [
+      "population change",
+      "population growth",
+      "how much each state grew",
+      "change in population",
+      "state growth rate",
+      "population gain or loss"
+    ],
+    "description": "Percent change in resident population between the 2010 and 2020 Censuses. Utah, Idaho and Texas grew fastest; only West Virginia, Mississippi and Illinois finished the decade smaller than they started it. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-population-change.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Three states sit on the far side of the midpoint from everyone else — whatever is measured here, they lost it over ten years.",
+      "The three that fell are West Virginia, Mississippi and Illinois; Utah rose most."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-net-migration",
+    "form": "diverging",
+    "title": "Net Domestic Migration",
+    "aliases": [
+      "net migration",
+      "domestic migration",
+      "people moving between states",
+      "where americans are moving",
+      "interstate migration",
+      "net movers"
+    ],
+    "description": "Net movement of people between states per 1,000 residents around 2022-23: arrivals from elsewhere in the country minus departures to it, ignoring births, deaths and immigration from abroad. South Carolina, Idaho and Delaware gained most; New York, California and Illinois lost most. Values are rounded estimates rather than exact published counts. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-net-migration.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Nobody is born or dies in this measure and nobody arrives from abroad — it only counts a choice already-resident people made.",
+      "New York is deepest on one side, South Carolina deepest on the other."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-population-growth",
+    "form": "diverging",
+    "title": "Annual Population Growth Rate",
+    "aliases": [
+      "population growth rate",
+      "how fast the population is growing",
+      "annual population change",
+      "population growth",
+      "rate of population increase"
+    ],
+    "description": "Approximate annual rate of change in national population around 2022, in percent. Niger, DR Congo and several Sahel states exceed three percent a year; Japan, Italy, Bulgaria and the Baltics are shrinking. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-population-growth.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "A band across the middle of Africa sits at one extreme and much of Europe plus Japan at the other, with the midpoint meaning no change at all.",
+      "Niger is the highest in the world; Bulgaria, Latvia and Japan are among the lowest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-uninsured",
+    "form": "classed",
+    "title": "Share of People Without Health Insurance",
+    "aliases": [
+      "uninsured rate",
+      "people without health insurance",
+      "health insurance coverage",
+      "share uninsured",
+      "no health cover",
+      "lack of health insurance"
+    ],
+    "description": "Percent of residents under 65 with no health coverage of any kind, around 2022, sorted into five equal-count classes. Texas is highest at about 18 percent; Massachusetts is lowest at under 3. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-uninsured.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Five classes, each holding the same number of states — and the two extremes differ by roughly a factor of six.",
+      "Texas sits alone in the top class; Massachusetts is the lowest in the country."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-homeownership",
+    "form": "classed",
+    "title": "Homeownership Rate",
+    "aliases": [
+      "homeownership rate",
+      "share of homes that are owned",
+      "owner occupied housing",
+      "how many people own their home",
+      "home ownership",
+      "share of households owning"
+    ],
+    "description": "Percent of occupied housing units lived in by their owner rather than rented, around 2023, in five equal-count classes. West Virginia and Maine are highest; the District of Columbia and New York are lowest. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-homeownership.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The measure is about tenure, not price or size — every household counts as one of exactly two kinds.",
+      "West Virginia and Maine top the list; the District of Columbia is far below every state."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-median-age",
+    "form": "classed",
+    "title": "Median Age",
+    "aliases": [
+      "median age",
+      "average age",
+      "how old the population is",
+      "age of the population",
+      "median age of the population"
+    ],
+    "description": "The age that splits each country's population in half, around 2023, in six equal-count classes. Niger is about 15, Japan about 49. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-median-age.png",
+    "width": 980,
+    "height": 620,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "Half of each country is above the shaded number and half below it.",
+      "Japan and Italy are in the top class; Niger and Mali are in the bottom one."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-gdp",
+    "form": "cartogram",
+    "title": "State Economy Size",
+    "aliases": [
+      "state gdp",
+      "size of the economy",
+      "economic output",
+      "gross domestic product",
+      "economy size",
+      "total economic output"
+    ],
+    "description": "Gross domestic product by state around 2023, in billions of dollars, drawn so each state's area is proportional to its output. California alone is close to four trillion dollars; Vermont and Wyoming are under sixty billion. Figures are rounded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-gdp.png",
+    "width": 975,
+    "height": 774,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Each state keeps its own outline and place but shrinks toward its middle — the gap to the faint shape behind it is the quantity.",
+      "California is by far the largest, then Texas and New York; Vermont and Wyoming are the smallest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-veterans",
+    "form": "cartogram",
+    "title": "Number of Military Veterans",
+    "aliases": [
+      "veterans",
+      "military veterans",
+      "number of veterans",
+      "veteran population",
+      "people who served in the military",
+      "former service members"
+    ],
+    "description": "Approximate number of living military veterans by state around 2022, in thousands, drawn with each state's area proportional to the count. California, Texas and Florida each hold roughly 1.4 million. Values are rounded estimates. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-veterans.png",
+    "width": 975,
+    "height": 774,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The count is of people who once held a particular job, not of anyone currently doing it.",
+      "California, Texas and Florida are nearly tied at the top; Virginia is unusually large for its population."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-military-spending",
+    "form": "cartogram",
+    "title": "Military Spending",
+    "aliases": [
+      "military spending",
+      "defence spending",
+      "defense budget",
+      "arms spending",
+      "how much countries spend on their military",
+      "military expenditure"
+    ],
+    "description": "Approximate military expenditure around 2023 in billions of US dollars, drawn with each country's area proportional to the total. The United States is larger than the next several combined. Countries without a figure are unshaded. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-military-spending.png",
+    "width": 980,
+    "height": 650,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "One country's shape barely shrinks at all while everyone else collapses toward a dot.",
+      "The United States is roughly three times China and eight times Russia here."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-k12-enrollment",
+    "form": "dorling",
+    "title": "Public School Enrollment",
+    "aliases": [
+      "public school enrollment",
+      "school enrollment",
+      "number of school children",
+      "students in public schools",
+      "k-12 enrollment",
+      "schoolchildren"
+    ],
+    "description": "Approximate number of pupils in public elementary and secondary schools by state around 2022, in thousands, drawn as area-scaled circles nudged apart so small states stay visible. California and Texas each exceed five million. Values are rounded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-k12-enrollment.png",
+    "width": 975,
+    "height": 784,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted here is under about eighteen and attending somewhere public.",
+      "California and Texas dwarf the rest; Vermont and Wyoming are the smallest circles."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-college-enrollment",
+    "form": "dorling",
+    "title": "Higher Education Enrollment",
+    "aliases": [
+      "college enrollment",
+      "university enrollment",
+      "higher education enrollment",
+      "number of college students",
+      "students in college",
+      "undergraduate and graduate enrollment"
+    ],
+    "description": "Approximate enrollment at degree-granting colleges and universities by state around 2022, in thousands. California is well over two million; Wyoming and Vermont are under fifty thousand. Values are rounded. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-college-enrollment.png",
+    "width": 975,
+    "height": 784,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted here has already finished school and chosen to keep going.",
+      "The District of Columbia is far larger here than its population would suggest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-internet-users",
+    "form": "dorling",
+    "title": "Number of Internet Users",
+    "aliases": [
+      "internet users",
+      "people online",
+      "number of people using the internet",
+      "internet population",
+      "how many people are online"
+    ],
+    "description": "Approximate number of people online by country around 2023, in millions, drawn as area-scaled circles. China and India together account for close to two billion. Countries without a figure are unshaded. Values are rounded estimates. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-internet-users.png",
+    "width": 980,
+    "height": 660,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "This is a raw head-count, not a percentage, so the biggest countries lead almost automatically.",
+      "China is the largest circle, then India, then the United States."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-electricity-price",
+    "form": "spike",
+    "title": "Residential Electricity Price",
+    "aliases": [
+      "electricity price",
+      "cost of electricity",
+      "power prices",
+      "price per kilowatt hour",
+      "electricity cost",
+      "how much electricity costs"
+    ],
+    "description": "Average price households pay for electricity around 2023, in cents per kilowatt-hour. Hawaii is roughly four times the cheapest states; Connecticut, Massachusetts and Rhode Island are the highest on the mainland. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-electricity-price.png",
+    "width": 975,
+    "height": 898,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "One island state towers over everything, and a cluster in the far Northeast comes next.",
+      "Hawaii is about 42 and Idaho, Utah and Washington are around 11."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-gas-price",
+    "form": "spike",
+    "title": "Average Gasoline Price",
+    "aliases": [
+      "gas prices",
+      "gasoline price",
+      "petrol price",
+      "price of gas",
+      "fuel price",
+      "cost of gasoline",
+      "price at the pump"
+    ],
+    "description": "Approximate average retail price of a gallon of regular around 2024. The West Coast and Hawaii run well above the Gulf states, largely because of taxes and refinery isolation. Prices move constantly, so treat these as a snapshot rather than a current quote. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-gas-price.png",
+    "width": 975,
+    "height": 888,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The whole Pacific edge stands tall and the Gulf coast sits flat, and the gap is mostly tax and distance from a refinery.",
+      "California and Hawaii are near the top; Mississippi, Oklahoma and Texas near the bottom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-lightning",
+    "form": "spike",
+    "title": "Lightning Strike Density",
+    "aliases": [
+      "lightning",
+      "lightning strikes",
+      "thunderstorm frequency",
+      "lightning density",
+      "how often lightning strikes",
+      "lightning flashes"
+    ],
+    "description": "Approximate cloud-to-ground flashes per square kilometre per year. Florida and the Gulf coast lead by a wide margin; the Pacific Northwest and Alaska almost never see it. Values are estimates rounded from strike-density climatology. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-lightning.png",
+    "width": 975,
+    "height": 888,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "Warm wet air and afternoon heat drive this, so it collapses to nothing along the cool Pacific coast.",
+      "Florida is the highest by far, then Louisiana and Mississippi; Oregon, Washington and Alaska are near zero."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:world-tourists",
+    "form": "spike",
+    "title": "International Tourist Arrivals",
+    "aliases": [
+      "tourist arrivals",
+      "international tourists",
+      "number of visitors",
+      "tourism",
+      "foreign visitors",
+      "how many tourists visit"
+    ],
+    "description": "Approximate international arrivals around 2023, in millions. France and Spain lead; the Mediterranean rim as a whole takes an outsized share. Countries without a figure are unshaded and values are rounded estimates. Boundaries: Natural Earth via world-atlas (public domain).",
+    "imageUrl": "/generated-maps/world-tourists.png",
+    "width": 980,
+    "height": 754,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 980,
+        "height": 58
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted crossed a border and then went home again.",
+      "France is first and Spain second; Mexico and Turkey both outrank the United Kingdom."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-age-structure",
+    "form": "composition",
+    "title": "Age Structure of the Population",
+    "aliases": [
+      "age structure",
+      "age distribution",
+      "age breakdown",
+      "how old the population is",
+      "share of children and seniors",
+      "population by age group",
+      "age composition"
+    ],
+    "description": "Share of residents in three bands — under 18, 18 to 64, and 65 and over — around 2022. Utah has the largest young share in the country; Maine, Florida and Vermont the largest old one. Each pie is rounded to sum to 100. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-age-structure.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 747,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Three slices, and every single resident falls into exactly one of them.",
+      "Utah's first slice is the largest anywhere; Maine's and Florida's last slice is the largest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-education",
+    "form": "composition",
+    "title": "Educational Attainment of Adults",
+    "aliases": [
+      "educational attainment",
+      "education levels",
+      "how educated the population is",
+      "college degrees",
+      "share with a degree",
+      "education breakdown",
+      "schooling levels"
+    ],
+    "description": "Share of adults 25 and over at three levels — high school or less, some college or an associate degree, and a bachelor's degree or more — around 2022. The District of Columbia and Massachusetts have the largest share at the top level; West Virginia and Mississippi the smallest. Each pie is rounded to sum to 100. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-education.png",
+    "width": 975,
+    "height": 790,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      },
+      {
+        "kind": "legend",
+        "x": 0,
+        "y": 747,
+        "width": 975,
+        "height": 20
+      }
+    ],
+    "preauthoredHints": [
+      "Everyone counted is at least 25, and the three slices are ordered rungs of the same ladder.",
+      "The District of Columbia's top slice is more than double West Virginia's."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-rainfall",
+    "form": "surface",
+    "title": "Average Annual Precipitation",
+    "aliases": [
+      "rainfall",
+      "precipitation",
+      "annual rainfall",
+      "how much rain falls",
+      "average precipitation",
+      "yearly rainfall",
+      "how wet it is"
+    ],
+    "description": "Mean yearly total in inches, interpolated across the lower 48 from 64 station observations, then banded into zones. The Gulf coast exceeds 60 inches; the desert Southwest is under 10. Alaska and Hawaii are unshaded because the surface is built in projected space, where their insets sit beside California. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-rainfall.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "A sharp edge runs roughly down the hundredth meridian, with everything to its west far below everything to its east.",
+      "Mobile and New Orleans anchor the highest zone; Las Vegas and Phoenix the lowest."
+    ]
+  },
+  {
+    "sourceId": "static-dataset",
+    "externalId": "static:us-sunshine",
+    "form": "surface",
+    "title": "Average Annual Sunshine Hours",
+    "aliases": [
+      "sunshine",
+      "sunshine hours",
+      "how sunny it is",
+      "hours of sun",
+      "annual sunshine",
+      "sunniest places",
+      "amount of sun"
+    ],
+    "description": "Mean yearly total in hours, interpolated across the lower 48 from 64 station observations and banded into zones. Phoenix and Las Vegas exceed 3,800 hours; Buffalo, Pittsburgh and Burlington fall near 2,000. Alaska and Hawaii are unshaded for the same projection reason as the precipitation map. Boundaries: us-atlas (public domain).",
+    "imageUrl": "/generated-maps/us-sunshine.png",
+    "width": 975,
+    "height": 744,
+    "mimeType": "image/png",
+    "attribution": {
+      "author": "Map of the Day (generated)",
+      "license": "CC0 1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sourcePageUrl": "https://github.com/jlucki13/map-of-the-day"
+    },
+    "preauthoredRedactionRegions": [
+      {
+        "kind": "title",
+        "x": 0,
+        "y": 0,
+        "width": 975,
+        "height": 68
+      }
+    ],
+    "preauthoredHints": [
+      "The desert Southwest is the brightest zone and the eastern Great Lakes the dullest, with roughly a two-to-one spread between them.",
+      "Phoenix and Las Vegas are highest; Buffalo and Pittsburgh are lowest."
+    ]
+  }
+]

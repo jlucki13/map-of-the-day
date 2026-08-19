@@ -1,0 +1,119 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+export interface InstructionsModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+/**
+ * Presentational "how to play" modal. The parent owns open/close state and the
+ * localStorage "seen" flag — this component just renders and reports dismissal
+ * so the same modal can be shown on first visit and reopened via the "?"
+ * button independently of that flag.
+ */
+export default function InstructionsModal({
+  open,
+  onClose,
+}: InstructionsModalProps) {
+  const dismissRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    // Move focus into the dialog and hand it back to whatever opened it, so the
+    // "?" button stays a sane place to land for keyboard users.
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    dismissRef.current?.focus();
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      previouslyFocused?.focus?.();
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="instructions-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ocean-950/45 p-4 backdrop-blur-[2px]"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-panel border border-hairline bg-surface p-6 shadow-lifted sm:p-7"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2
+          id="instructions-title"
+          className="font-display text-2xl tracking-tight text-ink"
+        >
+          How to play
+        </h2>
+
+        <div className="mt-4 space-y-4 text-sm leading-relaxed text-ink-muted">
+          <p>
+            A map shows up with its title hidden — figure out{" "}
+            <span className="font-semibold text-ink">
+              what it&apos;s measuring
+            </span>
+            . The colour scale stays visible; the words that would give it
+            away don&apos;t. You get{" "}
+            <span className="font-semibold text-ink">5 guesses</span>, with
+            hints unlocking after your 3rd and 4th.
+          </p>
+          <div>
+            <p className="font-semibold text-ink">Scoring</p>
+            <p className="mt-1">Win in fewer guesses, earn more points.</p>
+            {/* Six pairs read faster as a strip of chips than as six hairline
+                rows, and it keeps the modal short enough not to scroll. */}
+            <ul className="mt-3 grid grid-cols-3 gap-1.5">
+              {[
+                ["1st", "10"],
+                ["2nd", "8"],
+                ["3rd", "5"],
+                ["4th", "2"],
+                ["5th", "1"],
+                ["No win", "0"],
+              ].map(([label, points]) => (
+                <li
+                  key={label}
+                  className="rounded-control border border-hairline bg-surface-raised px-2.5 py-2 text-center"
+                >
+                  <span className="block font-mono text-lg font-semibold tabular-nums text-ink">
+                    {points}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-ink-subtle">
+                    {label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <p>
+            Points add up across every map you play. Pick a nickname after your
+            first win to appear on the{" "}
+            <span className="font-semibold text-ink">leaderboard</span>.
+          </p>
+        </div>
+
+        <div className="mt-6">
+          <button
+            ref={dismissRef}
+            type="button"
+            onClick={onClose}
+            className="w-full rounded-control bg-accent px-4 py-3 text-sm font-semibold text-accent-ink shadow-plate transition duration-150 hover:bg-accent-hover active:translate-y-px"
+          >
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

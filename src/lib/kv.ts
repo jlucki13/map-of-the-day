@@ -1,14 +1,29 @@
 /**
  * Key-value store abstraction. Two implementations:
- *  - Upstash Redis (production / any env with UPSTASH_REDIS_REST_URL + TOKEN)
- *  - In-memory Map fallback (local dev without Upstash configured)
+ *  - Upstash Redis (production / any env with REST URL + TOKEN configured)
+ *  - In-memory Map fallback (local dev without Redis configured)
  *
  * All server-side session/game state goes through this interface so the rest
  * of the codebase never has to know which backend is active.
+ *
+ * Vercel's Redis marketplace integration has, at different times/accounts,
+ * provisioned this under different env var name pairs — UPSTASH_REDIS_REST_*
+ * (the @upstash/redis SDK's own `Redis.fromEnv()` convention) and, currently,
+ * KV_REST_API_* (Vercel's own branding for the same underlying REST API).
+ * Rather than depend on a specific integration naming, check both.
  */
 
 import { Redis } from "@upstash/redis";
 import { config } from "@/lib/config";
+
+function resolveRedisRestCredentials(): { url: string; token: string } | null {
+  const url =
+    process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+  if (!url || !token) return null;
+  return { url, token };
+}
 
 export interface KvStore {
   getJson<T>(key: string): Promise<T | null>;
@@ -19,10 +34,23 @@ export interface KvStore {
   /** Prepend value to a capped recent-list (LPUSH + LTRIM semantics). */
   pushRecent(key: string, value: string, maxLen: number): Promise<void>;
   getRecent(key: string, maxLen: number): Promise<string[]>;
-}
-
-function hasUpstashEnv(): boolean {
-  return !!process.env.UPSTASH_REDIS_REST_URL && !!process.env.UPSTASH_REDIS_REST_TOKEN;
+  /** Atomically increments member's score in a sorted set; returns the new score. */
+  zIncrBy(key: string, member: string, delta: number): Promise<number>;
+  /** Top `count` members by score descending, with scores. */
+  zRevRangeWithScores(
+    key: string,
+    count: number,
+  ): Promise<{ member: string; score: number }[]>;
+  /** 0-indexed rank by score descending, or null if the member isn't present. */
+  zRevRank(key: string, member: string): Promise<number | null>;
+  /**
+   * Fixed-window rate-limit primitive: atomically increments `key` and, ONLY
+   * on the increment that creates the key (i.e. the count that comes back is
+   * 1), arms a `ttlSeconds` expiry on it. Later increments within the window
+   * do not touch the expiry, so the window is anchored to the first hit, not
+   * pushed back by every subsequent one. Returns the post-increment count.
+   */
+  incrWithExpiry(key: string, ttlSeconds: number): Promise<number>;
 }
 
 // ---------------------------------------------------------------------------
@@ -39,6 +67,17 @@ class UpstashKvStore implements KvStore {
     lpush(key: string, value: string): Promise<unknown>;
     ltrim(key: string, start: number, end: number): Promise<unknown>;
     lrange(key: string, start: number, end: number): Promise<unknown>;
+    // NOTE argument order: increment BEFORE member (matches @upstash/redis).
+    zincrby(key: string, increment: number, member: string): Promise<number>;
+    zrange(
+      key: string,
+      min: number,
+      max: number,
+      opts?: Record<string, unknown>,
+    ): Promise<unknown>;
+    zrevrank(key: string, member: string): Promise<number | null>;
+    incr(key: string): Promise<number>;
+    expire(key: string, ttlSeconds: number): Promise<unknown>;
   };
 
   constructor(client: UpstashKvStore["client"]) {
@@ -90,6 +129,52 @@ class UpstashKvStore implements KvStore {
     if (!Array.isArray(raw)) return [];
     return raw.map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
   }
+
+  async zIncrBy(key: string, member: string, delta: number): Promise<number> {
+    // @upstash/redis zincrby takes (key, increment, member) — increment first.
+    return this.client.zincrby(key, delta, member);
+  }
+
+  async zRevRangeWithScores(
+    key: string,
+    count: number,
+  ): Promise<{ member: string; score: number }[]> {
+    if (count <= 0) return [];
+    // withScores + rev => a FLAT array [member, score, member, score, ...].
+    const raw = await this.client.zrange(key, 0, count - 1, {
+      withScores: true,
+      rev: true,
+    });
+    if (!Array.isArray(raw)) return [];
+    const out: { member: string; score: number }[] = [];
+    for (let i = 0; i + 1 < raw.length; i += 2) {
+      out.push({
+        member: String(raw[i]),
+        // score may arrive as string or number depending on transport.
+        score: Number(raw[i + 1]),
+      });
+    }
+    return out;
+  }
+
+  async zRevRank(key: string, member: string): Promise<number | null> {
+    const rank = await this.client.zrevrank(key, member);
+    return rank ?? null;
+  }
+
+  async incrWithExpiry(key: string, ttlSeconds: number): Promise<number> {
+    const count = await this.client.incr(key);
+    if (count === 1) {
+      // First hit in this window — arm the expiry. Not wrapped in the same
+      // atomic op as the INCR (Upstash's REST client has no MULTI here), so
+      // there's a narrow window where a crash between the two calls leaves a
+      // key that never expires. Rate-limit state, not game state: the worst
+      // outcome is one session staying capped a bit longer than intended,
+      // which is the safe direction to fail in.
+      await this.client.expire(key, ttlSeconds);
+    }
+    return count;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -102,9 +187,14 @@ interface MemEntry {
 }
 
 const MEMORY_STORE_KEY = Symbol.for("map-of-the-day.kv.memoryStore");
+const MEMORY_ZSET_STORE_KEY = Symbol.for("map-of-the-day.kv.memoryZsetStore");
+
+// Sorted sets: outer key = zset key, inner Map = member -> score.
+type MemZsetStore = Map<string, Map<string, number>>;
 
 type GlobalWithStore = typeof globalThis & {
   [MEMORY_STORE_KEY]?: Map<string, MemEntry>;
+  [MEMORY_ZSET_STORE_KEY]?: MemZsetStore;
 };
 
 function getGlobalMemoryStore(): Map<string, MemEntry> {
@@ -113,6 +203,14 @@ function getGlobalMemoryStore(): Map<string, MemEntry> {
     g[MEMORY_STORE_KEY] = new Map<string, MemEntry>();
   }
   return g[MEMORY_STORE_KEY]!;
+}
+
+function getGlobalMemoryZsetStore(): MemZsetStore {
+  const g = globalThis as GlobalWithStore;
+  if (!g[MEMORY_ZSET_STORE_KEY]) {
+    g[MEMORY_ZSET_STORE_KEY] = new Map<string, Map<string, number>>();
+  }
+  return g[MEMORY_ZSET_STORE_KEY]!;
 }
 
 let warnedAboutFallbackOnVercel = false;
@@ -126,8 +224,8 @@ function warnIfFallbackOnVercel(): void {
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" +
         "! WARNING: Using in-memory KV fallback while running on Vercel.    !\n" +
         "! Serverless invocations do NOT share memory — session/game state  !\n" +
-        "! WILL be lost between requests. Set UPSTASH_REDIS_REST_URL and    !\n" +
-        "! UPSTASH_REDIS_REST_TOKEN to fix this.                            !\n" +
+        "! WILL be lost between requests. Set UPSTASH_REDIS_REST_URL/TOKEN  !\n" +
+        "! or KV_REST_API_URL/TOKEN to fix this.                            !\n" +
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n",
     );
   }
@@ -135,9 +233,37 @@ function warnIfFallbackOnVercel(): void {
 
 class MemoryKvStore implements KvStore {
   private store: Map<string, MemEntry>;
+  private zstore: MemZsetStore;
 
   constructor() {
     this.store = getGlobalMemoryStore();
+    this.zstore = getGlobalMemoryZsetStore();
+  }
+
+  private zset(key: string): Map<string, number> {
+    let set = this.zstore.get(key);
+    if (!set) {
+      set = new Map<string, number>();
+      this.zstore.set(key, set);
+    }
+    return set;
+  }
+
+  /** Members sorted by score descending, ties broken by member ascending. */
+  private zsortedDesc(key: string): { member: string; score: number }[] {
+    const set = this.zstore.get(key);
+    if (!set) return [];
+    return [...set.entries()]
+      .map(([member, score]) => ({ member, score }))
+      .sort((a, b) =>
+        b.score !== a.score
+          ? b.score - a.score
+          : a.member < b.member
+            ? -1
+            : a.member > b.member
+              ? 1
+              : 0,
+      );
   }
 
   private read(key: string): string | null {
@@ -208,6 +334,47 @@ class MemoryKvStore implements KvStore {
       return [];
     }
   }
+
+  async zIncrBy(key: string, member: string, delta: number): Promise<number> {
+    const set = this.zset(key);
+    const next = (set.get(member) ?? 0) + delta;
+    set.set(member, next);
+    return next;
+  }
+
+  async zRevRangeWithScores(
+    key: string,
+    count: number,
+  ): Promise<{ member: string; score: number }[]> {
+    if (count <= 0) return [];
+    return this.zsortedDesc(key).slice(0, count);
+  }
+
+  async zRevRank(key: string, member: string): Promise<number | null> {
+    const set = this.zstore.get(key);
+    if (!set || !set.has(member)) return null;
+    const idx = this.zsortedDesc(key).findIndex((e) => e.member === member);
+    return idx < 0 ? null : idx;
+  }
+
+  async incrWithExpiry(key: string, ttlSeconds: number): Promise<number> {
+    // Mirrors UpstashKvStore.incrWithExpiry: expiry is armed only on the
+    // increment that creates the entry, so later hits in the window don't
+    // push the reset time back. `read`/`write` already handle lazy expiry
+    // (see MemEntry) so an expired counter is indistinguishable from a
+    // missing one here.
+    const existing = this.read(key);
+    if (existing === null) {
+      this.write(key, "1", ttlSeconds);
+      return 1;
+    }
+    const next = (Number.parseInt(existing, 10) || 0) + 1;
+    // Update the value in place WITHOUT touching expiresAt — a fresh
+    // `write()` call would reset the TTL clock on every increment.
+    const entry = this.store.get(key)!;
+    entry.value = String(next);
+    return next;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -219,8 +386,9 @@ let cachedStore: KvStore | null = null;
 export function getKv(): KvStore {
   if (cachedStore) return cachedStore;
 
-  if (hasUpstashEnv()) {
-    cachedStore = new UpstashKvStore(Redis.fromEnv());
+  const credentials = resolveRedisRestCredentials();
+  if (credentials) {
+    cachedStore = new UpstashKvStore(new Redis(credentials));
   } else {
     cachedStore = new MemoryKvStore();
   }

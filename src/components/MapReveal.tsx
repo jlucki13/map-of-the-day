@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { quietAction } from "./styles";
 
 export interface MapRevealProps {
   redactedImageUrl: string;
@@ -9,6 +10,11 @@ export interface MapRevealProps {
   alt?: string;
 }
 
+/**
+ * The sheet on the desk. It carries no chrome beyond a thin white mount and a
+ * contact shadow, because on this layout the map is the largest object on the
+ * screen and everything else is arranged around it.
+ */
 export default function MapReveal({
   redactedImageUrl,
   originalImageUrl,
@@ -20,32 +26,36 @@ export default function MapReveal({
   // back to the redacted version to compare, if they want.
   const [showOriginal, setShowOriginal] = useState(true);
 
-  const displayUrl =
-    canToggle && !showOriginal ? redactedImageUrl : canToggle ? originalImageUrl! : redactedImageUrl;
+  const displayUrl = canToggle
+    ? showOriginal
+      ? originalImageUrl!
+      : redactedImageUrl
+    : redactedImageUrl;
 
   return (
-    <div className="relative">
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+    <figure className="relative">
+      <div className="overflow-hidden rounded-panel bg-surface p-2 shadow-lifted ring-1 ring-sand-300/70 sm:p-2.5">
         <img
           src={displayUrl}
           alt={revealed ? alt : `${alt} (title and legend redacted)`}
           loading="eager"
-          className="block max-w-full w-full h-auto select-none"
+          fetchPriority="high"
+          className="block h-auto w-full max-w-full select-none rounded-[8px]"
           draggable={false}
         />
       </div>
 
       {canToggle && (
-        <div className="mt-2 flex justify-end">
+        <figcaption className="mt-3 flex justify-end">
           <button
             type="button"
             onClick={() => setShowOriginal((v) => !v)}
-            className="rounded-md border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-800 hover:text-white"
+            className={quietAction}
           >
-            {showOriginal ? "Show redacted version" : "Show original"}
+            {showOriginal ? "Show it covered again" : "Show the real title"}
           </button>
-        </div>
+        </figcaption>
       )}
-    </div>
+    </figure>
   );
 }

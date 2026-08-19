@@ -13,8 +13,22 @@ function intFromEnv(name: string, fallback: number): number {
 export const MAX_GUESSES = 5;
 
 export const config = {
-  /** How long one puzzle stays live. Default 24h; shorten locally for testing. */
-  intervalSeconds: intFromEnv("PUZZLE_INTERVAL_SECONDS", 24 * 60 * 60),
+  /**
+   * Local/testing-only escape hatch. Real rotation is a fixed daily reveal
+   * time (see rotationSchedule.ts — 8 PM America/New_York, not configurable
+   * via env, since "the puzzle changes at a specific clock time every night"
+   * is the actual product requirement, not a tunable). Set this to revert to
+   * a plain "N seconds after generation" interval instead, so a dev server
+   * doesn't have to wait for a real wall-clock boundary to see a new puzzle.
+   * Unset (0 = disabled) in any real deployment. This deliberately has a
+   * different name from the old PUZZLE_INTERVAL_SECONDS var so a value still
+   * sitting in a deployment's env from before this change is silently inert
+   * rather than silently still controlling production rotation.
+   */
+  puzzleRotationOverrideSeconds: intFromEnv(
+    "PUZZLE_ROTATION_OVERRIDE_SECONDS",
+    0,
+  ),
 
   /** setNX lock TTL guarding background regeneration (seconds). */
   generationLockTtlSeconds: intFromEnv("GENERATION_LOCK_TTL_SECONDS", 180),
@@ -48,6 +62,37 @@ export const config = {
 
   /** True when running on Vercel (used to loudly warn about dev fallbacks). */
   isVercel: !!process.env.VERCEL,
+
+  /**
+   * Absolute origin used as metadataBase for OG/Twitter image URLs, so social
+   * crawlers (which don't share a browser's notion of "relative") get a real
+   * URL rather than a localhost one.
+   *
+   * Preference order:
+   *  1. SITE_URL — an explicit custom domain, set once and forget. Also the
+   *     only option that's stable if a per-deployment protection setting or
+   *     something else makes Vercel's own URLs unreliable for an outside
+   *     crawler to fetch.
+   *  2. VERCEL_PROJECT_PRODUCTION_URL — Vercel's own "stable alias for
+   *     whatever is currently in Production" variable. Deliberately preferred
+   *     over VERCEL_URL: that one is per-DEPLOYMENT (a fresh random hash every
+   *     push, e.g. map-of-the-qlo71hb3b-<team>.vercel.app) rather than
+   *     per-PROJECT, so a socially-shared link built from it goes stale the
+   *     next time anything is deployed — and those hashed URLs are commonly
+   *     still gated by Deployment Protection even once the real production
+   *     alias has been made public, which is exactly what broke this once.
+   *  3. VERCEL_URL — last-resort fallback for contexts where neither of the
+   *     above is set (e.g. a Preview deployment, which has no stable alias by
+   *     definition).
+   *  4. undefined, so Next's own localhost default applies in plain local dev.
+   */
+  siteUrl: process.env.SITE_URL
+    ? process.env.SITE_URL
+    : process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : undefined,
 } as const;
 
 /**

@@ -1,3 +1,472 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   ---------------------------------------------------------------------------
+   One atlas palette, four hues, each stored as space-separated RGB channels so
+   Tailwind can apply opacity modifiers (see tailwind.config.js).
+
+     ocean  the world itself: page, panels, borders, links, focus
+     sand   the reader's layer: type, the primary action, hint notes, map mount
+     land   correct / won
+     clay   incorrect / lost / errors
+
+   The shell is a light parchment page — an atlas sheet — so the globe behind it
+   reads as a clear blue-green sphere rather than a dim shape on a dark field.
+   Warm paper against a cool earth keeps the two separable. The map plate stays
+   pure white so it remains the brightest object and the obvious hero, and
+   green/red are still spent only on feedback.
+   ------------------------------------------------------------------------- */
+
+:root {
+  /* ocean ---------------------------------------------------------------- */
+  --ocean-950: 6 21 35; /* #061523 */
+  --ocean-900: 10 31 49; /* #0a1f31 */
+  --ocean-850: 14 42 63; /* #0e2a3f */
+  --ocean-800: 18 56 82; /* #123852 */
+  --ocean-700: 26 77 109; /* #1a4d6d */
+  --ocean-600: 36 104 142; /* #24688e */
+  --ocean-500: 47 134 176; /* #2f86b0 */
+  --ocean-400: 87 166 204; /* #57a6cc */
+  --ocean-300: 140 198 226; /* #8cc6e2 */
+  --ocean-200: 195 226 240; /* #c3e2f0 */
+
+  /* sand ----------------------------------------------------------------- */
+  --sand-50: 247 241 227; /* #f7f1e3 */
+  --sand-100: 238 228 207; /* #eee4cf */
+  --sand-200: 222 208 178; /* #ded0b2 */
+  --sand-300: 201 181 140; /* #c9b58c */
+  --sand-400: 185 156 102; /* #b99c66 */
+  --sand-500: 165 133 74; /* #a5854a */
+  --sand-600: 138 108 55; /* #8a6c37 */
+
+  /* land ----------------------------------------------------------------- */
+  --land-800: 20 67 47; /* #14432f */
+  --land-700: 27 92 64; /* #1b5c40 */
+  --land-600: 35 117 82; /* #237552 */
+  --land-500: 47 144 102; /* #2f9066 */
+  --land-400: 92 177 135; /* #5cb187 */
+  --land-300: 154 211 179; /* #9ad3b3 */
+
+  /* clay ----------------------------------------------------------------- */
+  --clay-900: 58 22 19; /* #3a1613 */
+  --clay-700: 122 44 34; /* #7a2c22 */
+  --clay-500: 184 80 60; /* #b8503c */
+  --clay-400: 207 116 96; /* #cf7460 */
+  --clay-300: 227 166 149; /* #e3a695 */
+
+  /* paper ---------------------------------------------------------------- */
+  --paper: 255 253 247; /* #fffdf7, the plate and panel white */
+
+  /* semantic roles ------------------------------------------------------- */
+  --canvas: var(--sand-50); /* parchment page */
+  --surface: var(--paper);
+  --surface-raised: 252 248 238; /* #fcf8ee */
+  --hairline: var(--sand-200);
+  --ink: var(--ocean-950); /* 16.4:1 on canvas */
+  --ink-muted: var(--ocean-800); /* 10.9:1 on canvas */
+  --ink-subtle: var(--ocean-700); /* 8.0:1 on canvas */
+  --accent: var(--ocean-700); /* primary action fill */
+  --accent-hover: var(--ocean-800);
+  --accent-ink: var(--paper); /* 8.9:1 on the accent fill */
+  --focus: var(--ocean-600);
+
+  /* Feedback, sized for a light page ---------------------------------------
+     The dark shell used the pale end of each ramp for status text. On paper
+     those read as wash, so status now uses the deep end (land-700 is 7.8:1 on
+     an instrument panel, clay-700 is 9.3:1) and the pale end survives only as
+     a fill behind it. Green and red are still spent on nothing but
+     correct/incorrect; sand carries the hint, which is neither. */
+  --good: var(--land-700);
+  --good-fill: 237 240 232; /* land-700 at 8% over paper */
+  --good-line: 205 222 212;
+  --bad: var(--clay-700);
+  --bad-fill: 244 236 230; /* clay-700 at 8% over paper */
+  --bad-line: 230 208 200;
+  --note: var(--sand-600); /* 4.8:1 on paper */
+  --note-fill: 243 238 228;
+  --note-line: var(--sand-200);
+}
+
+@layer base {
+  body {
+    /* Paper warms very slightly toward the top: one soft fall-off, no stack. */
+    background-color: rgb(var(--canvas));
+    background-image: radial-gradient(
+      120% 70% at 50% -12%,
+      rgb(var(--paper)) 0%,
+      rgb(var(--canvas)) 62%
+    );
+    background-attachment: fixed;
+  }
+
+  /* One focus treatment for every control on every surface. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--focus));
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: rgb(var(--sand-200));
+    color: rgb(var(--ocean-950));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Decorative globe (see src/components/GlobeBackground.tsx)
+   ---------------------------------------------------------------------------
+   A sphere built from three honest parts: a shaded disc, the world's land
+   sliding past behind a limb fade, and a graticule of real 3D circles rotating
+   about the polar axis. Only two elements animate, each with a single
+   compositable transform; nothing here reads or writes layout.
+   ------------------------------------------------------------------------- */
+
+.globe-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint style;
+  /* The sphere settles into the paper at the foot of the viewport rather than
+     being clipped by it, so the desk has no visible edge. */
+  --globe-veil: linear-gradient(to bottom, #000 0%, #000 82%, transparent 99%);
+  -webkit-mask-image: var(--globe-veil);
+  mask-image: var(--globe-veil);
+}
+
+.globe {
+  /* Desk-globe framing: the sphere is a real object standing to the right of
+     the work, low and partly off the edge, rather than wallpaper centred behind
+     it. Big enough to be a globe, cropped enough to be furniture. */
+  --globe-size: clamp(460px, 96vw, 900px);
+  --globe-spin: 110s;
+  /* Axial tilt, plus a viewpoint slightly above the equator, so the graticule
+     reads like a globe on a stand rather than a wheel. */
+  --globe-tilt: -16deg;
+  --globe-pitch: 12deg;
+  --globe-x: 50%;
+  --globe-y: 30%;
+
+  position: absolute;
+  left: var(--globe-x);
+  top: var(--globe-y);
+  width: var(--globe-size);
+  height: var(--globe-size);
+  margin-top: calc(var(--globe-size) / -2);
+  margin-left: calc(var(--globe-size) / -2);
+  border-radius: 50%;
+  /* The sphere is the page's one piece of colour and has to survive being read
+     against paper. The ocean stays in the light half of the ramp so dark type
+     crossing the disc keeps its contrast. */
+  opacity: 0.55;
+  background: radial-gradient(
+    circle at 34% 28%,
+    rgb(var(--ocean-200)) 0%,
+    rgb(var(--ocean-300)) 34%,
+    rgb(var(--ocean-400)) 64%,
+    rgb(var(--ocean-500)) 92%
+  );
+}
+
+/* Land --------------------------------------------------------------------- */
+
+.globe__skin {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  transform: rotate(var(--globe-tilt));
+  /* A sliding cylindrical texture cannot foreshorten longitude, so the limb,
+     where that error would show, is faded out. */
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    #000 40%,
+    rgb(0 0 0 / 0.32) 74%,
+    transparent 95%
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    #000 40%,
+    rgb(0 0 0 / 0.32) 74%,
+    transparent 95%
+  );
+}
+
+.globe__land {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -150%;
+  width: 400%; /* two whole worlds: one world spans twice the disc's diameter */
+  background-color: rgb(var(--land-500));
+  -webkit-mask-image: url("/globe-land.svg");
+  mask-image: url("/globe-land.svg");
+  -webkit-mask-size: 50% 100%;
+  mask-size: 50% 100%;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  animation: globe-drift var(--globe-spin) linear infinite;
+}
+
+/* Half a layer width is exactly one world, so the loop is seamless. */
+@keyframes globe-drift {
+  from {
+    transform: translate3d(-25%, 0, 0);
+  }
+  to {
+    transform: translate3d(25%, 0, 0);
+  }
+}
+
+/* Graticule ---------------------------------------------------------------- */
+
+.globe__frame {
+  position: absolute;
+  inset: 0;
+  transform: rotate(var(--globe-tilt)) rotateX(var(--globe-pitch));
+  transform-style: preserve-3d;
+}
+
+.globe__grid {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: globe-turn var(--globe-spin) linear infinite;
+}
+
+@keyframes globe-turn {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-360deg);
+  }
+}
+
+/* A circle turned about the polar axis projects to exactly the ellipse an
+   orthographic meridian draws, so nothing here is faked. */
+.globe__meridian {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(var(--ocean-700) / 0.22);
+  border-radius: 50%;
+  transform: rotateY(var(--meridian));
+}
+
+/* --lat-scale = cos(latitude), --lat-offset = -sin(latitude) / 2 */
+.globe__parallel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--globe-size) * var(--lat-scale));
+  height: calc(var(--globe-size) * var(--lat-scale));
+  border: 1px solid rgb(var(--ocean-700) / 0.18);
+  border-radius: 50%;
+  transform: translate(-50%, -50%)
+    translateY(calc(var(--globe-size) * var(--lat-offset))) rotateX(90deg);
+}
+
+/* Shading ------------------------------------------------------------------ */
+
+.globe__shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 31% 25%,
+    rgb(255 255 255 / 0.4) 0%,
+    rgb(255 255 255 / 0) 48%
+  );
+  /* Limb darkening in ocean rather than near-black: on paper a black rim reads
+     as a drop shadow around a hole instead of a sphere turning away. */
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--ocean-600) / 0.3),
+    inset -14px -18px 58px 4px rgb(var(--ocean-700) / 0.42),
+    inset 0 0 30px 4px rgb(var(--ocean-600) / 0.22);
+}
+
+/* Once there is room for a rail beside the map, the globe moves out from behind
+   the work and stands to its right, low, running off the corner of the desk. */
+@media (min-width: 1024px) {
+  .globe {
+    --globe-x: 84%;
+    --globe-y: 68%;
+    --globe-size: clamp(660px, 68vw, 1020px);
+    /* Stronger than the phone layout, because on the desk layout every piece of
+       running text sits on an opaque panel or on the left half of the page.
+       Nothing is read through the sphere, so the sphere can be a real object. */
+    opacity: 0.58;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .globe__land,
+  .globe__grid {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   One entrance, reused: panels that appear because the round changed state
+   (a hint unlocking, the result landing) settle in from just below. Everything
+   else is already on screen.
+   ------------------------------------------------------------------------- */
+
+@keyframes settle-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.settle-in {
+  animation: settle-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settle-in {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Loading: the plate and the rail before they arrive. Skeletons the shape of
+   the things they replace, so nothing shifts when the round lands, with a slow
+   sheen crossing them rather than a spinner.
+   ------------------------------------------------------------------------- */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgb(var(--surface-raised));
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translate3d(-100%, 0, 0);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(var(--paper) / 0.9) 50%,
+    transparent 100%
+  );
+  animation: skeleton-sheen 1900ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes skeleton-sheen {
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+    opacity: 0.5;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The rail's own register: small uppercase section markers with a hairline
+   running out to the panel edge. Used for the three fixed blocks of the rail
+   and nowhere else, so the page has one label style rather than a scattering.
+   ------------------------------------------------------------------------- */
+
+.rail-marker {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(var(--ink-subtle));
+}
+
+.rail-marker::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: rgb(var(--hairline));
+}
+
+/* ---------------------------------------------------------------------------
+   The game page's three instruments — map, rail, leaderboard — as one named
+   grid, so the same three elements can change position instead of needing
+   three different layouts:
+
+     mobile/tablet  everything stacks, map first
+     laptop (lg+)   map + rail win the width; the board drops below both,
+                    capped to a modest card rather than stretching full width
+     wide desktop   there is finally room for a fourth panel, so the board
+                    stands to the map's left, sized like the rail on its right
+
+   The round's own controls (map, rail) never move or resize because of this:
+   only the board's position changes.
+   ------------------------------------------------------------------------- */
+
+.game-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "map"
+    "rail"
+    "board";
+}
+
+.game-grid > .area-map {
+  grid-area: map;
+  min-width: 0;
+}
+
+.game-grid > .area-rail {
+  grid-area: rail;
+  min-width: 0;
+}
+
+.game-grid > .area-board {
+  grid-area: board;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .game-grid {
+    column-gap: 3rem;
+    row-gap: 2rem;
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    /* The rail runs a good deal taller than the map, so the board goes into
+       the gap that leaves under the map rather than onto a row of its own
+       below both — which stranded it past the fold with the whole rail's
+       width of nothing beside it. Sharing the map's column also lines their
+       edges up, so the two read as one stack. */
+    grid-template-areas:
+      "map rail"
+      "board rail";
+    align-content: start;
+  }
+
+  /* The rail spans both rows; without this it stretches to their combined
+     height and its sticky offset has nothing to bite on. */
+  .game-grid > .area-rail {
+    align-self: start;
+  }
+}
+
+@media (min-width: 1536px) {
+  .game-grid {
+    grid-template-columns: 18rem minmax(0, 1fr) 21rem;
+    grid-template-areas: "board map rail";
+  }
+}

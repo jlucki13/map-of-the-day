@@ -9,6 +9,11 @@ export interface GuessFormProps {
   onSubmit: (guess: string) => void;
 }
 
+/**
+ * The rail's one control. It stacks rather than sitting in a row: at the rail's
+ * width a side-by-side field and button leaves the field too short to hold a
+ * phrase like "share of electricity from wind", and the phrase is the answer.
+ */
 export default function GuessForm({
   disabled,
   submitting,
@@ -39,38 +44,50 @@ export default function GuessForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full">
-      <div className="flex items-stretch gap-2">
-        <label htmlFor="guess-input" className="sr-only">
-          Guess the place
-        </label>
-        <input
-          id="guess-input"
-          type="text"
-          inputMode="text"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck={false}
-          placeholder="Where is this?"
-          value={value}
-          disabled={isDisabled}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          aria-invalid={Boolean(error) || undefined}
-          aria-describedby={error ? "guess-form-error" : undefined}
-          className="flex-1 rounded-lg border border-slate-700 bg-slate-900 px-4 py-2.5 text-base text-slate-100 placeholder:text-slate-500 outline-none transition-colors focus:border-slate-500 disabled:cursor-not-allowed disabled:opacity-50"
-        />
-        <button
-          type="submit"
-          disabled={isDisabled || value.trim().length === 0}
-          className="shrink-0 rounded-lg bg-emerald-600 px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-emerald-500 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+    <form onSubmit={handleSubmit}>
+      <label
+        htmlFor="guess-input"
+        className="block text-sm font-semibold text-ink"
+      >
+        Your guess
+      </label>
+
+      <input
+        id="guess-input"
+        type="text"
+        inputMode="text"
+        autoComplete="off"
+        autoCorrect="off"
+        spellCheck={false}
+        placeholder="e.g. average rainfall"
+        value={value}
+        disabled={isDisabled}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        aria-invalid={Boolean(error) || undefined}
+        aria-describedby={error ? "guess-form-error" : "guess-form-helper"}
+        className="mt-2 block w-full rounded-control border border-sand-300 bg-surface-raised px-3.5 py-3 text-[17px] text-ink outline-none transition-colors duration-150 placeholder:text-ink-subtle/70 hover:border-ocean-600 focus:border-ocean-600 disabled:cursor-not-allowed disabled:opacity-50"
+      />
+
+      <button
+        type="submit"
+        disabled={isDisabled || value.trim().length === 0}
+        className="mt-2 w-full rounded-control bg-accent px-5 py-3 text-[15px] font-semibold text-accent-ink shadow-plate transition duration-150 hover:bg-accent-hover active:translate-y-px disabled:cursor-not-allowed disabled:border disabled:border-sand-300 disabled:bg-surface-raised disabled:text-ink-subtle disabled:shadow-none"
+      >
+        {submitting ? "Checking…" : "Submit guess"}
+      </button>
+
+      {error ? (
+        <p
+          id="guess-form-error"
+          role="alert"
+          className="mt-2.5 text-sm font-medium text-bad"
         >
-          {submitting ? "Guessing…" : "Guess"}
-        </button>
-      </div>
-      {error && (
-        <p id="guess-form-error" role="alert" className="mt-2 text-sm font-medium text-amber-400">
           {error}
+        </p>
+      ) : (
+        <p id="guess-form-helper" className="mt-2.5 text-sm text-ink-subtle">
+          Name the topic, not the place.
         </p>
       )}
     </form>
